@@ -113,3 +113,13 @@ scripts/release.sh
 - `scripts/build.sh` runs `dotnet build Hologirl.csproj`. The project's MSBuild targets copy the DLL, PDB, manifest, and generated PCK into the local STS2 mod folder.
 - `scripts/package.sh` builds first, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
+
+## Compatibility Practices
+
+Hologirl should be conservative around shared game state and other mods.
+
+- Use mod-scoped ids and localization keys.
+- Prefer BaseLib's local content model APIs over global patches.
+- Avoid custom enum/keyword registration for glossary terms unless a real keyword behavior is needed. For now, `Shapeshift` is represented through a Hologirl-local tooltip power rather than a global `CardKeyword`.
+- Keep relic-specific behavior attached to the relic conceptually and in code. For example, `Livestream` shapeshifts, while `Prism Pendant` is responsible for adding the form-specific 0-cost card.
+- Before adding patches, global description overrides, custom piles, or other shared systems, document the collision risk and test with BaseLib plus at least one other character mod where possible.

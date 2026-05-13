@@ -6,7 +6,7 @@
   "HOLOGIRL-CONCERT.title": "Concert!",
   "HOLOGIRL-CONCERT.description": "Gain {FansPower:diff()} [gold]Fans[/gold].\nGain {SingingPower:diff()} [gold]Singing[/gold].",
   "HOLOGIRL-LIVESTREAM.title": "Livestream",
-  "HOLOGIRL-LIVESTREAM.description": "Transform into a random [gold]Idol Form[/gold].\nAdd that form's special card to your hand.",
+  "HOLOGIRL-LIVESTREAM.description": "[gold]Shapeshift[/gold] into a random [gold]Idol Form[/gold].",
   "HOLOGIRL-FAUNA_BLOOM.title": "Bloom",
   "HOLOGIRL-FAUNA_BLOOM.description": "A placeholder Fauna form card.",
   "HOLOGIRL-AMELIA_CLUE.title": "Clue",

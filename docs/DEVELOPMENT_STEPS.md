@@ -60,12 +60,15 @@
 - [x] Add a placeholder starting relic that documents transformation reward cards.
 - [x] Add one placeholder 0-cost transformation reward card per form.
 - [x] Add power hover tips and rich text coloring for the first Hologirl resource/form terms.
+- [x] Rename the player-facing transformation term to `Shapeshift` and move the 0-cost card bonus onto the starter relic.
 - [ ] Test the first combat loop locally.
 
 ## Design Risks
 
 - [ ] Decide how to handle public naming/art/IP references for Hololive-inspired forms.
 - [ ] Ensure `Fans` decay is predictable from card/relic/power text before expanding the card pool.
+- [x] Establish a compatibility policy: prefer local behavior and avoid global hooks/custom enums unless justified.
+- [ ] Review new mechanics for collision risk before each release.
 
 ## Debugging Workflow
 

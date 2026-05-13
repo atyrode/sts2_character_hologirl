@@ -2,7 +2,9 @@ using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Hologirl.HologirlCode.Cards.Tokens;
 using Hologirl.HologirlCode.Character;
+using Hologirl.HologirlCode.Powers;
 using Hologirl.HologirlCode.Powers.Forms;
+using Hologirl.HologirlCode.Relics;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -18,6 +20,7 @@ public sealed class Livestream() : HologirlCard(2, CardType.Skill, CardRarity.Ba
 {
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
+        HoverTipFactory.FromPower<ShapeshiftPower>(),
         HoverTipFactory.FromPower<FaunaFormPower>(),
         HoverTipFactory.FromPower<AmeliaFormPower>(),
         HoverTipFactory.FromPower<GuraFormPower>(),
@@ -48,6 +51,7 @@ public sealed class Livestream() : HologirlCard(2, CardType.Skill, CardRarity.Ba
         where TCard : CardModel
     {
         await PowerCmd.Apply<TPower>(Owner.Creature, 1m, Owner.Creature, this);
-        await CardPileCmd.Add([ModelDb.Card<TCard>()], PileType.Hand.GetPile(Owner), CardPilePosition.Top, this);
+        if (Owner.Relics.OfType<PrismPendant>().Any())
+            await CardPileCmd.Add([ModelDb.Card<TCard>()], PileType.Hand.GetPile(Owner), CardPilePosition.Top, this);
     }
 }
