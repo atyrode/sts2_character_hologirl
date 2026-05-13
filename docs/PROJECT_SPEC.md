@@ -29,3 +29,5 @@ Status: complete.
 ## Next Target
 
 Define the first real version of Hologirl's character identity and combat loop, then replace the smoke-test starting deck with a tiny intentional starter kit.
+
+Current direction: Hologirl builds `Fans`, uses `Livestream` to transform into a random idol-inspired form, and spends or loses fans to maintain that form. `Concert!` is the first fan-generation card and `Singing` temporarily prevents fan loss.

@@ -41,12 +41,23 @@
 
 ## Character Direction
 
-- [ ] Define Hologirl's character fantasy in `docs/DESIGN.md`.
-- [ ] Define the first small mechanical hook.
-- [ ] Decide whether the first hook needs a power, relic, secondary resource, card tag, or only normal card effects.
+- [x] Define Hologirl's character fantasy in `docs/DESIGN.md`.
+- [x] Define the first small mechanical hook.
+- [ ] Decide whether `Fans` should be implemented first as a power, player resource, or custom state.
+- [ ] Decide whether transformations should be implemented first as powers, stances, or custom player state.
+- [ ] Decide whether fan decay is linear or tiered for the first prototype.
 - [ ] Replace the smoke-test starter deck with a first intentional starter kit.
-- [ ] Add one basic attack, one basic defend, and one mechanic card.
+- [ ] Add Strike-style and Defend-style Hologirl starter cards.
+- [ ] Add `Concert!`: gain 3 Fans and Singing for 2 turns.
+- [ ] Add `Livestream`: transform into a random form.
+- [ ] Add a placeholder starting relic that documents transformation reward cards.
+- [ ] Add one placeholder 0-cost transformation reward card per form.
 - [ ] Test the first combat loop locally.
+
+## Design Risks
+
+- [ ] Decide how to handle public naming/art/IP references for Hololive-inspired forms.
+- [ ] Ensure `Fans` decay is predictable from card/relic/power text before expanding the card pool.
 
 ## Debugging Workflow
 
