@@ -4,20 +4,18 @@ These instructions apply to the whole repository. Follow them before making chan
 
 ## Project Direction
 
-- This repository is for the `hologirl` character project.
-- Keep the repo usable as a clean project foundation until the runtime, asset pipeline, and delivery target are explicitly chosen.
-- Do not introduce a game engine, web framework, CMS, deployment stack, or paid service by assumption. Document the choice before wiring it into the repo.
-- Treat character source assets, generated exports, references, and build/runtime code as separate concerns. Keep ownership boundaries clear in docs when those directories are added.
-- Preserve provenance for imported assets where licensing, attribution, prompt history, or client approval matters.
+- Keep the repository as a clean project foundation until concrete requirements are provided.
+- Do not introduce project assumptions, technologies, services, workflows, directory structures, or product direction by guesswork.
+- Documentation files in `docs/` are intentionally allowed to start empty. Build and revise them as the project evolves from confirmed decisions and actual implementation.
+- When a project-specific decision is made, document it in the relevant file instead of relying on chat history.
 
 ## Branch Policy
 
 - Before committing, branching, merging, or deploying, fetch the remote branch state when it is relevant to the task. At minimum, use `git fetch` plus `git status --short --branch` before deciding whether the local branch can be pushed safely.
-- `main` is for shared foundations only: documentation structure, project scaffolding, asset conventions, build/runtime infrastructure, CI, deployment workflow, and cross-variant fixes.
-- Do not add a long-lived `dev` branch unless the workflow is explicitly revisited. Use short-lived `foundation/*`, `asset/*`, `design/*`, or `fix/*` branches when a separate branch is useful.
-- Visual, animation, rigging, shader, and interaction experiments should live on short-lived variant branches until the operator chooses one as the foundation.
-- Create new variant branches from the latest `main`.
-- Do not merge variant-specific assets, animation data, shader experiments, or runtime behavior into `main` unless the operator explicitly chooses that direction as shared foundation.
+- `main` is for shared foundations only.
+- Do not add a long-lived `dev` branch unless the workflow is explicitly revisited.
+- Create new work branches from the latest `main` when a separate branch is useful.
+- Do not merge exploratory or project-specific experiments into `main` unless the operator explicitly chooses that direction as shared foundation.
 - Push changes to `main` only through pull requests when branch protection or team workflow requires it.
 
 ## Repository Governance
@@ -33,16 +31,18 @@ These instructions apply to the whole repository. Follow them before making chan
 ## Documentation Rule
 
 - Treat documentation as part of every foundational change.
-- When changing architecture, asset workflow, CI, deployment, branch workflow, environment variables, project assumptions, or runtime/tooling choices, update the relevant docs in the same change.
+- Keep docs sparse until there is something true and useful to record.
+- Do not fill docs with speculative content. Empty placeholders are acceptable.
+- When changing architecture, CI, deployment, branch workflow, environment variables, project assumptions, or tooling choices, update the relevant docs in the same change.
 - When a change expands or shifts the scope of the requested work, leave sober human-readable context in the relevant documentation or, when the context belongs next to the implementation, a concise code comment.
 - Documentation and comments should help another developer understand purpose, ownership, and operational constraints without narrating obvious code mechanics.
 - When adding operator workflows, scripts, env files, or examples, update the appropriate README to explain how to use them, how to create ignored local files from examples, and where values should come from when that can be stated safely.
 - Keep these files aligned:
   - `README.md` for setup and onboarding.
-  - `docs/PROJECT_SPEC.md` for product and creative intent.
-  - `docs/ARCHITECTURE.md` for codebase structure, ownership, and integration points.
+  - `docs/PROJECT_SPEC.md` for confirmed project intent.
+  - `docs/ARCHITECTURE.md` for confirmed codebase structure, ownership, and integration points.
   - `docs/DEVELOPMENT_STEPS.md` for the working checklist.
-  - `docs/DESIGN.md` for current design direction and variant notes.
+  - `docs/DESIGN.md` for confirmed design direction and variant notes.
 
 ## Secret Handling
 
@@ -65,7 +65,7 @@ These instructions apply to the whole repository. Follow them before making chan
 ## Validation
 
 - Prefer focused checks that match the current repo shape. Do not add heavyweight validation just because another project used it.
-- Once a runtime or asset toolchain exists, document the normal checks in `README.md` and `docs/ARCHITECTURE.md`.
+- Once a project toolchain exists, document the normal checks in `README.md` and `docs/ARCHITECTURE.md`.
 - Avoid running heavy local builds on constrained machines unless the operator explicitly asks or the check is necessary for the current change.
 
 ## Working Style
