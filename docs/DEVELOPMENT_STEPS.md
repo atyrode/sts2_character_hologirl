@@ -14,7 +14,7 @@
 - [x] Install or locate `.NET SDK`.
 - [x] Locate the local Slay the Spire 2 install path.
 - [x] Install BaseLib into the game's `mods/BaseLib/` folder.
-- [x] Declare BaseLib minimum version in `Hologirl.json`.
+- [x] Declare BaseLib dependency in `Hologirl.json` using the game-compatible string-list schema.
 - [x] Generate `.pck` through `BSchneppe.StS2.PckPacker` for the initial simple asset/localization pack.
 - [ ] Confirm the installed game branch/version beyond local runtime/depot files.
 - [ ] Find a reliable gameplay test path: local Steam client, remote desktop Steam session, or proven headless launch flow.
