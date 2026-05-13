@@ -6,14 +6,24 @@ using Hologirl.HologirlCode.Powers.Forms;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace Hologirl.HologirlCode.Cards.Basic;
 
 [Pool(typeof(HologirlCardPool))]
 public sealed class Livestream() : HologirlCard(2, CardType.Skill, CardRarity.Basic, TargetType.Self)
 {
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromPower<FaunaFormPower>(),
+        HoverTipFactory.FromPower<AmeliaFormPower>(),
+        HoverTipFactory.FromPower<GuraFormPower>(),
+        HoverTipFactory.FromPower<KroniiFormPower>()
+    ];
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         switch (Random.Shared.Next(4))

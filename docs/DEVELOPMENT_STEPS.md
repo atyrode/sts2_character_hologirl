@@ -59,6 +59,7 @@
 - [x] Add `Livestream`: transform into a random form.
 - [x] Add a placeholder starting relic that documents transformation reward cards.
 - [x] Add one placeholder 0-cost transformation reward card per form.
+- [x] Add power hover tips and rich text coloring for the first Hologirl resource/form terms.
 - [ ] Test the first combat loop locally.
 
 ## Design Risks
