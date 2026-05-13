@@ -27,17 +27,26 @@
 - [x] Build the DLL.
 - [x] Generate the PCK.
 - [x] Copy the mod folder outputs into the game `mods/` directory.
-- [ ] Confirm the mod appears in Settings -> Mod Settings.
+- [x] Confirm the mod appears in the local game.
 
 ## First Playable Card Test
 
 - [x] Add a single custom basic card to the character card pool.
 - [x] Add English localization for the card.
 - [x] Put the card in the character starting deck.
-- [ ] Start a run as the custom character.
-- [ ] Draw the custom card.
-- [ ] Play the custom card against an enemy.
-- [ ] Verify the effect resolves and the combat continues.
+- [x] Start a run as the custom character.
+- [x] Draw the custom card.
+- [x] Play the custom card against an enemy.
+- [x] Verify the effect resolves and the combat continues.
+
+## Character Direction
+
+- [ ] Define Hologirl's character fantasy in `docs/DESIGN.md`.
+- [ ] Define the first small mechanical hook.
+- [ ] Decide whether the first hook needs a power, relic, secondary resource, card tag, or only normal card effects.
+- [ ] Replace the smoke-test starter deck with a first intentional starter kit.
+- [ ] Add one basic attack, one basic defend, and one mechanic card.
+- [ ] Test the first combat loop locally.
 
 ## Debugging Workflow
 
