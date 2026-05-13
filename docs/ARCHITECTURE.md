@@ -64,6 +64,8 @@ The manifest includes fields like:
 
 BaseLib must be installed in the game's `mods/BaseLib/` folder before BaseLib-dependent mods load.
 
+`Hologirl.json` pins this dependency as `BaseLib` minimum version `3.1.3`. If the game log reports that Hologirl cannot load `BaseLib, Version=3.1.3.0`, update BaseLib to `v3.1.3` or newer before testing Hologirl.
+
 ## Character Template Shape
 
 The current character template provides:
