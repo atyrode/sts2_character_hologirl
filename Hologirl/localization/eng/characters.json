@@ -1,0 +1,16 @@
+{
+  "HOLOGIRL-HOLOGIRL.title": "Hologirl",
+  "HOLOGIRL-HOLOGIRL.titleObject": "Hologirl",
+  "HOLOGIRL-HOLOGIRL.description": "A prototype custom character.",
+  "HOLOGIRL-HOLOGIRL.pronounSubject": "they",
+  "HOLOGIRL-HOLOGIRL.pronounObject": "them",
+  "HOLOGIRL-HOLOGIRL.pronounPossessive": "theirs",
+  "HOLOGIRL-HOLOGIRL.possessiveAdjective": "their",
+  "HOLOGIRL-HOLOGIRL.goldMonologue": "...",
+  "HOLOGIRL-HOLOGIRL.eventDeathPrevention": "...",
+  "HOLOGIRL-HOLOGIRL.aromaPrinciple": "...",
+  "HOLOGIRL-HOLOGIRL.cardsModifierTitle": "Hologirl Cards",
+  "HOLOGIRL-HOLOGIRL.cardsModifierDescription": "Hologirl cards will now appear in rewards and shops.",
+  "HOLOGIRL-HOLOGIRL.banter.alive.endTurnPing": "...",
+  "HOLOGIRL-HOLOGIRL.banter.dead.endTurnPing": "..."
+}

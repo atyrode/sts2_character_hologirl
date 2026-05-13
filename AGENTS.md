@@ -4,8 +4,11 @@ These instructions apply to the whole repository. Follow them before making chan
 
 ## Project Direction
 
-- Keep the repository as a clean project foundation until concrete requirements are provided.
-- Do not introduce project assumptions, technologies, services, workflows, directory structures, or product direction by guesswork.
+- This repository is for a Slay the Spire 2 playable character mod.
+- Slay the Spire 2 is new and modding information may become stale quickly. Before making implementation decisions about the modding API, templates, loaders, dependencies, file layout, build process, or install process, verify the current state from live sources such as GitHub, Nexus Mods, the active template/wiki, or source code from working mods.
+- Prefer current working source code and official/community-maintained templates over old blog posts, STS1 modding patterns, or unverified summaries.
+- Clearly separate confirmed facts from assumptions in documentation.
+- Do not introduce technologies, services, workflows, directory structures, or product direction by guesswork.
 - Documentation files in `docs/` are intentionally allowed to start empty. Build and revise them as the project evolves from confirmed decisions and actual implementation.
 - When a project-specific decision is made, document it in the relevant file instead of relying on chat history.
 
@@ -34,6 +37,7 @@ These instructions apply to the whole repository. Follow them before making chan
 - Keep docs sparse until there is something true and useful to record.
 - Do not fill docs with speculative content. Empty placeholders are acceptable.
 - When changing architecture, CI, deployment, branch workflow, environment variables, project assumptions, or tooling choices, update the relevant docs in the same change.
+- When new research changes our understanding of STS2 modding, update the relevant docs before or alongside implementation.
 - When a change expands or shifts the scope of the requested work, leave sober human-readable context in the relevant documentation or, when the context belongs next to the implementation, a concise code comment.
 - Documentation and comments should help another developer understand purpose, ownership, and operational constraints without narrating obvious code mechanics.
 - When adding operator workflows, scripts, env files, or examples, update the appropriate README to explain how to use them, how to create ignored local files from examples, and where values should come from when that can be stated safely.

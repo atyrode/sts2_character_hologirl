@@ -1,11 +1,13 @@
 # sts2_character_hologirl
 
-Project repository.
+Slay the Spire 2 playable character mod project.
 
 ## Current Shape
 
 - Persistent agent/contributor workflow rules: [AGENTS.md](AGENTS.md).
-- Documentation placeholders live in [docs/](docs/) and should be filled only as confirmed project decisions emerge.
+- Confirmed project goal and current research live in [docs/](docs/).
+- STS2 character mod scaffold: `Hologirl.csproj`, `HologirlCode/`, and `Hologirl/`.
+- First custom card: `HoloStrike`, currently added to the starting deck.
 
 ## Development
 
@@ -16,7 +18,31 @@ git fetch
 git status --short --branch
 ```
 
+Current VPS state:
+
+- STS2 game files are installed at `/home/alex/games/slay-the-spire-2`.
+- `.NET 9 SDK` is installed at `/home/alex/.dotnet`.
+- BaseLib `v3.1.3` is installed at `/home/alex/games/slay-the-spire-2/mods/BaseLib`.
+- The Hologirl build copies `Hologirl.dll`, `Hologirl.pdb`, `Hologirl.json`, and `Hologirl.pck` to `/home/alex/games/slay-the-spire-2/mods/Hologirl`.
+- Headless game launch reaches startup, but gameplay testing is blocked on the VPS because Steamworks still requires a running Steam client.
+
+Create local build settings in ignored `Directory.Build.props` when needed:
+
+```xml
+<Project>
+  <PropertyGroup>
+    <Sts2Path>/path/to/Slay the Spire 2</Sts2Path>
+  </PropertyGroup>
+</Project>
+```
+
 When project tooling is added, document the setup, run commands, generated outputs, and validation steps here.
+
+Build:
+
+```sh
+/home/alex/.dotnet/dotnet build Hologirl.csproj
+```
 
 ## Documents
 
