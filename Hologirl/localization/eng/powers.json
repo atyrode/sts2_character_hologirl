@@ -1,3 +1,20 @@
 {
-  
+  "HOLOGIRL-FANS_POWER.title": "Fans",
+  "HOLOGIRL-FANS_POWER.description": "At the end of your turn, lose 1 Fan unless you are Singing. Idol forms consume 1 additional Fan each turn.",
+  "HOLOGIRL-FANS_POWER.smartDescription": "Lose 1 at end of turn unless Singing.",
+  "HOLOGIRL-SINGING_POWER.title": "Singing",
+  "HOLOGIRL-SINGING_POWER.description": "Fans do not decay at end of turn. Decreases by 1 at the start of your turn.",
+  "HOLOGIRL-SINGING_POWER.smartDescription": "Fans do not decay.",
+  "HOLOGIRL-FAUNA_FORM_POWER.title": "Fauna Form",
+  "HOLOGIRL-FAUNA_FORM_POWER.description": "You are transformed. At the end of your turn, spend 1 Fan or return to Hologirl.",
+  "HOLOGIRL-FAUNA_FORM_POWER.smartDescription": "Spend 1 Fan each turn.",
+  "HOLOGIRL-AMELIA_FORM_POWER.title": "Amelia Form",
+  "HOLOGIRL-AMELIA_FORM_POWER.description": "You are transformed. At the end of your turn, spend 1 Fan or return to Hologirl.",
+  "HOLOGIRL-AMELIA_FORM_POWER.smartDescription": "Spend 1 Fan each turn.",
+  "HOLOGIRL-GURA_FORM_POWER.title": "Gura Form",
+  "HOLOGIRL-GURA_FORM_POWER.description": "You are transformed. At the end of your turn, spend 1 Fan or return to Hologirl.",
+  "HOLOGIRL-GURA_FORM_POWER.smartDescription": "Spend 1 Fan each turn.",
+  "HOLOGIRL-KRONII_FORM_POWER.title": "Kronii Form",
+  "HOLOGIRL-KRONII_FORM_POWER.description": "You are transformed. At the end of your turn, spend 1 Fan or return to Hologirl.",
+  "HOLOGIRL-KRONII_FORM_POWER.smartDescription": "Spend 1 Fan each turn."
 }

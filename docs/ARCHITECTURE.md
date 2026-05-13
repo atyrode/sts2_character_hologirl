@@ -99,3 +99,17 @@ Working card examples use `CustomCardModel` through a mod-specific base card cla
 - `--headless` launch reaches game startup, but Steamworks fails because no Steam client is running. This blocks actual run/card gameplay testing on the VPS.
 
 Build/install is validated on the VPS. Gameplay validation should happen on a machine with a normal Steam client and display session unless a reliable STS2 headless test path is found.
+
+## Build And Release Scripts
+
+Use the repo scripts for the repeated path:
+
+```bash
+scripts/build.sh
+scripts/package.sh
+scripts/release.sh
+```
+
+- `scripts/build.sh` runs `dotnet build Hologirl.csproj`. The project's MSBuild targets copy the DLL, PDB, manifest, and generated PCK into the local STS2 mod folder.
+- `scripts/package.sh` builds first, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
+- `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.

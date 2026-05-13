@@ -19,6 +19,13 @@
 - [ ] Confirm the installed game branch/version beyond local runtime/depot files.
 - [ ] Find a reliable gameplay test path: local Steam client, remote desktop Steam session, or proven headless launch flow.
 
+## Build And Release Workflow
+
+- [x] Use `scripts/build.sh` to compile the mod, generate `Hologirl.pck`, and copy outputs into the local STS2 `mods/Hologirl/` folder.
+- [x] Use `scripts/package.sh` to build and create `dist/Hologirl-<version>.zip` from the installed mod outputs.
+- [x] Use `scripts/release.sh` to package and publish a normal GitHub release for the version in `Hologirl.json`.
+- [ ] After each release, test the downloaded mod through the local mod manager before expanding the prototype further.
+
 ## Scaffold
 
 - [x] Generate or copy the `Slay the Spire 2 Character` template.
@@ -43,15 +50,15 @@
 
 - [x] Define Hologirl's character fantasy in `docs/DESIGN.md`.
 - [x] Define the first small mechanical hook.
-- [ ] Decide whether `Fans` should be implemented first as a power, player resource, or custom state.
-- [ ] Decide whether transformations should be implemented first as powers, stances, or custom player state.
-- [ ] Decide whether fan decay is linear or tiered for the first prototype.
-- [ ] Replace the smoke-test starter deck with a first intentional starter kit.
-- [ ] Add Strike-style and Defend-style Hologirl starter cards.
-- [ ] Add `Concert!`: gain 3 Fans and Singing for 2 turns.
-- [ ] Add `Livestream`: transform into a random form.
-- [ ] Add a placeholder starting relic that documents transformation reward cards.
-- [ ] Add one placeholder 0-cost transformation reward card per form.
+- [x] Decide whether `Fans` should be implemented first as a power, player resource, or custom state.
+- [x] Decide whether transformations should be implemented first as powers, stances, or custom player state.
+- [x] Decide whether fan decay is linear or tiered for the first prototype.
+- [x] Replace the smoke-test starter deck with a first intentional starter kit.
+- [x] Add Strike-style and Defend-style Hologirl starter cards.
+- [x] Add `Concert!`: gain 3 Fans and Singing for 2 turns.
+- [x] Add `Livestream`: transform into a random form.
+- [x] Add a placeholder starting relic that documents transformation reward cards.
+- [x] Add one placeholder 0-cost transformation reward card per form.
 - [ ] Test the first combat loop locally.
 
 ## Design Risks

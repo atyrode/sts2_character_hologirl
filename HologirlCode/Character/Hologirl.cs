@@ -2,6 +2,7 @@
 using BaseLib.Utils.NodeFactories;
 using Hologirl.HologirlCode.Cards.Basic;
 using Hologirl.HologirlCode.Extensions;
+using Hologirl.HologirlCode.Relics;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
@@ -22,20 +23,20 @@ public class Hologirl : PlaceholderCharacterModel
     
     public override IEnumerable<CardModel> StartingDeck => [
         ModelDb.Card<HoloStrike>(),
-        ModelDb.Card<StrikeIronclad>(),
-        ModelDb.Card<StrikeIronclad>(),
-        ModelDb.Card<StrikeIronclad>(),
-        ModelDb.Card<StrikeIronclad>(),
-        ModelDb.Card<DefendIronclad>(),
-        ModelDb.Card<DefendIronclad>(),
-        ModelDb.Card<DefendIronclad>(),
-        ModelDb.Card<DefendIronclad>(),
-        ModelDb.Card<DefendIronclad>()
+        ModelDb.Card<HoloStrike>(),
+        ModelDb.Card<HoloStrike>(),
+        ModelDb.Card<HoloStrike>(),
+        ModelDb.Card<HoloDefend>(),
+        ModelDb.Card<HoloDefend>(),
+        ModelDb.Card<HoloDefend>(),
+        ModelDb.Card<HoloDefend>(),
+        ModelDb.Card<Concert>(),
+        ModelDb.Card<Livestream>()
     ];
 
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
-        ModelDb.Relic<BurningBlood>()
+        ModelDb.Relic<PrismPendant>()
     ];
     
     public override CardPoolModel CardPool => ModelDb.CardPool<HologirlCardPool>();
