@@ -12,6 +12,21 @@ mkdir -p "$dist_dir"
 
 "$repo_root/scripts/build.sh"
 
+pck_exporter="${HOLOGIRL_PCK_EXPORTER:-quick}"
+
+case "$pck_exporter" in
+  quick)
+    ;;
+  godot)
+    "$repo_root/scripts/export-pck-godot.sh" "$mod_dir/Hologirl.pck"
+    ;;
+  *)
+    echo "Unknown HOLOGIRL_PCK_EXPORTER value: $pck_exporter" >&2
+    echo "Expected 'quick' or 'godot'." >&2
+    exit 1
+    ;;
+esac
+
 for file in Hologirl.dll Hologirl.pck Hologirl.json; do
   if [[ ! -f "$mod_dir/$file" ]]; then
     echo "Missing build output: $mod_dir/$file" >&2

@@ -20,9 +20,7 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
     {
         var root = new HologirlCharacterSelectScene
         {
-            Name = "HologirlCharacterSelectScene",
-            ZIndex = -1000,
-            ZAsRelative = false
+            Name = "HologirlCharacterSelectScene"
         };
         root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
         return root;
@@ -56,8 +54,6 @@ public sealed partial class HologirlCharacterSelectScene : Control
         ClipContents = true;
         MouseFilter = MouseFilterEnum.Ignore;
         ProcessMode = ProcessModeEnum.Always;
-        ZIndex = -1000;
-        ZAsRelative = false;
 
         _canvas = new Control
         {
@@ -69,12 +65,9 @@ public sealed partial class HologirlCharacterSelectScene : Control
             CustomMinimumSize = VirtualSize
         };
 
-        var background = new TextureRect
+        var background = new HologirlCharacterSelectBackground
         {
             Name = "Background",
-            Texture = GD.Load<Texture2D>("character_select_bg.png".CharacterUiPath()),
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            StretchMode = TextureRect.StretchModeEnum.Scale,
             Size = VirtualSize,
             MouseFilter = MouseFilterEnum.Ignore,
             ZIndex = 0
@@ -86,8 +79,9 @@ public sealed partial class HologirlCharacterSelectScene : Control
             Texture = GD.Load<Texture2D>("character_select_hologirl.png".CharacterUiPath()),
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
-            Size = new Vector2(1240f, 827f),
-            Position = new Vector2(1320f, 300f),
+            Size = new Vector2(1180f, 787f),
+            Position = new Vector2(1240f, 345f),
+            Material = CreateChromaKeyMaterial(),
             MouseFilter = MouseFilterEnum.Ignore,
             ZIndex = 10
         };
@@ -108,7 +102,7 @@ public sealed partial class HologirlCharacterSelectScene : Control
         _canvas.AddChild(_effects);
         AddChild(_canvas);
 
-        _effects.Configure(VirtualSize);
+        _effects.Configure(VirtualSize, character.Position, character.Size);
     }
 
     public override void _Ready()
@@ -126,7 +120,7 @@ public sealed partial class HologirlCharacterSelectScene : Control
 
     public void StartSelectionBurst()
     {
-        _effects.Configure(VirtualSize);
+        _effects.Configure(VirtualSize, new Vector2(1240f, 345f), new Vector2(1180f, 787f));
         _effects.StartSelectionBurst();
     }
 
@@ -141,7 +135,60 @@ public sealed partial class HologirlCharacterSelectScene : Control
         var scale = Mathf.Max(bounds.X / VirtualSize.X, bounds.Y / VirtualSize.Y);
         _canvas.Scale = Vector2.One * scale;
         _canvas.Position = (bounds - VirtualSize * scale) / 2f;
-        _effects.Configure(VirtualSize);
+        _effects.Configure(VirtualSize, new Vector2(1240f, 345f), new Vector2(1180f, 787f));
+    }
+
+    private static ShaderMaterial CreateChromaKeyMaterial()
+    {
+        return new ShaderMaterial
+        {
+            Shader = new Shader
+            {
+                Code = """
+                    shader_type canvas_item;
+                    uniform vec4 key_color : source_color = vec4(0.0, 1.0, 0.0, 1.0);
+                    uniform float threshold = 0.46;
+                    uniform float softness = 0.08;
+
+                    void fragment() {
+                        vec4 tex = texture(TEXTURE, UV);
+                        float keyed = smoothstep(threshold, threshold + softness, distance(tex.rgb, key_color.rgb));
+                        tex.a *= keyed;
+                        COLOR = tex;
+                    }
+                    """
+            }
+        };
+    }
+}
+
+public sealed partial class HologirlCharacterSelectBackground : Control
+{
+    public override void _Draw()
+    {
+        var size = Size;
+        DrawRect(new Rect2(Vector2.Zero, size), new Color(0.29f, 0.18f, 0.31f));
+        DrawRect(new Rect2(0f, size.Y * 0.55f, size.X, size.Y * 0.45f), new Color(0.19f, 0.13f, 0.23f));
+        DrawPolygon(
+            [
+                new Vector2(size.X * 0.44f, 0f),
+                new Vector2(size.X, 0f),
+                new Vector2(size.X, size.Y),
+                new Vector2(size.X * 0.62f, size.Y)
+            ],
+            [new Color(0.36f, 0.20f, 0.34f)]
+        );
+        DrawPolygon(
+            [
+                new Vector2(size.X * 0.05f, size.Y),
+                new Vector2(size.X * 0.38f, size.Y * 0.18f),
+                new Vector2(size.X * 0.52f, size.Y * 0.24f),
+                new Vector2(size.X * 0.28f, size.Y)
+            ],
+            [new Color(0.21f, 0.15f, 0.27f, 0.65f)]
+        );
+        DrawLine(new Vector2(size.X * 0.08f, size.Y * 0.72f), new Vector2(size.X * 0.95f, size.Y * 0.42f), new Color(0.86f, 0.63f, 0.21f, 0.18f), 10f);
+        DrawLine(new Vector2(size.X * 0.12f, size.Y * 0.78f), new Vector2(size.X * 0.90f, size.Y * 0.50f), new Color(0.33f, 0.86f, 1.0f, 0.14f), 7f);
     }
 }
 
@@ -161,12 +208,16 @@ public sealed partial class HologirlCharacterSelectEffects : Control
 
     private readonly RandomNumberGenerator _rng = new();
     private Vector2 _bounds;
+    private Vector2 _characterPosition;
+    private Vector2 _characterSize;
     private float _sparkTimer;
     private float _driftTimer;
 
-    public void Configure(Vector2 bounds)
+    public void Configure(Vector2 bounds, Vector2 characterPosition, Vector2 characterSize)
     {
         _bounds = bounds;
+        _characterPosition = characterPosition;
+        _characterSize = characterSize;
         Size = bounds;
         CustomMinimumSize = bounds;
         ProcessMode = ProcessModeEnum.Always;
@@ -208,7 +259,7 @@ public sealed partial class HologirlCharacterSelectEffects : Control
 
     private void SpawnWhipSpark(bool burst)
     {
-        var anchor = WhipEmitterPoints[_rng.RandiRange(0, WhipEmitterPoints.Length - 1)] * _bounds;
+        var anchor = _characterPosition + WhipEmitterPoints[_rng.RandiRange(0, WhipEmitterPoints.Length - 1)] * _characterSize;
         var jitter = new Vector2(_rng.RandfRange(-18f, 18f), _rng.RandfRange(-14f, 14f));
         var lifetime = _rng.RandfRange(0.85f, burst ? 1.35f : 1.05f);
         var color = new Color(1.0f, 0.78f, 0.18f, _rng.RandfRange(0.72f, 1.0f));
@@ -219,8 +270,8 @@ public sealed partial class HologirlCharacterSelectEffects : Control
 
     private void SpawnHologramDrift(bool burst)
     {
-        var x = _rng.RandfRange(0.38f, 0.87f) * _bounds.X;
-        var y = _rng.RandfRange(0.12f, 0.88f) * _bounds.Y;
+        var x = _characterPosition.X + _rng.RandfRange(0.08f, 0.90f) * _characterSize.X;
+        var y = _characterPosition.Y + _rng.RandfRange(0.08f, 0.86f) * _characterSize.Y;
         var width = _rng.RandfRange(42f, 110f);
         var height = _rng.RandfRange(6f, 12f);
         var lifetime = _rng.RandfRange(0.7f, burst ? 1.3f : 0.95f);

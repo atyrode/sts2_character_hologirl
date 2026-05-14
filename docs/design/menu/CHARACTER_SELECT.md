@@ -12,13 +12,24 @@ Character button portraits:
 
 Large character-select backgrounds:
 
-- Official backgrounds are Godot character-select scenes, generally using Spine atlases plus simple wide background plates.
-- The recoverable background plates use wide `2048x1024` style compositions with large empty space for UI.
+- Official backgrounds are Godot `PackedScene` character-select scenes loaded from each `CharacterModel.CharacterSelectBg`.
+- Vanilla selection adds the instantiated scene to `NCharacterSelectScreen` node `AnimatedBg` (`_bgContainer`), after clearing the previous background.
+- The base vanilla background behavior lives in `NCharacterSelectScreenBg`: it listens for window size changes and scales the root between about `1.1` and `1.2683` depending on aspect ratio.
+- The recoverable background plates use wide compositions with large empty space for UI.
 - Characters are staged on the right or as modular atlas pieces, with the center/left kept visually quieter.
+- Recovered art suggests backgrounds are visually simpler than the current Hologirl stage painting: broad two-tone/low-color fields, large silhouette shapes, and restrained detail.
+
+Vanilla code references checked locally on 2026-05-14:
+
+- `MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect.NCharacterSelectScreen.SelectCharacter`
+- `MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect.NCharacterSelectScreenBg`
+- `MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect.NRegentCharacterSelectBg`
+- `MegaCrit.Sts2.Core.Models.CharacterModel.CharacterSelectBg`
+- `BaseLib.Patches.UI.CustomCharacterSelectEntryPatch.SelectCustomEntry`
 
 ## Hologirl Direction
 
-Use a C# `CustomCharacterSelectEntry` first. BaseLib supports custom character-select entries that can build a Godot `Control` scene in code, which avoids global patches and avoids requiring a full Godot export for a `.tscn` file.
+BaseLib's `CustomCharacterSelectEntry` is mod-safe and adds its background scene to the same vanilla `AnimatedBg` container, but it is not the exact vanilla button path. Vanilla characters are normal `CharacterModel` buttons whose `CharacterSelectBg` points to a packed Godot scene. Prefer vanilla-feeling scene behavior and presentation; use the BaseLib entry path only where it avoids unsafe patches or packaging/tooling blockers.
 
 Use `docs/design/STS_STYLE_RESEARCH.md` for the visual language. The strongest character-select rule is silhouette-first readability: Hologirl should read through big blue twin-tail masses, a simple body block, and a bold golden whip before any facial or costume detail.
 
@@ -28,12 +39,14 @@ Hologirl's background should:
 - Leave large atmospheric negative space on the left/center for the vanilla UI.
 - Keep her silhouette large and readable: blue/cyan hologram body, two long ponytails, simple idol outfit.
 - Use gold only for projected effects: light-whip arc, stage light, sparse light sticks, tiny holographic particles.
-- Keep the crowd/fans very low-detail and discreet, mostly dark silhouettes.
+- Keep the crowd/fans very low-detail and discreet if present at all. Avoid a fully illustrated stage scene for now.
+- Prefer a simple broad two-tone background decoration, closer to vanilla/card art backgrounds, instead of a detailed environment.
 - Stay hand-drawn, matte, graphic, and lower-detail than a polished anime illustration.
 - Keep Hologirl near the boundary between the middle and right thirds, closer to camera than the first attempt, and holding/displaying the golden sparkly light-whip rather than attacking with it.
 
 ## Implemented Attempt
 
+- Current released implementation is considered a failed prototype for character-select parity. Do not keep iterating on it by tiny release tweaks.
 - Background archive: `docs/design/art_archive/menu/character_select_background/attempt-001/`
 - Runtime background image: `Hologirl/images/charui/character_select_bg.png`
 - Foreground cutout archive: `docs/design/art_archive/menu/character_select_layers/hologirl_cutout/attempt-007/`
@@ -42,14 +55,17 @@ Hologirl's background should:
 - Button portrait archive: `docs/design/art_archive/menu/character_select_button/attempt-001/`
 - Runtime button portrait: `Hologirl/images/charui/char_select_char_name.png`
 - Runtime effects: `HologirlCode/Character/HologirlCharacterSelectEntry.cs` builds a layered `Control` scene with a code-drawn effects layer. Golden whip sparks use short-lived emitter particles; blue hologram drift uses short horizontal particles around the body.
+- The current runtime pass uses a code-drawn simple two-tone background and chroma-keys the green source background from `character_select_hologirl.png`. Replace this with a true transparent layer when the next cutout is generated/exported.
 - Runtime framing: the character-select scene uses a fixed `2564x1204` virtual canvas, matching the proportions of recoverable vanilla background plates. The canvas is scaled as one composition instead of positioning Hologirl directly from the viewport size.
 - Hologirl's character layer is intentionally right-biased with large empty space preserved for the vanilla UI. Do not size or position it from `GetViewportRect()`; use the background container/canvas size instead.
 - The scene root uses a negative absolute z-index defensively so BaseLib's custom background cannot draw above the vanilla UI. If Hologirl appears over UI again, investigate BaseLib's actual node insertion order before adding more visual layers.
 - Particle effects must be initialized with non-zero virtual-canvas bounds before any burst is emitted; otherwise the first particles spawn at `(0, 0)` or outside the visible composition.
+- Full Godot/MegaDot PCK export is now available on the VPS for real packed scenes. Prefer a `.tscn`/`PackedScene` implementation for the next character-select pass instead of more code-built layout patches.
 
 ## Open Questions
 
-- Whether the C#-built layered scene is enough, or whether we should later build a Spine/Godot animated scene with proper articulated body, whip, crowd, and glow motion.
-- Whether BaseLib exposes enough of the vanilla character-select container for a closer one-to-one clone of the game's internal scene setup.
+- Whether to keep a BaseLib `CustomCharacterSelectEntry` for mod-safe custom button behavior, or switch to vanilla model-level `CustomCharacterSelectBg` plus a visible normal character button. The latter is closer to vanilla but needs careful testing around hidden characters and random selection behavior.
+- Whether to keep using official Godot `4.5.1.stable.mono` for exports or replace it with MegaDot if a MegaDot-specific editor feature becomes necessary.
+- Whether a C#-built scene can emulate `NCharacterSelectScreenBg` closely enough without fighting BaseLib's lifecycle. If yes, it should use the same root scaling rule and a much simpler visual background.
 - Whether the locked character-select portrait should get a separate desaturated/locked treatment.
 - If character-select behavior remains off, check Nexus Mods and linked GitHub repos for current playable character implementations before inventing more custom layout logic. `Manosaba` is a known Nexus character mod with character-select/BaseLib discussion in its posts.

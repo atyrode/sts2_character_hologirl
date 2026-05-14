@@ -121,10 +121,19 @@ scripts/release.sh
 
 - `scripts/build.sh` runs `dotnet build Hologirl.csproj`. The project's MSBuild targets copy the DLL, PDB, manifest, and generated PCK into the local STS2 mod folder.
 - `scripts/package.sh` builds first, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
+- `scripts/package.sh` uses the quick PCK packer by default. Set `HOLOGIRL_PCK_EXPORTER=godot` and `GODOT_BIN=/path/to/Godot_v4.5.1-stable_mono_linux.x86_64` to overwrite the PCK through Godot's headless `--export-pack` path before zipping.
+- `scripts/export-pck-godot.sh` is the direct Godot/MegaDot PCK export helper. It sets `DOTNET_ROOT` to `/home/alex/.dotnet` by default and prepends it to `PATH` for Godot's C# tooling.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
 
-The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. For the current character-select splash, Hologirl uses a BaseLib `CustomCharacterSelectEntry` that creates a `TextureRect` in C# and loads `Hologirl/images/charui/character_select_bg.png`. This keeps the release path on the lightweight packer until we decide a full Godot/Megadot export is needed for animated scenes.
+The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. Use the Godot/MegaDot export path when shipping vanilla-style character-select scenes, `GpuParticles2D`, or other resources that require Godot import metadata.
+
+The VPS currently has official Godot `4.5.1.stable.mono` installed at `/home/alex/.cache/hologirl-tools/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64`, with export templates installed under `/home/alex/.local/share/godot/export_templates/4.5.1.stable`. It emits `libfontconfig.so.1` warnings on this VPS, but headless PCK export still completes.
+
+Vanilla character select loads `CharacterModel.CharacterSelectBg` as a `PackedScene` and adds it to `NCharacterSelectScreen`'s `AnimatedBg` container. BaseLib's `CustomCharacterSelectEntry` also adds its background scene to that container, but via a custom-entry patch and optional foreground layer. Future character-select work should either:
+
+- use a true packed scene path once full Godot export is available, or
+- consciously emulate `NCharacterSelectScreenBg` in C# while keeping the visual design simple and vanilla-like.
 
 ## Compatibility Practices
 

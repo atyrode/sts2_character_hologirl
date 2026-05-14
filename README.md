@@ -44,6 +44,22 @@ Build:
 /home/alex/.dotnet/dotnet build Hologirl.csproj
 ```
 
+Package with the default quick PCK packer:
+
+```sh
+scripts/package.sh
+```
+
+Package with Godot/MegaDot export when the mod needs packed Godot resources such as `.tscn` scenes:
+
+```sh
+GODOT_BIN=/home/alex/.cache/hologirl-tools/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64 \
+HOLOGIRL_PCK_EXPORTER=godot \
+scripts/package.sh
+```
+
+The Godot path is intentionally supplied through `GODOT_BIN` so the repository does not commit machine-specific editor paths.
+
 ## Documents
 
 - [AGENTS.md](AGENTS.md): persistent workflow rules for future agents and contributors.
