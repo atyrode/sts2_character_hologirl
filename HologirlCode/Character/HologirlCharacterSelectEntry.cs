@@ -52,7 +52,10 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
 
         var idle = splash.CreateTween();
         idle.SetLoops();
-        idle.TweenProperty(splash, "modulate", new Color(0.9f, 1.0f, 1.0f, 0.96f), 1.2f);
-        idle.TweenProperty(splash, "modulate", Colors.White, 1.2f);
+        idle.SetParallel();
+        idle.TweenProperty(splash, "modulate", new Color(0.86f, 1.0f, 1.0f, 0.94f), 1.2f);
+        idle.TweenProperty(splash, "position", new Vector2(0, 4), 1.2f);
+        idle.Chain().TweenProperty(splash, "modulate", Colors.White, 1.2f);
+        idle.TweenProperty(splash, "position", Vector2.Zero, 1.2f);
     }
 }

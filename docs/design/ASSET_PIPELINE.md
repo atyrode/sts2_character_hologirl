@@ -46,3 +46,9 @@ Use `scripts/resize-image.sh` for non-card assets:
 ```bash
 scripts/resize-image.sh <source-png> <output-png> <width> <height> [cover|contain]
 ```
+
+Use `scripts/shift-image-content.sh` for small runtime framing tweaks to an already accepted generated image:
+
+```bash
+scripts/shift-image-content.sh <source-png> <output-png> <shift-y-px>
+```

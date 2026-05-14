@@ -38,6 +38,7 @@ Hologirl's background should:
 - Button portrait archive: `docs/design/art_archive/menu/character_select_button/attempt-001/`
 - Runtime button portrait: `Hologirl/images/charui/char_select_char_name.png`
 - Runtime effects: `HologirlCode/Character/HologirlCharacterSelectSparkles.cs` adds mod-local whip sparkle animation, and `RegisterScene` applies a short selection shake to the Hologirl background scene.
+- Runtime framing: `attempt-003` is shifted down slightly before packing so Hologirl sits lower in the character-select view.
 
 ## Open Questions
 
