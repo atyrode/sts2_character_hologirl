@@ -52,3 +52,15 @@ Use `scripts/shift-image-content.sh` for small runtime framing tweaks to an alre
 ```bash
 scripts/shift-image-content.sh <source-png> <output-png> <shift-y-px>
 ```
+
+Use `scripts/remove-chroma-key.sh` for generated cutout sources that were created on a flat chroma-key background:
+
+```bash
+scripts/remove-chroma-key.sh <source-png> <output-png> [#rrggbb]
+```
+
+Use `scripts/preview-alpha.sh` to make a checkerboard preview and alpha-pixel summary for transparent PNGs:
+
+```bash
+scripts/preview-alpha.sh <source-png> <output-png>
+```

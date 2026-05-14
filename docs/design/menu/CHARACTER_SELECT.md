@@ -20,6 +20,8 @@ Large character-select backgrounds:
 
 Use a C# `CustomCharacterSelectEntry` first. BaseLib supports custom character-select entries that can build a Godot `Control` scene in code, which avoids global patches and avoids requiring a full Godot export for a `.tscn` file.
 
+Use `docs/design/STS_STYLE_RESEARCH.md` for the visual language. The strongest character-select rule is silhouette-first readability: Hologirl should read through big blue twin-tail masses, a simple body block, and a bold golden whip before any facial or costume detail.
+
 Hologirl's background should:
 
 - Put Hologirl on the right third.
@@ -32,15 +34,17 @@ Hologirl's background should:
 
 ## Implemented Attempt
 
-- Background archive: `docs/design/art_archive/menu/character_select_splash/attempt-003/`
+- Background archive: `docs/design/art_archive/menu/character_select_background/attempt-001/`
 - Runtime background image: `Hologirl/images/charui/character_select_bg.png`
+- Foreground cutout archive: `docs/design/art_archive/menu/character_select_layers/hologirl_cutout/attempt-007/`
+- Runtime foreground cutout: `Hologirl/images/charui/character_select_hologirl.png`
 - Runtime scene builder: `HologirlCode/Character/HologirlCharacterSelectEntry.cs`
 - Button portrait archive: `docs/design/art_archive/menu/character_select_button/attempt-001/`
 - Runtime button portrait: `Hologirl/images/charui/char_select_char_name.png`
-- Runtime effects: `HologirlCode/Character/HologirlCharacterSelectSparkles.cs` adds mod-local whip sparkle animation, and `RegisterScene` applies a short selection shake to the Hologirl background scene.
-- Runtime framing: `attempt-003` is shifted down slightly before packing so Hologirl sits lower in the character-select view.
+- Runtime effects: `HologirlCode/Character/HologirlCharacterSelectEntry.cs` builds a layered `Control` scene with a code-drawn effects layer. Golden whip sparks use short-lived emitter particles; blue hologram drift uses short horizontal particles around the body.
+- Runtime framing: the character is a separate foreground texture so placement can be tuned without regenerating the background.
 
 ## Open Questions
 
-- Whether the static C#-built background is enough, or whether we should later build a Spine/Godot animated scene with subtle scanline, whip, crowd, and glow motion.
+- Whether the C#-built layered scene is enough, or whether we should later build a Spine/Godot animated scene with proper articulated body, whip, crowd, and glow motion.
 - Whether the locked character-select portrait should get a separate desaturated/locked treatment.

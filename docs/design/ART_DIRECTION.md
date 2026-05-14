@@ -2,10 +2,13 @@
 
 Hologirl card art should target a simple Slay the Spire 2-inspired starter-card read: bold shapes, low detail, matte texture, and instant recognition at small card size.
 
+Use `docs/design/STS_STYLE_RESEARCH.md` as the shared reference for Slay the Spire style language, especially when generating character-select layers.
+
 ## High-Level Rules
 
 - Use one dominant object, action, or silhouette per card.
 - Prefer flat chunky shapes, hard graphic edges, abrupt silhouettes, broad shadow shapes, and smooth matte shading.
+- Use selective hard shadow planes, almost like partial cel shading, where they clarify form. Do not turn the whole image into clean anime cel shading.
 - Keep the palette tight, usually 2-4 major color groups.
 - Use elegant desaturated pink and deep plum backgrounds for the base starter-card family unless a card document says otherwise.
 - Hologirl herself is blue/cyan hologram light.

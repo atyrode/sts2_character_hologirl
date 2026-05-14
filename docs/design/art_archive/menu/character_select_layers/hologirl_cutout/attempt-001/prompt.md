@@ -1,0 +1,10 @@
+# Prompt
+
+Use case: background-extraction
+Asset type: Transparent cutout source for Hologirl character-select layered scene.
+Primary request: Create Hologirl as a standalone character cutout for a Slay the Spire 2-style character-select scene. She should match the current character-select splash direction: blue/cyan hologram girl, two long ponytails/twintails, simple idol-like silhouette, holding the handle of a golden sparkly holographic light-whip. The whip should appear as an elegant loose arc/coil around her, displayed calmly, not being swung.
+Composition: Full upper-body to upper-thigh character cutout with generous padding around head, ponytails, arms, and whip. Keep the full head and both ponytail tops visible. Center the subject. No background scene, no floor, no crowd, no UI.
+Style direction: Slay the Spire 2-inspired hand-drawn 2D fantasy art, chunky readable silhouette, crisp hard-edged painted shapes, visible brush texture, flat/matte color blocks, low-to-medium detail, stylized anatomy, not realistic. It should feel graphic and handmade, not glossy fantasy splash art and not clean anime rendering.
+Color rules: Hologirl herself is blue/cyan hologram light. Gold/yellow is only for projected things she creates: the light-whip and sparse sparkles. Avoid green anywhere in the subject.
+Chroma key requirement: Put the complete subject on a perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Keep the subject fully separated from the background with crisp edges and generous padding. No cast shadow, no contact shadow, no reflection, no watermark, no text.
+Avoid: text, logo, UI, card frame, headset, headphones, microphone, computer setup, cropped head, cropped ponytail tops, cropped whip, full scene background, realistic rendering, glossy lighting, high-detail face, high-detail costume, busy particles, many colors, chibi proportions, extra characters, attacking pose, whip strike pose, any green inside the subject.
