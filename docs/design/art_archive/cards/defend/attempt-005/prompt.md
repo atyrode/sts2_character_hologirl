@@ -1,0 +1,3 @@
+# Prompt
+
+Simple STS2-inspired card portrait, one bold readable starter defense image. A faint yellow holographic shield flashes into existence at a diagonal angle, made of one large chunky translucent shield shape with two or three angular pane divisions. The shield is the main subject, pale yellow with small cyan edge accents, hard graphic edges, minimal glow, and a few tiny restrained sparkles implying magic or holographic technology. A tiny cropped dark hand or wrist is barely implied behind it, no full character. Elegant desaturated pink background with broad flat shadow shapes. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, iconic starter defense readability. No scene, no detailed costume, no text, no card frame, no UI, no logo.

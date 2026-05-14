@@ -1,0 +1,3 @@
+# Prompt
+
+Simple STS2-inspired card portrait, one bold readable starter attack image. A faint yellow holographic light-whip slashes diagonally across an elegant desaturated pink background. The whip is the main subject: a thick smooth curved band of warm yellow light with a few angular breaks, hard graphic edges, minimal glow, one or two white-hot highlight cuts, and a few tiny restrained sparkles implying magic or holographic technology. No full character; only a tiny cropped dark hand or simple handle implied at one edge. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, broad background shadow shapes, iconic starter attack readability. No scene, no detailed costume, no text, no card frame, no UI, no logo.

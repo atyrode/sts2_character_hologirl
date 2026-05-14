@@ -5,6 +5,7 @@ This folder keeps repo-owned copies of generated card-art attempts.
 Each attempt folder should contain:
 
 - `result.png`: the generated image.
+- `prompt.md`: the exact prompt when available, or an honest reconstructed/missing prompt note.
 - `README.md`: timestamp, source file, prompt status, design notes, and selection status.
 
 Prompt text should be exact when available. If the exact prompt was only discussed in chat and not captured, mark it as reconstructed or partial instead of treating it as authoritative.

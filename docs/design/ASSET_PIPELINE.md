@@ -25,3 +25,15 @@ Every GitHub release should have a matching changelog at `docs/releases/<version
 ## Art Archive
 
 All generated card-art attempts that influence design should be copied into `docs/design/art_archive/` before the conversation context becomes the only record. Keep selected and rejected attempts. Each attempt should include the generated image and a metadata README with timestamp, source filename, prompt status, design notes, and selection status.
+
+Use `scripts/archive-art-attempt.sh` for future generated attempts:
+
+```bash
+scripts/archive-art-attempt.sh <card-id> <source-png> [prompt-file]
+```
+
+Use `scripts/resize-card-art.sh` to prepare selected art for the game:
+
+```bash
+scripts/resize-card-art.sh <source-png> Hologirl/images/card_portraits/big/<card_id>.png Hologirl/images/card_portraits/<card_id>.png
+```
