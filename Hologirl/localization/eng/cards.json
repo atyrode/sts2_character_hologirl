@@ -1,7 +1,7 @@
 {
-  "HOLOGIRL-HOLO_STRIKE.title": "Holo Strike",
+  "HOLOGIRL-HOLO_STRIKE.title": "Strike",
   "HOLOGIRL-HOLO_STRIKE.description": "Deal {Damage:diff()} damage.",
-  "HOLOGIRL-HOLO_DEFEND.title": "Holo Defend",
+  "HOLOGIRL-HOLO_DEFEND.title": "Defend",
   "HOLOGIRL-HOLO_DEFEND.description": "Gain {Block:diff()} [gold]Block[/gold].",
   "HOLOGIRL-CONCERT.title": "Concert!",
   "HOLOGIRL-CONCERT.description": "Gain {FansPower:diff()} [gold]Fans[/gold].\nGain {SingingPower:diff()} [gold]Singing[/gold].",

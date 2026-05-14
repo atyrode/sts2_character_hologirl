@@ -31,10 +31,70 @@ The exact benefits of having more fans are undecided. Fans may be a currency, sc
 
 Initial starter deck direction:
 
-- 4 Strike-style cards.
-- 4 Defend-style cards.
+- 4 `Strike` cards.
+- 4 `Defend` cards.
 - `Concert!`
 - `Livestream`
+
+## Weapon Direction
+
+Hologirl's baseline weapon should be a light-whip: a flexible lash made from faint yellow holographic light.
+
+Starter card art should stay simple and iconic. `Strike` should mostly show the weapon in motion, with Hologirl only as a small or blurred supporting detail if needed. The composition should read as a basic attack at card size: a clean arc of yellow light cutting through the air, minimal background, strong silhouette, and restrained effects.
+
+The same weapon can support future animation: idle state with the light-whip loosely trailing or resting on the ground, attack state with a fast snapping lash.
+
+## AI Card Art Direction
+
+When generating placeholder or production card art with AI, use the recovered STS2 starter cards as the style target rather than broad fantasy concept art.
+
+The current accepted starter-card direction came from comparing recovered local STS2 Strike references:
+
+- `strike_ironclad`: one huge flat sword shape over a red/orange field.
+- `strike_defect`: cropped chunky fist, broad impact shape, very low detail.
+- `strike_silent`: one diagonal dagger shape, hard black silhouette and simple red background.
+- `strike_regent`: glowing weapon shapes on a pink/purple field, still very icon-like.
+- `strike_necrobinder`: one scythe shape and one large cyan impact field.
+
+The useful lesson is not to ask for "beautiful fantasy card art." Ask for an icon-like card portrait with one dominant object/action, broad flat shapes, and almost no scene.
+
+Baseline prompt grammar:
+
+- Simple STS2-inspired card portrait.
+- One bold readable object or action shape.
+- Flat chunky shapes, abrupt silhouettes, smooth matte shading.
+- Low color count, usually 2-4 major color groups.
+- Broad background shadow shapes, not a detailed scene.
+- Hard graphic edges, minimal glow, very sparse sparkles only where they clarify magic/technology.
+- Main subject first, Hologirl second; starter cards should rarely show a full character.
+- Elegant desaturated pink or red-pink backgrounds are preferred for Hologirl starter cards.
+
+Avoid:
+
+- Detailed fantasy illustration.
+- Photorealism.
+- Anime screenshot styling.
+- Glossy mobile-game rendering.
+- Complex backgrounds.
+- Particle-heavy effects.
+- Many colors.
+- Cinematic close-ups that obscure the icon-like read.
+
+Final reusable prompt pattern:
+
+> Simple STS2-inspired card portrait, one bold readable [attack/defense/skill] image. [One dominant object/action] across an elegant desaturated pink background. The subject is the main shape: thick, smooth, graphic, hard-edged, with minimal glow, one or two white-hot highlight cuts, and a few tiny restrained sparkles implying magic or holographic technology. No full character; at most a tiny cropped dark hand, wrist, handle, or silhouette detail at one edge. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, broad background shadow shapes, iconic starter-card readability. No scene, no detailed costume, no particle cloud, no text, no card frame, no UI, no logo.
+
+Negative prompt pattern:
+
+> detailed fantasy illustration, photorealism, anime screenshot, glossy mobile-game rendering, complex background, cinematic close-up, many colors, realistic object render, dense particle effects, full character portrait, elaborate costume
+
+`Strike` prompt direction:
+
+> Simple STS2-inspired card portrait, one bold readable starter attack image. A faint yellow holographic light-whip slashes diagonally across an elegant desaturated pink background. The whip is the main subject: a thick smooth curved band of warm yellow light with a few angular breaks, hard graphic edges, minimal glow, one or two white-hot highlight cuts, and a few tiny restrained sparkles implying magic or holographic technology. No full character; only a tiny cropped dark hand or simple handle implied at one edge. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, broad background shadow shapes, iconic starter attack readability. No scene, no detailed costume, no text, no card frame, no UI, no logo.
+
+`Defend` prompt direction:
+
+> Simple STS2-inspired card portrait, one bold readable starter defense image. A faint yellow holographic shield flashes into existence at a diagonal angle, made of one large chunky translucent shield shape with two or three angular pane divisions. The shield is the main subject, pale yellow with small cyan edge accents, hard graphic edges, minimal glow, and a few tiny restrained sparkles implying magic or holographic technology. A tiny cropped dark hand or wrist is barely implied behind it, no full character. Elegant desaturated pink background with broad flat shadow shapes. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, iconic starter defense readability. No scene, no detailed costume, no text, no card frame, no UI, no logo.
 
 ### Concert!
 
