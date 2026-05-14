@@ -31,6 +31,18 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
         splash.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 
         root.AddChild(splash);
+        root.AddChild(new HologirlCharacterSelectSparkles());
         return root;
+    }
+
+    public override void RegisterScene(Control scene, CustomCharacterSelectContext context)
+    {
+        scene.Position = Vector2.Zero;
+
+        var shake = scene.CreateTween();
+        shake.TweenProperty(scene, "position", new Vector2(8, -3), 0.035f);
+        shake.TweenProperty(scene, "position", new Vector2(-5, 3), 0.045f);
+        shake.TweenProperty(scene, "position", new Vector2(3, -2), 0.04f);
+        shake.TweenProperty(scene, "position", Vector2.Zero, 0.06f);
     }
 }

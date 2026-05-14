@@ -5,7 +5,7 @@
 - Result: `result.png`
 - Prompt: `prompt.md`
 - Prompt status: exact.
-- Selection status: selected and implemented as `Hologirl/images/charui/character_select_bg.png`.
+- Selection status: superseded by `attempt-002`.
 
 ## Direction
 
@@ -13,4 +13,4 @@ Wide character-select splash, Hologirl on the right, large empty UI-safe space o
 
 ## Notes
 
-Accepted as the first in-game static character-select background. It matches the vanilla composition principle better than a centered character illustration.
+Accepted as the first in-game static character-select background. It matched the vanilla composition principle better than a centered character illustration, but Hologirl was too far from camera, too far right, and not weapon-forward enough.

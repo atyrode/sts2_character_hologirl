@@ -28,14 +28,16 @@ Hologirl's background should:
 - Use gold only for projected effects: light-whip arc, stage light, sparse light sticks, tiny holographic particles.
 - Keep the crowd/fans very low-detail and discreet, mostly dark silhouettes.
 - Stay hand-drawn, matte, graphic, and lower-detail than a polished anime illustration.
+- Keep Hologirl near the boundary between the middle and right thirds, closer to camera than the first attempt, and holding/displaying the golden sparkly light-whip rather than attacking with it.
 
 ## Implemented Attempt
 
-- Background archive: `docs/design/art_archive/menu/character_select_splash/attempt-001/`
+- Background archive: `docs/design/art_archive/menu/character_select_splash/attempt-002/`
 - Runtime background image: `Hologirl/images/charui/character_select_bg.png`
 - Runtime scene builder: `HologirlCode/Character/HologirlCharacterSelectEntry.cs`
 - Button portrait archive: `docs/design/art_archive/menu/character_select_button/attempt-001/`
 - Runtime button portrait: `Hologirl/images/charui/char_select_char_name.png`
+- Runtime effects: `HologirlCode/Character/HologirlCharacterSelectSparkles.cs` adds mod-local whip sparkle animation, and `RegisterScene` applies a short selection shake to the Hologirl background scene.
 
 ## Open Questions
 
