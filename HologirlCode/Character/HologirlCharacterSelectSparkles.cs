@@ -19,6 +19,7 @@ public partial class HologirlCharacterSelectSparkles : Control
     ];
 
     private double time;
+    private Vector2 explicitBounds;
 
     public HologirlCharacterSelectSparkles()
     {
@@ -31,16 +32,35 @@ public partial class HologirlCharacterSelectSparkles : Control
     public override void _Ready()
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        RefreshBounds();
     }
 
     public override void _Process(double delta)
     {
         time += delta;
+        RefreshBounds();
+        QueueRedraw();
+    }
+
+    public void SetExplicitBounds(Vector2 bounds)
+    {
+        explicitBounds = bounds;
+        Size = bounds;
+        CustomMinimumSize = bounds;
+        SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         QueueRedraw();
     }
 
     public override void _Draw()
     {
+        var bounds = GetDrawBounds();
+        if (bounds.X < 1 || bounds.Y < 1)
+        {
+            return;
+        }
+
+        DrawHologramBands(bounds);
+
         foreach (var sparkle in Sparkles)
         {
             var pulse = 0.5f + 0.5f * Mathf.Sin((float)time * 4.2f + sparkle.Phase);
@@ -50,13 +70,61 @@ public partial class HologirlCharacterSelectSparkles : Control
                 Mathf.Sin((float)time * 1.7f + sparkle.Phase) * sparkle.DriftX,
                 Mathf.Cos((float)time * 1.35f + sparkle.Phase) * sparkle.DriftY
             );
-            var center = new Vector2(Size.X * sparkle.X, Size.Y * sparkle.Y) + drift;
+            var center = new Vector2(bounds.X * sparkle.X, bounds.Y * sparkle.Y) + drift;
             var color = new Color(1.0f, 0.78f, 0.25f, alpha);
             var glow = new Color(1.0f, 0.72f, 0.14f, alpha * 0.48f);
 
             DrawCircle(center, radius * 3.2f, glow);
             DrawLine(center + new Vector2(-radius, 0), center + new Vector2(radius, 0), color, 2.8f);
             DrawLine(center + new Vector2(0, -radius), center + new Vector2(0, radius), color, 2.8f);
+        }
+    }
+
+    private void RefreshBounds()
+    {
+        if (Size.X >= 1 && Size.Y >= 1)
+        {
+            return;
+        }
+
+        var viewportSize = GetViewportRect().Size;
+        if (viewportSize.X < 1 || viewportSize.Y < 1)
+        {
+            return;
+        }
+
+        Size = viewportSize;
+        CustomMinimumSize = viewportSize;
+    }
+
+    private Vector2 GetDrawBounds()
+    {
+        if (Size.X >= 1 && Size.Y >= 1)
+        {
+            return Size;
+        }
+
+        if (explicitBounds.X >= 1 && explicitBounds.Y >= 1)
+        {
+            return explicitBounds;
+        }
+
+        return GetViewportRect().Size;
+    }
+
+    private void DrawHologramBands(Vector2 bounds)
+    {
+        var xStart = bounds.X * 0.52f;
+        var xEnd = bounds.X * 0.93f;
+        var yStart = bounds.Y * 0.17f;
+        var yEnd = bounds.Y * 0.86f;
+
+        for (var i = 0; i < 8; i++)
+        {
+            var y = Mathf.Lerp(yStart, yEnd, i / 7f) + Mathf.Sin((float)time * 1.8f + i) * 7f;
+            var alpha = 0.08f + 0.07f * (0.5f + 0.5f * Mathf.Sin((float)time * 2.6f + i * 1.7f));
+            var color = new Color(0.28f, 0.95f, 1.0f, alpha);
+            DrawLine(new Vector2(xStart, y), new Vector2(xEnd, y + 3f), color, 1.5f);
         }
     }
 

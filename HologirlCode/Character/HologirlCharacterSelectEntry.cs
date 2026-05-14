@@ -18,7 +18,7 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
 
     public override Control CreateCharacterSelectScene()
     {
-        var root = new Control { Name = "HologirlCharacterSelectBg" };
+        var root = new Control { Name = "HologirlCharacterSelectBg", ClipContents = false };
         root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 
         var splash = new TextureRect
@@ -31,8 +31,17 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
         splash.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 
         root.AddChild(splash);
-        root.AddChild(new HologirlCharacterSelectSparkles());
+        root.AddChild(new HologirlCharacterSelectSparkles { Name = "BackgroundWhipSparkles" });
         return root;
+    }
+
+    public override Control CreateCharacterSelectForegroundScene()
+    {
+        var foreground = new Control { Name = "HologirlCharacterSelectForeground", ClipContents = false };
+        foreground.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        foreground.MouseFilter = Control.MouseFilterEnum.Ignore;
+        foreground.AddChild(new HologirlCharacterSelectSparkles { Name = "ForegroundWhipSparkles" });
+        return foreground;
     }
 
     public override void RegisterScene(Control scene, CustomCharacterSelectContext context)
@@ -57,5 +66,18 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
         idle.TweenProperty(splash, "position", new Vector2(0, 4), 1.2f);
         idle.Chain().TweenProperty(splash, "modulate", Colors.White, 1.2f);
         idle.TweenProperty(splash, "position", Vector2.Zero, 1.2f);
+    }
+
+    public override void RegisterForegroundScene(Control scene, CustomCharacterSelectContext context)
+    {
+        scene.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        var foregroundSize = context.ForegroundSceneRoot?.Size ?? scene.GetViewportRect().Size;
+        scene.Size = foregroundSize;
+        scene.MouseFilter = Control.MouseFilterEnum.Ignore;
+
+        if (scene.GetNodeOrNull<HologirlCharacterSelectSparkles>("ForegroundWhipSparkles") is { } sparkles)
+        {
+            sparkles.SetExplicitBounds(scene.Size);
+        }
     }
 }
