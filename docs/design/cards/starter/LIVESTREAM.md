@@ -11,7 +11,7 @@ The form-specific 0-cost card comes from `Prism Pendant`, not from `Livestream` 
 
 Implemented from the approved generated image:
 
-`/home/alex/.codex/generated_images/019e2306-06f1-7c40-b91e-f1c39d42d8d8/ig_006aa01e6712584c016a05ba39f1a88191aee8ad18a6b3fdbf.png`
+`docs/design/art_archive/cards/livestream/attempt-004/result.png`
 
 - Big portrait: `Hologirl/images/card_portraits/big/livestream.png`
 - Small portrait: `Hologirl/images/card_portraits/livestream.png`

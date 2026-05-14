@@ -21,3 +21,7 @@ Avoid adding portrait/tall generations and hoping the card crop works. Regenerat
 ## Release Notes
 
 Every GitHub release should have a matching changelog at `docs/releases/<version>.md`. `scripts/release.sh` uses that file as the release notes when it exists.
+
+## Art Archive
+
+All generated card-art attempts that influence design should be copied into `docs/design/art_archive/` before the conversation context becomes the only record. Keep selected and rejected attempts. Each attempt should include the generated image and a metadata README with timestamp, source filename, prompt status, design notes, and selection status.
