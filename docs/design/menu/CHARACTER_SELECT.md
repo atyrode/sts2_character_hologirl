@@ -32,7 +32,7 @@ Hologirl's background should:
 
 ## Implemented Attempt
 
-- Background archive: `docs/design/art_archive/menu/character_select_splash/attempt-002/`
+- Background archive: `docs/design/art_archive/menu/character_select_splash/attempt-003/`
 - Runtime background image: `Hologirl/images/charui/character_select_bg.png`
 - Runtime scene builder: `HologirlCode/Character/HologirlCharacterSelectEntry.cs`
 - Button portrait archive: `docs/design/art_archive/menu/character_select_button/attempt-001/`

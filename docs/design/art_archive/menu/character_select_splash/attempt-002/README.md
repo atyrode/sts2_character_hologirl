@@ -5,7 +5,7 @@
 - Result: `result.png`
 - Prompt: `prompt.md`
 - Prompt status: exact.
-- Selection status: selected and implemented as `Hologirl/images/charui/character_select_bg.png`.
+- Selection status: superseded by `attempt-003`.
 
 ## Notes
 

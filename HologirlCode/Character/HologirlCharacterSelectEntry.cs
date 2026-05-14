@@ -44,5 +44,15 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
         shake.TweenProperty(scene, "position", new Vector2(-5, 3), 0.045f);
         shake.TweenProperty(scene, "position", new Vector2(3, -2), 0.04f);
         shake.TweenProperty(scene, "position", Vector2.Zero, 0.06f);
+
+        if (scene.GetNodeOrNull<TextureRect>("Splash") is not { } splash)
+        {
+            return;
+        }
+
+        var idle = splash.CreateTween();
+        idle.SetLoops();
+        idle.TweenProperty(splash, "modulate", new Color(0.9f, 1.0f, 1.0f, 0.96f), 1.2f);
+        idle.TweenProperty(splash, "modulate", Colors.White, 1.2f);
     }
 }
