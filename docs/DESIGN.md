@@ -1,5 +1,15 @@
 # Design Direction
 
+Detailed design notes now live under `docs/design/`.
+
+- `docs/design/ART_DIRECTION.md` is the source of truth for AI art style and color rules.
+- `docs/design/ASSET_PIPELINE.md` documents card portrait sizes and naming.
+- `docs/design/GAMEPLAY_IDENTITY.md` documents the current combat fantasy and starter kit.
+- `docs/design/TERMINOLOGY.md` documents `Fans`, `Singing`, `Shapeshift`, `Idol Form`, and `Prism Pendant`.
+- `docs/design/cards/`, `docs/design/forms/`, `docs/design/effects/`, and `docs/design/relics/` hold per-item notes.
+
+The notes below are retained as a working overview until each section is fully migrated.
+
 ## Combat Fantasy
 
 Hologirl is a ghostly hologram performer who builds an audience, then uses that audience's support to sustain temporary idol transformations.
@@ -14,8 +24,6 @@ Hologirl can shift from her base hologram form into idol-inspired stances/forms:
 - Amelia Watson
 - Gawr Gura
 - Ouro Kronii
-
-These are currently design references for stance identities. Exact naming, art usage, and presentation should be treated carefully before public release, because they reference real Hololive talents and related IP.
 
 The stance loop:
 
@@ -61,6 +69,9 @@ The useful lesson is not to ask for "beautiful fantasy card art." Ask for an ico
 Baseline prompt grammar:
 
 - Simple STS2-inspired card portrait.
+- Generate or prepare art for the documented template formats before adding it to the mod:
+  - big card portrait: `1000x760`
+  - small card portrait: `250x190`
 - One bold readable object or action shape.
 - Flat chunky shapes, abrupt silhouettes, smooth matte shading.
 - Low color count, usually 2-4 major color groups.
@@ -68,6 +79,15 @@ Baseline prompt grammar:
 - Hard graphic edges, minimal glow, very sparse sparkles only where they clarify magic/technology.
 - Main subject first, Hologirl second; starter cards should rarely show a full character.
 - Elegant desaturated pink or red-pink backgrounds are preferred for Hologirl starter cards.
+- Base Hologirl herself should read as blue/cyan hologram light that complements the chosen desaturated pink backgrounds, not gold.
+- Base Hologirl's silhouette has two long ponytails/twintails, Hatsune Miku-like in broad read, and this should remain recognizable whenever her head/hair is visible.
+- Yellow/gold is reserved for things Hologirl creates or projects: her light-whip, shield constructs, stage spotlights, light sticks, and other holographic tools/effects.
+
+Card art workflow rule:
+
+- Before generating a card, check this section and the specific prompt direction below.
+- Before adding art to the mod, verify the source can be cropped or resized cleanly to `1000x760`; portrait/tall generations should be regenerated in landscape format instead of blindly cropped.
+- Add both `Hologirl/images/card_portraits/big/<card_id>.png` at `1000x760` and `Hologirl/images/card_portraits/<card_id>.png` at `250x190`.
 
 Avoid:
 
@@ -95,6 +115,14 @@ Negative prompt pattern:
 `Defend` prompt direction:
 
 > Simple STS2-inspired card portrait, one bold readable starter defense image. A faint yellow holographic shield flashes into existence at a diagonal angle, made of one large chunky translucent shield shape with two or three angular pane divisions. The shield is the main subject, pale yellow with small cyan edge accents, hard graphic edges, minimal glow, and a few tiny restrained sparkles implying magic or holographic technology. A tiny cropped dark hand or wrist is barely implied behind it, no full character. Elegant desaturated pink background with broad flat shadow shapes. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, iconic starter defense readability. No scene, no detailed costume, no text, no card frame, no UI, no logo.
+
+`Concert!` prompt direction:
+
+> Simple STS2-inspired card portrait in a wide landscape card-art composition, one bold readable skill image. View from behind a small blue/cyan hologram idol girl silhouette standing on a stage, facing a dark crowd. A warm pale-yellow spotlight shines down on her and creates one clear cone of light. In front of her, beyond the stage edge, the crowd is represented as broad dark rounded silhouettes with many tiny simple light sticks glowing pale yellow and a few soft cyan accents. Elegant desaturated pink and deep plum background, broad flat shadow shapes, low color count, hard graphic edges, smooth matte shading, minimal glow, very sparse sparkles implying holographic performance technology. Iconic concert readability at small card size. No detailed faces, no detailed audience, no full scene complexity, no text, no card frame, no UI, no logo.
+
+`Livestream` prompt direction:
+
+> Simple STS2-inspired card portrait in a wide landscape card-art composition, one bold readable skill image. Cozy intimate streamer-at-home scene: Hologirl is medium-large in frame, seen in clean side profile at her desk, wearing a headset and facing a computer monitor that is also shown from the side so their angles match. The image should feel like a close, comfortable look into her room while she streams to her fans, not a concert or crowd scene. Keep Hologirl as blue/cyan hologram light with her established twin-ponytail silhouette readable where visible. The desk, chair, and monitor are simplified chunky shapes, close to the camera, minimal and icon-like. Gold/yellow is reserved for the monitor glow, projected UI accents, and tiny holographic effects. Elegant desaturated pink and deep plum room/background, broad flat shadow shapes, low color count, hard graphic edges, smooth matte shading, minimal glow, very sparse sparkles implying holographic technology. Horizontal `1000x760` style card portrait composition. No crowd, no fans in the background, no light-stick audience, no detailed face, no detailed room clutter, no text, no readable UI, no card frame, no logo.
 
 ### Concert!
 

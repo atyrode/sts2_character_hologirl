@@ -113,6 +113,7 @@ scripts/release.sh
 - `scripts/build.sh` runs `dotnet build Hologirl.csproj`. The project's MSBuild targets copy the DLL, PDB, manifest, and generated PCK into the local STS2 mod folder.
 - `scripts/package.sh` builds first, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
+- `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
 
 ## Compatibility Practices
 

@@ -50,4 +50,5 @@ Build:
 - [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md): confirmed project intent.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): confirmed codebase structure, ownership, and integration points.
 - [docs/DESIGN.md](docs/DESIGN.md): confirmed design direction and variant notes.
+- [docs/design/](docs/design/): per-card, per-form, per-effect, art direction, terminology, and asset pipeline notes.
 - [docs/DEVELOPMENT_STEPS.md](docs/DEVELOPMENT_STEPS.md): working checklist.
