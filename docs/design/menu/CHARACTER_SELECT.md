@@ -42,9 +42,12 @@ Hologirl's background should:
 - Button portrait archive: `docs/design/art_archive/menu/character_select_button/attempt-001/`
 - Runtime button portrait: `Hologirl/images/charui/char_select_char_name.png`
 - Runtime effects: `HologirlCode/Character/HologirlCharacterSelectEntry.cs` builds a layered `Control` scene with a code-drawn effects layer. Golden whip sparks use short-lived emitter particles; blue hologram drift uses short horizontal particles around the body.
-- Runtime framing: the character is a separate foreground texture so placement can be tuned without regenerating the background.
+- Runtime framing: the character-select scene uses a fixed `2564x1204` virtual canvas, matching the proportions of recoverable vanilla background plates. The canvas is scaled as one composition instead of positioning Hologirl directly from the viewport size.
+- Hologirl's character layer is intentionally right-biased with large empty space preserved for the vanilla UI. Do not size or position it from `GetViewportRect()`; use the background container/canvas size instead.
 
 ## Open Questions
 
 - Whether the C#-built layered scene is enough, or whether we should later build a Spine/Godot animated scene with proper articulated body, whip, crowd, and glow motion.
+- Whether BaseLib exposes enough of the vanilla character-select container for a closer one-to-one clone of the game's internal scene setup.
 - Whether the locked character-select portrait should get a separate desaturated/locked treatment.
+- If character-select behavior remains off, check Nexus Mods and linked GitHub repos for current playable character implementations before inventing more custom layout logic. `Manosaba` is a known Nexus character mod with character-select/BaseLib discussion in its posts.

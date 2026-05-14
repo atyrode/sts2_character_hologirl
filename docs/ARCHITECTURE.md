@@ -42,6 +42,14 @@ This is not the same stack as Slay the Spire 1 Java mods.
   https://github.com/harsh2204/STS2-Buu
 - Nexus Mods `The Hermit`: working playable character mod, with notes that STS2 beta updates can break mod APIs.
   https://www.nexusmods.com/slaythespire2/mods/320
+- Nexus Mods STS2 mod index: use this as a live discovery source for current libraries, compatibility notes, and popular working mods when BaseLib/template behavior is unclear.
+  https://www.nexusmods.com/games/slaythespire2/mods
+- Nexus Mods `BaseLib`: live user-facing distribution page for BaseLib and version requirements used by other mods.
+  https://www.nexusmods.com/slaythespire2/mods/103
+- Nexus Mods `StartingDeckSelect`: example of a current BaseLib-dependent mod with explicit game/BaseLib version notes and multiplayer compatibility notes.
+  https://www.nexusmods.com/slaythespire2/mods/515
+- Nexus Mods `Manosaba`: character-select posts are useful when investigating custom character-select behavior and BaseLib updates.
+  https://www.nexusmods.com/slaythespire2/mods/353
 
 ## Minimum Mod Shape
 

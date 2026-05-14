@@ -18,40 +18,8 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
 
     public override Control CreateCharacterSelectScene()
     {
-        var root = new Control { Name = "HologirlCharacterSelectScene", ClipContents = false };
+        var root = new HologirlCharacterSelectScene { Name = "HologirlCharacterSelectScene" };
         root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-
-        var background = new TextureRect
-        {
-            Name = "Background",
-            Texture = GD.Load<Texture2D>("character_select_bg.png".CharacterUiPath()),
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered
-        };
-        background.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-
-        var character = new TextureRect
-        {
-            Name = "HologirlLayer",
-            Texture = GD.Load<Texture2D>("character_select_hologirl.png".CharacterUiPath()),
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            StretchMode = TextureRect.StretchModeEnum.KeepAspect,
-            MouseFilter = Control.MouseFilterEnum.Ignore,
-            ZIndex = 10
-        };
-
-        var effects = new HologirlCharacterSelectEffects
-        {
-            Name = "HologirlEffects",
-            MouseFilter = Control.MouseFilterEnum.Ignore,
-            ClipContents = false,
-            ZIndex = 30
-        };
-        effects.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-
-        root.AddChild(background);
-        root.AddChild(character);
-        root.AddChild(effects);
         return root;
     }
 
@@ -65,27 +33,102 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
         shake.TweenProperty(scene, "position", new Vector2(3, -2), 0.04f);
         shake.TweenProperty(scene, "position", Vector2.Zero, 0.06f);
 
-        var bounds = scene.GetViewportRect().Size;
-        if (scene.GetNodeOrNull<TextureRect>("HologirlLayer") is { } character)
+        if (scene is HologirlCharacterSelectScene hologirlScene)
         {
-            ConfigureCharacterLayer(character, bounds);
+            hologirlScene.StartSelectionBurst();
         }
+    }
+}
 
-        if (scene.GetNodeOrNull<HologirlCharacterSelectEffects>("HologirlEffects") is { } effects)
+public sealed partial class HologirlCharacterSelectScene : Control
+{
+    private static readonly Vector2 VirtualSize = new(2564f, 1204f);
+    private readonly Control _canvas;
+    private readonly HologirlCharacterSelectEffects _effects;
+
+    public HologirlCharacterSelectScene()
+    {
+        ClipContents = true;
+        MouseFilter = MouseFilterEnum.Ignore;
+
+        _canvas = new Control
         {
-            effects.Configure(bounds);
-            effects.StartSelectionBurst();
+            Name = "VirtualCanvas",
+            ClipContents = false,
+            MouseFilter = MouseFilterEnum.Ignore,
+            Size = VirtualSize,
+            CustomMinimumSize = VirtualSize
+        };
+
+        var background = new TextureRect
+        {
+            Name = "Background",
+            Texture = GD.Load<Texture2D>("character_select_bg.png".CharacterUiPath()),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+            Size = VirtualSize,
+            MouseFilter = MouseFilterEnum.Ignore,
+            ZIndex = 0
+        };
+
+        var character = new TextureRect
+        {
+            Name = "HologirlLayer",
+            Texture = GD.Load<Texture2D>("character_select_hologirl.png".CharacterUiPath()),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+            Size = new Vector2(1080f, 720f),
+            Position = new Vector2(1180f, 160f),
+            MouseFilter = MouseFilterEnum.Ignore,
+            ZIndex = 10
+        };
+
+        _effects = new HologirlCharacterSelectEffects
+        {
+            Name = "HologirlEffects",
+            MouseFilter = MouseFilterEnum.Ignore,
+            ClipContents = false,
+            Size = VirtualSize,
+            CustomMinimumSize = VirtualSize,
+            ZIndex = 20
+        };
+
+        _canvas.AddChild(background);
+        _canvas.AddChild(character);
+        _canvas.AddChild(_effects);
+        AddChild(_canvas);
+    }
+
+    public override void _Ready()
+    {
+        ApplyLayout();
+    }
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationResized)
+        {
+            ApplyLayout();
         }
     }
 
-    private static void ConfigureCharacterLayer(TextureRect character, Vector2 bounds)
+    public void StartSelectionBurst()
     {
-        var height = bounds.Y * 1.08f;
-        var width = height * 1.5f;
-        character.Size = new Vector2(width, height);
-        character.Position = new Vector2(bounds.X * 0.26f, bounds.Y * -0.06f);
-        character.CustomMinimumSize = character.Size;
-        character.PivotOffset = character.Size / 2f;
+        _effects.StartSelectionBurst();
+    }
+
+    private void ApplyLayout()
+    {
+        var bounds = Size;
+        if (bounds.X <= 0f || bounds.Y <= 0f)
+        {
+            bounds = GetParent<Control>()?.Size ?? GetViewportRect().Size;
+        }
+
+        var scale = Mathf.Max(bounds.X / VirtualSize.X, bounds.Y / VirtualSize.Y);
+        _canvas.Scale = Vector2.One * scale;
+        _canvas.Position = (bounds - VirtualSize * scale) / 2f;
+        _effects.Configure(VirtualSize);
     }
 }
 
@@ -93,18 +136,16 @@ public sealed partial class HologirlCharacterSelectEffects : Control
 {
     private static readonly Vector2[] WhipEmitterPoints =
     [
-        new(0.39f, 0.53f),
-        new(0.48f, 0.42f),
-        new(0.57f, 0.33f),
-        new(0.67f, 0.26f),
-        new(0.77f, 0.24f),
-        new(0.86f, 0.32f),
-        new(0.90f, 0.44f),
-        new(0.82f, 0.62f),
-        new(0.71f, 0.76f),
+        new(0.50f, 0.50f),
+        new(0.58f, 0.41f),
+        new(0.66f, 0.32f),
+        new(0.76f, 0.28f),
+        new(0.84f, 0.33f),
+        new(0.86f, 0.46f),
+        new(0.78f, 0.61f),
+        new(0.67f, 0.72f),
     ];
 
-    private readonly List<Particle> _particles = [];
     private readonly RandomNumberGenerator _rng = new();
     private Vector2 _bounds;
     private float _sparkTimer;
@@ -115,7 +156,6 @@ public sealed partial class HologirlCharacterSelectEffects : Control
         _bounds = bounds;
         Size = bounds;
         CustomMinimumSize = bounds;
-        SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         SetProcess(true);
     }
 
@@ -123,12 +163,12 @@ public sealed partial class HologirlCharacterSelectEffects : Control
     {
         for (var i = 0; i < 18; i++)
         {
-            EmitWhipSpark(true);
+            SpawnWhipSpark(true);
         }
 
         for (var i = 0; i < 10; i++)
         {
-            EmitHologramDrift(true);
+            SpawnHologramDrift(true);
         }
     }
 
@@ -140,110 +180,61 @@ public sealed partial class HologirlCharacterSelectEffects : Control
 
         while (_sparkTimer <= 0f)
         {
-            EmitWhipSpark(false);
+            SpawnWhipSpark(false);
             _sparkTimer += 0.055f;
         }
 
         while (_driftTimer <= 0f)
         {
-            EmitHologramDrift(false);
+            SpawnHologramDrift(false);
             _driftTimer += 0.18f;
         }
 
-        for (var i = _particles.Count - 1; i >= 0; i--)
-        {
-            var particle = _particles[i];
-            particle.Age += dt;
-            particle.Position += particle.Velocity * dt;
-            particle.Rotation += particle.RotationSpeed * dt;
-
-            if (particle.Age >= particle.Lifetime)
-            {
-                _particles.RemoveAt(i);
-            }
-            else
-            {
-                _particles[i] = particle;
-            }
-        }
-
-        QueueRedraw();
     }
 
-    public override void _Draw()
-    {
-        foreach (var particle in _particles)
-        {
-            var t = particle.Age / particle.Lifetime;
-            var alpha = particle.Color.A * (1f - t);
-            var color = new Color(particle.Color.R, particle.Color.G, particle.Color.B, alpha);
-            var size = particle.Size * (1f + t * particle.Grow);
-
-            if (particle.Kind == ParticleKind.Spark)
-            {
-                DrawSetTransform(particle.Position, particle.Rotation, Vector2.One);
-                DrawRect(new Rect2(-size / 2f, size), color);
-                DrawRect(new Rect2(new Vector2(-size.X, -1.5f), new Vector2(size.X * 2f, 3f)), color with { A = alpha * 0.45f });
-                DrawSetTransform(Vector2.Zero, 0f, Vector2.One);
-            }
-            else
-            {
-                DrawRect(new Rect2(particle.Position, size), color);
-            }
-        }
-    }
-
-    private void EmitWhipSpark(bool burst)
+    private void SpawnWhipSpark(bool burst)
     {
         var anchor = WhipEmitterPoints[_rng.RandiRange(0, WhipEmitterPoints.Length - 1)] * _bounds;
         var jitter = new Vector2(_rng.RandfRange(-18f, 18f), _rng.RandfRange(-14f, 14f));
-        _particles.Add(new Particle(
-            ParticleKind.Spark,
-            anchor + jitter,
-            new Vector2(_rng.RandfRange(-18f, 28f), _rng.RandfRange(-34f, -8f)),
-            new Vector2(_rng.RandfRange(5f, 10f), _rng.RandfRange(5f, 10f)),
-            _rng.RandfRange(0.42f, burst ? 0.85f : 0.62f),
-            0f,
-            _rng.RandfRange(-Mathf.Pi, Mathf.Pi),
-            _rng.RandfRange(-2.8f, 2.8f),
-            _rng.RandfRange(0.25f, 0.8f),
-            new Color(1.0f, 0.78f, 0.18f, _rng.RandfRange(0.55f, 0.95f))));
+        var lifetime = _rng.RandfRange(0.42f, burst ? 0.85f : 0.62f);
+        var color = new Color(1.0f, 0.78f, 0.18f, _rng.RandfRange(0.55f, 0.95f));
+        var size = new Vector2(_rng.RandfRange(5f, 10f), _rng.RandfRange(5f, 10f));
+        SpawnParticleNode(anchor + jitter, new Vector2(_rng.RandfRange(-18f, 28f), _rng.RandfRange(-34f, -8f)), size, lifetime, color, true);
+
     }
 
-    private void EmitHologramDrift(bool burst)
+    private void SpawnHologramDrift(bool burst)
     {
         var x = _rng.RandfRange(0.38f, 0.87f) * _bounds.X;
         var y = _rng.RandfRange(0.12f, 0.88f) * _bounds.Y;
         var width = _rng.RandfRange(18f, 56f);
         var height = _rng.RandfRange(3f, 7f);
-        _particles.Add(new Particle(
-            ParticleKind.Drift,
-            new Vector2(x, y),
-            new Vector2(_rng.RandfRange(-48f, 42f), _rng.RandfRange(-8f, 8f)),
-            new Vector2(width, height),
-            _rng.RandfRange(0.38f, burst ? 0.86f : 0.58f),
-            0f,
-            0f,
-            0f,
-            0.15f,
-            new Color(0.24f, 0.88f, 1.0f, _rng.RandfRange(0.16f, 0.34f))));
+        var lifetime = _rng.RandfRange(0.38f, burst ? 0.86f : 0.58f);
+        var color = new Color(0.24f, 0.88f, 1.0f, _rng.RandfRange(0.16f, 0.34f));
+        SpawnParticleNode(new Vector2(x, y), new Vector2(_rng.RandfRange(-48f, 42f), _rng.RandfRange(-8f, 8f)), new Vector2(width, height), lifetime, color, false);
+
     }
 
-    private enum ParticleKind
+    private void SpawnParticleNode(Vector2 position, Vector2 velocity, Vector2 size, float lifetime, Color color, bool sparkle)
     {
-        Spark,
-        Drift
+        var particle = new ColorRect
+        {
+            Color = color,
+            Size = size,
+            Position = position - size / 2f,
+            PivotOffset = size / 2f,
+            Rotation = sparkle ? _rng.RandfRange(-Mathf.Pi, Mathf.Pi) : 0f,
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+
+        AddChild(particle);
+
+        var tween = particle.CreateTween();
+        tween.SetParallel();
+        tween.TweenProperty(particle, "position", particle.Position + velocity * lifetime, lifetime);
+        tween.TweenProperty(particle, "modulate", new Color(1f, 1f, 1f, 0f), lifetime);
+        tween.TweenProperty(particle, "scale", Vector2.One * (sparkle ? 1.75f : 1.1f), lifetime);
+        tween.TweenCallback(Callable.From(particle.QueueFree)).SetDelay(lifetime);
     }
 
-    private record struct Particle(
-        ParticleKind Kind,
-        Vector2 Position,
-        Vector2 Velocity,
-        Vector2 Size,
-        float Lifetime,
-        float Age,
-        float Rotation,
-        float RotationSpeed,
-        float Grow,
-        Color Color);
 }
