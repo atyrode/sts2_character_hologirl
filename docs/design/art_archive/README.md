@@ -1,6 +1,6 @@
 # Art Archive
 
-This folder keeps repo-owned copies of generated card-art attempts.
+This folder keeps repo-owned copies of generated art attempts.
 
 Each attempt folder should contain:
 
@@ -10,7 +10,7 @@ Each attempt folder should contain:
 
 Prompt text should be exact when available. If the exact prompt was only discussed in chat and not captured, mark it as reconstructed or partial instead of treating it as authoritative.
 
-Selected art is still copied into the runtime card portrait folders documented in `docs/design/ASSET_PIPELINE.md`. The archive keeps both selected and rejected attempts so the visual direction can be reviewed later.
+Selected art is still copied into the runtime asset folders documented in `docs/design/ASSET_PIPELINE.md`. The archive keeps both selected and rejected attempts so the visual direction can be reviewed later.
 
 ## Current Cards
 
@@ -18,3 +18,8 @@ Selected art is still copied into the runtime card portrait folders documented i
 - `cards/defend/`: Defend and holographic shield exploration.
 - `cards/concert/`: Concert stage/crowd exploration.
 - `cards/livestream/`: Livestream desk/streaming exploration.
+
+## Current Menu Art
+
+- `menu/character_select_splash/`: large character-select background art.
+- `menu/character_select_button/`: small character-select grid portrait art.

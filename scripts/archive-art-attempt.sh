@@ -2,16 +2,23 @@
 set -euo pipefail
 
 if [[ $# -lt 2 || $# -gt 3 ]]; then
-  echo "Usage: scripts/archive-art-attempt.sh <card-id> <source-png> [prompt-file]" >&2
-  echo "Example: scripts/archive-art-attempt.sh livestream /path/generated.png /tmp/prompt.md" >&2
+  echo "Usage: scripts/archive-art-attempt.sh <archive-key> <source-png> [prompt-file]" >&2
+  echo "Examples:" >&2
+  echo "  scripts/archive-art-attempt.sh livestream /path/generated.png /tmp/prompt.md" >&2
+  echo "  scripts/archive-art-attempt.sh menu/character_select_splash /path/generated.png /tmp/prompt.md" >&2
   exit 1
 fi
 
-card_id="$1"
+archive_key="$1"
 source_png="$2"
 prompt_file="${3:-}"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-archive_root="$repo_root/docs/design/art_archive/cards/$card_id"
+
+if [[ "$archive_key" == */* ]]; then
+  archive_root="$repo_root/docs/design/art_archive/$archive_key"
+else
+  archive_root="$repo_root/docs/design/art_archive/cards/$archive_key"
+fi
 
 if [[ ! -f "$source_png" ]]; then
   echo "Source image not found: $source_png" >&2
@@ -51,10 +58,10 @@ fi
 
 generated_at="$(stat -c '%y' "$source_png" | sed 's/ +0000$//')"
 source_name="$(basename "$source_png")"
-title_card="$(printf '%s' "$card_id" | sed -E 's/(^|-)([a-z])/\U\2/g')"
+title_name="$(printf '%s' "$archive_key" | sed -E 's#[/_-]+# #g; s/(^| )([a-z])/\U\2/g')"
 
 cat > "$attempt_dir/README.md" <<EOF
-# $title_card ${attempt_id^}
+# $title_name ${attempt_id^}
 
 - Generated: $generated_at UTC
 - Source: \`$source_name\`

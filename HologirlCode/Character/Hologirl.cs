@@ -20,6 +20,8 @@ public class Hologirl : PlaceholderCharacterModel
     public override Color NameColor => Color;
     public override CharacterGender Gender => CharacterGender.Neutral;
     public override int StartingHp => 70;
+    public override bool HideFromVanillaCharacterSelect => true;
+    public override bool AllowInVanillaRandomCharacterSelect => true;
     
     public override IEnumerable<CardModel> StartingDeck => [
         ModelDb.Card<HoloStrike>(),

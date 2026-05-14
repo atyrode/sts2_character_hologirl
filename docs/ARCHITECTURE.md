@@ -22,6 +22,7 @@ This is not the same stack as Slay the Spire 1 Java mods.
 - `Hologirl/`: mod assets and localization packed into `Hologirl.pck`.
 - `HologirlCode/Cards/Basic/HoloStrike.cs`: first custom card.
 - `HologirlCode/Character/Hologirl.cs`: character model and starting deck.
+- `HologirlCode/Character/HologirlCharacterSelectEntry.cs`: BaseLib character-select entry that builds Hologirl's static selection background in C#.
 - `global.json`: pins the .NET SDK line to 9.0.
 - `Directory.Build.props`: ignored local file for machine-specific paths such as `Sts2Path`.
 
@@ -114,6 +115,8 @@ scripts/release.sh
 - `scripts/package.sh` builds first, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
+
+The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. For the current character-select splash, Hologirl uses a BaseLib `CustomCharacterSelectEntry` that creates a `TextureRect` in C# and loads `Hologirl/images/charui/character_select_bg.png`. This keeps the release path on the lightweight packer until we decide a full Godot/Megadot export is needed for animated scenes.
 
 ## Compatibility Practices
 

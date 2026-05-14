@@ -1,0 +1,43 @@
+# Character Select
+
+## Confirmed Asset References
+
+Recovered local STS2 references from `/home/alex/games/slay-the-spire-2/SlayTheSpire2.pck` on 2026-05-14.
+
+Character button portraits:
+
+- Official `char_select_*` portraits are `132x195`.
+- They use tight head/shoulder crops, clear silhouettes, saturated flat backgrounds, hard edge definition, matte brush texture, and low detail.
+- Each portrait reads through one strong head shape: Ironclad helm, Silent skull mask, Defect orb head, Regent horn, Necrobinder skull.
+
+Large character-select backgrounds:
+
+- Official backgrounds are Godot character-select scenes, generally using Spine atlases plus simple wide background plates.
+- The recoverable background plates use wide `2048x1024` style compositions with large empty space for UI.
+- Characters are staged on the right or as modular atlas pieces, with the center/left kept visually quieter.
+
+## Hologirl Direction
+
+Use a C# `CustomCharacterSelectEntry` first. BaseLib supports custom character-select entries that can build a Godot `Control` scene in code, which avoids global patches and avoids requiring a full Godot export for a `.tscn` file.
+
+Hologirl's background should:
+
+- Put Hologirl on the right third.
+- Leave large atmospheric negative space on the left/center for the vanilla UI.
+- Keep her silhouette large and readable: blue/cyan hologram body, two long ponytails, simple idol outfit.
+- Use gold only for projected effects: light-whip arc, stage light, sparse light sticks, tiny holographic particles.
+- Keep the crowd/fans very low-detail and discreet, mostly dark silhouettes.
+- Stay hand-drawn, matte, graphic, and lower-detail than a polished anime illustration.
+
+## Implemented Attempt
+
+- Background archive: `docs/design/art_archive/menu/character_select_splash/attempt-001/`
+- Runtime background image: `Hologirl/images/charui/character_select_bg.png`
+- Runtime scene builder: `HologirlCode/Character/HologirlCharacterSelectEntry.cs`
+- Button portrait archive: `docs/design/art_archive/menu/character_select_button/attempt-001/`
+- Runtime button portrait: `Hologirl/images/charui/char_select_char_name.png`
+
+## Open Questions
+
+- Whether the static C#-built background is enough, or whether we should later build a Spine/Godot animated scene with subtle scanline, whip, crowd, and glow motion.
+- Whether the locked character-select portrait should get a separate desaturated/locked treatment.
