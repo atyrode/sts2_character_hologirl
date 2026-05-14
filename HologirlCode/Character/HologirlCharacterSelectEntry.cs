@@ -18,7 +18,12 @@ public class HologirlCharacterSelectEntry : CustomCharacterSelectEntry
 
     public override Control CreateCharacterSelectScene()
     {
-        var root = new HologirlCharacterSelectScene { Name = "HologirlCharacterSelectScene" };
+        var root = new HologirlCharacterSelectScene
+        {
+            Name = "HologirlCharacterSelectScene",
+            ZIndex = -1000,
+            ZAsRelative = false
+        };
         root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
         return root;
     }
@@ -50,12 +55,16 @@ public sealed partial class HologirlCharacterSelectScene : Control
     {
         ClipContents = true;
         MouseFilter = MouseFilterEnum.Ignore;
+        ProcessMode = ProcessModeEnum.Always;
+        ZIndex = -1000;
+        ZAsRelative = false;
 
         _canvas = new Control
         {
             Name = "VirtualCanvas",
             ClipContents = false,
             MouseFilter = MouseFilterEnum.Ignore,
+            ProcessMode = ProcessModeEnum.Always,
             Size = VirtualSize,
             CustomMinimumSize = VirtualSize
         };
@@ -77,8 +86,8 @@ public sealed partial class HologirlCharacterSelectScene : Control
             Texture = GD.Load<Texture2D>("character_select_hologirl.png".CharacterUiPath()),
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
-            Size = new Vector2(1080f, 720f),
-            Position = new Vector2(1180f, 160f),
+            Size = new Vector2(1240f, 827f),
+            Position = new Vector2(1320f, 300f),
             MouseFilter = MouseFilterEnum.Ignore,
             ZIndex = 10
         };
@@ -88,6 +97,7 @@ public sealed partial class HologirlCharacterSelectScene : Control
             Name = "HologirlEffects",
             MouseFilter = MouseFilterEnum.Ignore,
             ClipContents = false,
+            ProcessMode = ProcessModeEnum.Always,
             Size = VirtualSize,
             CustomMinimumSize = VirtualSize,
             ZIndex = 20
@@ -97,6 +107,8 @@ public sealed partial class HologirlCharacterSelectScene : Control
         _canvas.AddChild(character);
         _canvas.AddChild(_effects);
         AddChild(_canvas);
+
+        _effects.Configure(VirtualSize);
     }
 
     public override void _Ready()
@@ -114,6 +126,7 @@ public sealed partial class HologirlCharacterSelectScene : Control
 
     public void StartSelectionBurst()
     {
+        _effects.Configure(VirtualSize);
         _effects.StartSelectionBurst();
     }
 
@@ -156,6 +169,7 @@ public sealed partial class HologirlCharacterSelectEffects : Control
         _bounds = bounds;
         Size = bounds;
         CustomMinimumSize = bounds;
+        ProcessMode = ProcessModeEnum.Always;
         SetProcess(true);
     }
 
@@ -196,9 +210,9 @@ public sealed partial class HologirlCharacterSelectEffects : Control
     {
         var anchor = WhipEmitterPoints[_rng.RandiRange(0, WhipEmitterPoints.Length - 1)] * _bounds;
         var jitter = new Vector2(_rng.RandfRange(-18f, 18f), _rng.RandfRange(-14f, 14f));
-        var lifetime = _rng.RandfRange(0.42f, burst ? 0.85f : 0.62f);
-        var color = new Color(1.0f, 0.78f, 0.18f, _rng.RandfRange(0.55f, 0.95f));
-        var size = new Vector2(_rng.RandfRange(5f, 10f), _rng.RandfRange(5f, 10f));
+        var lifetime = _rng.RandfRange(0.85f, burst ? 1.35f : 1.05f);
+        var color = new Color(1.0f, 0.78f, 0.18f, _rng.RandfRange(0.72f, 1.0f));
+        var size = new Vector2(_rng.RandfRange(12f, 22f), _rng.RandfRange(12f, 22f));
         SpawnParticleNode(anchor + jitter, new Vector2(_rng.RandfRange(-18f, 28f), _rng.RandfRange(-34f, -8f)), size, lifetime, color, true);
 
     }
@@ -207,10 +221,10 @@ public sealed partial class HologirlCharacterSelectEffects : Control
     {
         var x = _rng.RandfRange(0.38f, 0.87f) * _bounds.X;
         var y = _rng.RandfRange(0.12f, 0.88f) * _bounds.Y;
-        var width = _rng.RandfRange(18f, 56f);
-        var height = _rng.RandfRange(3f, 7f);
-        var lifetime = _rng.RandfRange(0.38f, burst ? 0.86f : 0.58f);
-        var color = new Color(0.24f, 0.88f, 1.0f, _rng.RandfRange(0.16f, 0.34f));
+        var width = _rng.RandfRange(42f, 110f);
+        var height = _rng.RandfRange(6f, 12f);
+        var lifetime = _rng.RandfRange(0.7f, burst ? 1.3f : 0.95f);
+        var color = new Color(0.24f, 0.88f, 1.0f, _rng.RandfRange(0.28f, 0.52f));
         SpawnParticleNode(new Vector2(x, y), new Vector2(_rng.RandfRange(-48f, 42f), _rng.RandfRange(-8f, 8f)), new Vector2(width, height), lifetime, color, false);
 
     }
