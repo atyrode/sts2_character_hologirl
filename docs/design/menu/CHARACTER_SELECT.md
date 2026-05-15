@@ -71,11 +71,11 @@ Hologirl's background should:
 - The temporary tuning panel stores slider values in script-level static variables. Values should survive character-select scene recreation while comparing characters, but they intentionally reset when the game process restarts.
 - Tuner ranges are intentionally broad while calibrating: X `0..2200`, Y `-400..900`, scale `0.25..2.50`, particle densities `0..5`, and gold jitter `0..80`.
 - Confirmed tester-preferred temporary framing values: X `842`, Y `120`, scale `1.49`, whip density `1.05`, drift density `0.29`, gold jitter `80`. These are now the tuner defaults until replaced by final constants.
-- `v0.2.25` code-drawn geometric background variants are considered superseded. They were too mathematical and did not match vanilla's hand-drawn accent-color plates.
-- `v0.2.26` switches background testing to generated bitmap plates. Runtime copies live in `Hologirl/images/charui/background_variants/`; originals and prompts live in `docs/design/art_archive/menu/character_select_background/generated-variants-2026-05-15/`.
-- Background direction from vanilla comparison: generated backgrounds should use hand-drawn broad color fields, one strong character accent palette, low detail, and thematic abstract shapes like flames, swirls, curtains, static, or projection haze. Avoid code-drawn geometry, detailed illustrated rooms, full crowd scenes, and dominant Necrobinder-like pink.
-- `v0.2.27` adds a second generated background batch, variants 11-30, while keeping the first 10 in the tuner. This batch should be judged against the stricter vanilla-reading rule: one hue family, two or three value variants, broad black-outlined shapes, and very little internal detail. The background should feel like a colored plate behind Hologirl, not an illustrated scene.
-- Runtime tuner copies are currently exported at `1282x602` and stretched to the `2564x1204` virtual canvas to keep package size manageable while comparing many variants. The archived originals remain the source of truth for final art selection.
+- `v0.2.25` code-drawn geometric background variants are rejected. They were too mathematical and did not match vanilla's hand-drawn accent-color plates.
+- `v0.2.26` and `v0.2.27` generated bitmap background batches are rejected and removed. They were too dark, textured, painterly, and detailed for the vanilla character-select background language.
+- Current background direction: the plate should be a bright solid accent color with one or two same-hue value variants used for large flat motifs. The background motif should be drawn, but in a simple graphic way: fire-like outlines, lightning bolts, waves, curtains, halos, or signal shapes. Do not use texture, grain, gradients, realistic lighting, soft shadows, environment paintings, or multicolor palettes.
+- Runtime tuner copies are currently exported at `1282x602` and stretched to the `2564x1204` virtual canvas to keep package size manageable while comparing variants. The archived originals remain the source of truth for final art selection.
+- `scripts/generate-character-bg-variants.sh` generates the current flat background exploration batch. Use it for deterministic iterations when exploring simple vanilla-like character-select plates.
 
 ## Open Questions
 
