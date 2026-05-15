@@ -14,8 +14,15 @@ func _init() -> void:
 	await process_frame
 	await create_timer(0.25).timeout
 
-	var particles := node.find_child("HologirlParticles", true, false)
-	if particles == null or particles.get_child_count() == 0:
+	var back_particles := node.find_child("HologirlBackParticles", true, false)
+	var front_particles := node.find_child("HologirlFrontParticles", true, false)
+	var particle_count := 0
+	if back_particles != null:
+		particle_count += back_particles.get_child_count()
+	if front_particles != null:
+		particle_count += front_particles.get_child_count()
+
+	if particle_count == 0:
 		push_error("Hologirl character-select particles did not spawn.")
 		quit(1)
 		return

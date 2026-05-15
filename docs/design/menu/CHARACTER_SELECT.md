@@ -62,6 +62,8 @@ Hologirl's background should:
 - Particle effects must be initialized with non-zero virtual-canvas bounds before any burst is emitted; otherwise the first particles spawn at `(0, 0)` or outside the visible composition.
 - Full Godot/MegaDot PCK export is now available on the VPS for real packed scenes. Prefer a `.tscn`/`PackedScene` implementation for the next character-select pass instead of more code-built layout patches.
 - As of `v0.2.19`, Hologirl uses `CustomCharacterSelectBg` to load `res://Hologirl/scenes/character_select/hologirl_character_select_bg.tscn` through the vanilla background loader. Do not restore the old `CustomCharacterSelectEntry.CreateCharacterSelectScene()` visual path; it can draw over vanilla UI depending on BaseLib node ordering.
+- Particle emitters should be tied to image content, not hand-estimated screen coordinates. The current scene samples gold pixels from the whip and blue pixels from the hologram body, then maps those normalized image points into the displayed character rectangle.
+- Background palette direction: muted indigo/blue-violet base, darker lower band, limited dusty violet structure, cyan hologram accent, and gold projected-light accent. Avoid making the scene dominantly pink so it does not collapse into Necrobinder's color space.
 
 ## Open Questions
 
