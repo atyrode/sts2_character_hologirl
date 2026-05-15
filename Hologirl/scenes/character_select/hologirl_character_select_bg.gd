@@ -30,7 +30,7 @@ var _whip_jitter: float = 5.0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_PASS if SHOW_TUNING_PANEL else Control.MOUSE_FILTER_IGNORE
-	clip_contents = true
+	clip_contents = not SHOW_TUNING_PANEL
 	set_process(true)
 	_rng.randomize()
 	_build_scene()
@@ -47,6 +47,8 @@ func _notification(what: int) -> void:
 
 
 func _process(delta: float) -> void:
+	_apply_tuning_panel_layout()
+
 	_spark_timer -= delta
 	_drift_timer -= delta
 	_glow_timer -= delta
@@ -197,7 +199,7 @@ func _apply_layout() -> void:
 	var scale_value: float = max(bounds.x / VIRTUAL_SIZE.x, bounds.y / VIRTUAL_SIZE.y)
 	_canvas.scale = Vector2.ONE * scale_value
 	_canvas.position = (bounds - VIRTUAL_SIZE * scale_value) * 0.5
-	_apply_tuning_panel_layout(bounds)
+	_apply_tuning_panel_layout()
 
 
 func _create_chroma_key_material() -> ShaderMaterial:
@@ -351,23 +353,32 @@ func _build_tuning_panel() -> PanelContainer:
 	button_row.add_child(reset_button)
 
 	_update_tuning_values_label()
-	_apply_tuning_panel_layout(size)
+	_apply_tuning_panel_layout()
 	return panel
 
 
-func _apply_tuning_panel_layout(bounds: Vector2) -> void:
+func _apply_tuning_panel_layout() -> void:
 	if _tuning_panel == null:
 		return
 
-	if bounds.x <= 0.0 or bounds.y <= 0.0:
-		bounds = get_viewport_rect().size
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		viewport_size = get_viewport_rect().size
 
-	var panel_size: Vector2 = Vector2(
-		min(500.0, max(320.0, bounds.x - TUNING_PANEL_MARGIN.x * 2.0)),
-		min(390.0, max(260.0, bounds.y - TUNING_PANEL_MARGIN.y * 2.0))
+	var root_transform: Transform2D = get_global_transform_with_canvas()
+	var root_scale: Vector2 = root_transform.get_scale()
+	if absf(root_scale.x) < 0.001:
+		root_scale.x = 1.0
+	if absf(root_scale.y) < 0.001:
+		root_scale.y = 1.0
+
+	var panel_screen_size: Vector2 = Vector2(
+		min(500.0, max(320.0, viewport_size.x - TUNING_PANEL_MARGIN.x * 2.0)),
+		min(390.0, max(260.0, viewport_size.y - TUNING_PANEL_MARGIN.y * 2.0))
 	)
-	_tuning_panel.position = TUNING_PANEL_MARGIN
-	_tuning_panel.size = panel_size
+	_tuning_panel.position = root_transform.affine_inverse() * TUNING_PANEL_MARGIN
+	_tuning_panel.scale = Vector2(1.0 / absf(root_scale.x), 1.0 / absf(root_scale.y))
+	_tuning_panel.size = panel_screen_size
 
 
 func _create_tuning_slider(label_text: String, key: String, min_value: float, max_value: float, value: float, step: float) -> HBoxContainer:

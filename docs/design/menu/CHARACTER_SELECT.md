@@ -67,6 +67,7 @@ Hologirl's background should:
 - `v0.2.21` intentionally ships a temporary in-game `HologirlTuningPanel` on the character-select background. It is a calibration tool for choosing Hologirl's X/Y/scale, whip particle density, drift density, and gold jitter inside the real game layout. Remove or hide this panel once the final values are confirmed.
 - Default particle direction after `v0.2.21`: fewer gold sparkles, smaller sparkles, lower background glow density, and tighter gold jitter. Keep whip sparks cute and crisp rather than smoky.
 - `v0.2.22` moves the temporary tuning panel out of the virtual art canvas and anchors it to the visible scene bounds. Calibration UI should never be positioned in the cropped/scaled character art coordinate system.
+- `v0.2.23` makes the temporary tuning panel counter-transform itself from viewport coordinates back into the character-select scene root. The root is not clipped while the tuner is enabled, because parent scene offsets can require negative local positions for an onscreen overlay.
 
 ## Open Questions
 
