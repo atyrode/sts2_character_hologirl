@@ -42,12 +42,47 @@ const CHARACTER_VARIANT_NAMES: Array[String] = [
 	"Vanilla Matte",
 	"Chunky Vanilla",
 	"Soft Vanilla",
+	"Puppet Attempt 002",
 ]
 const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_01_current.png",
 	"res://Hologirl/images/charui/character_variants/character_02_vanilla_matte.png",
 	"res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png",
 	"res://Hologirl/images/charui/character_variants/character_04_soft_vanilla.png",
+]
+const PUPPET_CHARACTER_VARIANT: int = 4
+const PUPPET_LAYER_DIR: String = "res://Hologirl/images/charui/puppet_attempt_002"
+const PUPPET_BASE_SIZE: Vector2 = Vector2(1020.0, 960.0)
+const PUPPET_PARTS: Array[Dictionary] = [
+	{"file": "layer_08.png", "name": "Whip", "pos": Vector2(545.0, 155.0), "pivot": Vector2(40.0, 535.0), "z": -3, "amp": 0.018, "phase": 0.2},
+	{"file": "layer_13.png", "name": "BackLegL", "pos": Vector2(405.0, 540.0), "pivot": Vector2(56.0, 20.0), "z": -2, "amp": 0.004, "phase": 0.8},
+	{"file": "layer_14.png", "name": "BackLegR", "pos": Vector2(510.0, 540.0), "pivot": Vector2(62.0, 20.0), "z": -2, "amp": 0.004, "phase": 1.4},
+	{"file": "layer_01.png", "name": "PonytailL", "pos": Vector2(240.0, 90.0), "pivot": Vector2(250.0, 72.0), "z": -1, "amp": 0.025, "phase": 0.0},
+	{"file": "layer_02.png", "name": "PonytailR", "pos": Vector2(690.0, 96.0), "pivot": Vector2(20.0, 70.0), "z": -1, "amp": 0.025, "phase": 1.1},
+	{"file": "layer_04.png", "name": "Skirt", "pos": Vector2(380.0, 390.0), "pivot": Vector2(180.0, 35.0), "z": 0, "amp": 0.003, "phase": 2.0},
+	{"file": "layer_05.png", "name": "Torso", "pos": Vector2(445.0, 230.0), "pivot": Vector2(128.0, 190.0), "z": 1, "amp": 0.006, "phase": 0.5},
+	{"file": "layer_03.png", "name": "Head", "pos": Vector2(425.0, 52.0), "pivot": Vector2(154.0, 250.0), "z": 2, "amp": 0.008, "phase": 1.8},
+	{"file": "layer_10.png", "name": "ArmL", "pos": Vector2(280.0, 270.0), "pivot": Vector2(162.0, 36.0), "z": 3, "amp": 0.012, "phase": 1.0},
+	{"file": "layer_07.png", "name": "ArmRWhipHandle", "pos": Vector2(640.0, 328.0), "pivot": Vector2(40.0, 52.0), "z": 3, "amp": 0.018, "phase": 2.4},
+	{"file": "layer_06.png", "name": "ArmLHand", "pos": Vector2(185.0, 325.0), "pivot": Vector2(230.0, 45.0), "z": 4, "amp": 0.012, "phase": 2.8},
+	{"file": "layer_11.png", "name": "BootL", "pos": Vector2(330.0, 765.0), "pivot": Vector2(104.0, 30.0), "z": 4, "amp": 0.0, "phase": 0.0},
+	{"file": "layer_12.png", "name": "BootR", "pos": Vector2(545.0, 760.0), "pivot": Vector2(100.0, 30.0), "z": 4, "amp": 0.0, "phase": 0.0},
+]
+const PUPPET_WHIP_EMITTERS: Array[Vector2] = [
+	Vector2(0.76, 0.18),
+	Vector2(0.86, 0.28),
+	Vector2(0.91, 0.42),
+	Vector2(0.88, 0.58),
+	Vector2(0.74, 0.72),
+]
+const PUPPET_BODY_EMITTERS: Array[Vector2] = [
+	Vector2(0.48, 0.18),
+	Vector2(0.54, 0.35),
+	Vector2(0.48, 0.52),
+	Vector2(0.32, 0.30),
+	Vector2(0.72, 0.36),
+	Vector2(0.24, 0.22),
+	Vector2(0.76, 0.22),
 ]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
@@ -61,6 +96,8 @@ static var _saved_character_variant: int = 2
 var _canvas: Control
 var _background: TextureRect
 var _character: TextureRect
+var _puppet_root: Node2D
+var _puppet_parts: Array[Node2D] = []
 var _back_particle_layer: Control
 var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
@@ -106,6 +143,7 @@ func _notification(what: int) -> void:
 
 func _process(delta: float) -> void:
 	_apply_tuning_panel_layout()
+	_animate_puppet_parts()
 
 	_spark_timer -= delta
 	_drift_timer -= delta
@@ -165,6 +203,12 @@ func _build_scene() -> void:
 	_character.material = _create_chroma_key_material()
 	_canvas.add_child(_character)
 
+	_puppet_root = Node2D.new()
+	_puppet_root.name = "HologirlPuppetAttempt002"
+	_puppet_root.visible = _uses_puppet_character()
+	_canvas.add_child(_puppet_root)
+	_build_puppet_parts()
+
 	_apply_character_tuning()
 
 	_front_particle_layer = _create_particle_layer("HologirlFrontParticles")
@@ -185,13 +229,59 @@ func _create_particle_layer(layer_name: String) -> Control:
 
 
 func _load_character_texture() -> Texture2D:
+	if _uses_puppet_character():
+		return load("res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png")
+
 	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
 	return load(CHARACTER_VARIANT_PATHS[index])
+
+
+func _uses_puppet_character() -> bool:
+	return _character_variant == PUPPET_CHARACTER_VARIANT
+
+
+func _build_puppet_parts() -> void:
+	if _puppet_root == null:
+		return
+
+	for child in _puppet_root.get_children():
+		child.queue_free()
+
+	_puppet_parts.clear()
+	for part in PUPPET_PARTS:
+		var holder := Node2D.new()
+		holder.name = part["name"]
+		holder.position = part["pos"]
+		holder.z_index = part["z"]
+		_puppet_root.add_child(holder)
+
+		var sprite := Sprite2D.new()
+		sprite.texture = _load_texture("%s/%s" % [PUPPET_LAYER_DIR, part["file"]])
+		sprite.centered = false
+		sprite.position = -part["pivot"]
+		holder.add_child(sprite)
+		_puppet_parts.append(holder)
+
+
+func _load_texture(path: String) -> Texture2D:
+	var texture: Texture2D = load(path) if ResourceLoader.exists(path) else null
+	if texture != null:
+		return texture
+
+	var image := Image.new()
+	if image.load(path) != OK:
+		return null
+	return ImageTexture.create_from_image(image)
 
 
 func _build_emitters(texture: Texture2D) -> void:
 	_whip_emitters.clear()
 	_body_emitters.clear()
+
+	if _uses_puppet_character():
+		_whip_emitters = PUPPET_WHIP_EMITTERS.duplicate()
+		_body_emitters = PUPPET_BODY_EMITTERS.duplicate()
+		return
 
 	if texture == null:
 		_add_fallback_emitters()
@@ -364,13 +454,28 @@ func _current_character_size() -> Vector2:
 
 
 func _apply_character_tuning() -> void:
-	if _character == null:
+	if _character == null or _puppet_root == null:
 		return
 
 	_character.position = _character_pos
 	_character.size = _current_character_size()
 	_character.pivot_offset = _character.size * 0.5
+	_character.visible = not _uses_puppet_character()
+	_puppet_root.visible = _uses_puppet_character()
+	_puppet_root.position = _character_pos + Vector2(_current_character_size().x * 0.07, _current_character_size().y * 0.03)
+	_puppet_root.scale = Vector2.ONE * (_current_character_size().x / PUPPET_BASE_SIZE.x)
 	_update_tuning_values_label()
+
+
+func _animate_puppet_parts() -> void:
+	if not _uses_puppet_character() or _puppet_parts.is_empty():
+		return
+
+	var t: float = Time.get_ticks_msec() / 1000.0
+	for index in _puppet_parts.size():
+		var holder: Node2D = _puppet_parts[index]
+		var part: Dictionary = PUPPET_PARTS[index]
+		holder.rotation = sin(t * 0.85 + part["phase"]) * part["amp"]
 
 
 func _build_tuning_panel() -> PanelContainer:

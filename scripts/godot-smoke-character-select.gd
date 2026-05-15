@@ -102,5 +102,33 @@ func _init() -> void:
 		quit(1)
 		return
 
+	restored_node._character_variant = 4
+	restored_node._apply_character_variant()
+	await process_frame
+	var puppet := restored_node.find_child("HologirlPuppetAttempt002", true, false)
+	var stable_cutout := restored_node.find_child("HologirlLayer", true, false)
+	if puppet == null or not puppet.visible:
+		push_error("Hologirl puppet attempt 002 did not become visible after selecting the runtime variant.")
+		quit(1)
+		return
+	if stable_cutout == null or stable_cutout.visible:
+		push_error("Hologirl stable cutout is still visible over the puppet runtime variant.")
+		quit(1)
+		return
+	if puppet.get_child_count() < 10:
+		push_error("Hologirl puppet attempt 002 did not build enough runtime parts.")
+		quit(1)
+		return
+	for holder in puppet.get_children():
+		if holder.get_child_count() == 0:
+			push_error("Hologirl puppet runtime part has no sprite: %s" % holder.name)
+			quit(1)
+			return
+		var sprite := holder.get_child(0) as Sprite2D
+		if sprite == null or sprite.texture == null:
+			push_error("Hologirl puppet runtime part has no texture: %s" % holder.name)
+			quit(1)
+			return
+
 	print("Hologirl character-select scene smoke passed.")
 	quit(0)
