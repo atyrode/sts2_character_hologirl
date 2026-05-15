@@ -74,6 +74,8 @@ Hologirl's background should:
 - `v0.2.25` code-drawn geometric background variants are considered superseded. They were too mathematical and did not match vanilla's hand-drawn accent-color plates.
 - `v0.2.26` switches background testing to generated bitmap plates. Runtime copies live in `Hologirl/images/charui/background_variants/`; originals and prompts live in `docs/design/art_archive/menu/character_select_background/generated-variants-2026-05-15/`.
 - Background direction from vanilla comparison: generated backgrounds should use hand-drawn broad color fields, one strong character accent palette, low detail, and thematic abstract shapes like flames, swirls, curtains, static, or projection haze. Avoid code-drawn geometry, detailed illustrated rooms, full crowd scenes, and dominant Necrobinder-like pink.
+- `v0.2.27` adds a second generated background batch, variants 11-30, while keeping the first 10 in the tuner. This batch should be judged against the stricter vanilla-reading rule: one hue family, two or three value variants, broad black-outlined shapes, and very little internal detail. The background should feel like a colored plate behind Hologirl, not an illustrated scene.
+- Runtime tuner copies are currently exported at `1282x602` and stretched to the `2564x1204` virtual canvas to keep package size manageable while comparing many variants. The archived originals remain the source of truth for final art selection.
 
 ## Open Questions
 
