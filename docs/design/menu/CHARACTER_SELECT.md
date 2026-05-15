@@ -70,6 +70,14 @@ Hologirl's background should:
 - `v0.2.23` makes the temporary tuning panel counter-transform itself from viewport coordinates back into the character-select scene root. The root is not clipped while the tuner is enabled, because parent scene offsets can require negative local positions for an onscreen overlay.
 - The temporary tuning panel stores slider values in script-level static variables. Values should survive character-select scene recreation while comparing characters, but they intentionally reset when the game process restarts.
 - Tuner ranges are intentionally broad while calibrating: X `0..2200`, Y `-400..900`, scale `0.25..2.50`, particle densities `0..5`, and gold jitter `0..80`.
+- Confirmed tester-preferred temporary framing values: X `842`, Y `120`, scale `1.49`, whip density `1.05`, drift density `0.29`, gold jitter `80`. These are now the tuner defaults until replaced by final constants.
+- Background direction from vanilla comparison: use broad two-tone fields, large quiet negative-space shapes, simple diagonal/spotlight geometry, and only sparse cyan/gold accents. Avoid illustrated rooms, detailed stages, full crowd scenes, and dominant Necrobinder-like pink.
+- Runtime background test variants:
+  - `Digital Night`: dark cyan/indigo base with restrained gold and cyan signal lines. Intended as the most on-brand Hologirl default candidate.
+  - `Backstage Teal`: deeper green-teal backstage palette, quiet and less magical.
+  - `Prism Broadcast`: neutral indigo broadcast/prism feel with a slightly more synthetic palette.
+  - `Muted Encore`: warmer muted mauve/rose option for comparison; should be checked against Necrobinder similarity.
+  - `Void Spotlight`: darkest high-contrast option with one strong gold projection line.
 
 ## Open Questions
 

@@ -38,6 +38,7 @@ func _init() -> void:
 	node._whip_density = 0.33
 	node._drift_density = 1.25
 	node._whip_jitter = 3.5
+	node._background_variant = 3
 	node._save_tuning_values()
 	node.queue_free()
 
@@ -58,6 +59,11 @@ func _init() -> void:
 
 	if not is_equal_approx(restored_node._whip_density, 0.33) or not is_equal_approx(restored_node._drift_density, 1.25) or not is_equal_approx(restored_node._whip_jitter, 3.5):
 		push_error("Hologirl character-select tuner did not restore saved particle values.")
+		quit(1)
+		return
+
+	if restored_node._background_variant != 3:
+		push_error("Hologirl character-select tuner did not restore saved background variant.")
 		quit(1)
 		return
 
