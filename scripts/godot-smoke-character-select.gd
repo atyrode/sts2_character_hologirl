@@ -45,9 +45,10 @@ func _init() -> void:
 		quit(1)
 		return
 
-	var hologram_motion := node.find_child("HologramMotionLayer", true, false)
 	var whip_motion := node.find_child("WhipMotionLayer", true, false)
-	if hologram_motion == null or whip_motion == null:
+	var ponytail_motion := node.find_child("PonytailMotionLayer", true, false)
+	var arm_motion := node.find_child("ArmMotionLayer", true, false)
+	if whip_motion == null or ponytail_motion == null or arm_motion == null:
 		push_error("Hologirl character-select motion overlay layers did not spawn.")
 		quit(1)
 		return

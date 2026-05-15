@@ -61,8 +61,9 @@ static var _saved_character_variant: int = 2
 var _canvas: Control
 var _background: TextureRect
 var _character: TextureRect
-var _body_motion_layer: TextureRect
 var _whip_motion_layer: TextureRect
+var _ponytail_motion_layer: TextureRect
+var _arm_motion_layer: TextureRect
 var _back_particle_layer: Control
 var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
@@ -169,11 +170,14 @@ func _build_scene() -> void:
 	_character.material = _create_chroma_key_material()
 	_canvas.add_child(_character)
 
-	_body_motion_layer = _create_character_motion_layer("HologramMotionLayer", character_texture, false)
-	_canvas.add_child(_body_motion_layer)
-
-	_whip_motion_layer = _create_character_motion_layer("WhipMotionLayer", character_texture, true)
+	_whip_motion_layer = _create_character_motion_layer("WhipMotionLayer", character_texture, "gold")
 	_canvas.add_child(_whip_motion_layer)
+
+	_ponytail_motion_layer = _create_character_motion_layer("PonytailMotionLayer", character_texture, "ponytails")
+	_canvas.add_child(_ponytail_motion_layer)
+
+	_arm_motion_layer = _create_character_motion_layer("ArmMotionLayer", character_texture, "arm")
+	_canvas.add_child(_arm_motion_layer)
 
 	_apply_character_tuning()
 
@@ -199,15 +203,15 @@ func _load_character_texture() -> Texture2D:
 	return load(CHARACTER_VARIANT_PATHS[index])
 
 
-func _create_character_motion_layer(layer_name: String, texture: Texture2D, whip_only: bool) -> TextureRect:
+func _create_character_motion_layer(layer_name: String, texture: Texture2D, motion_region: String) -> TextureRect:
 	var layer: TextureRect = TextureRect.new()
 	layer.name = layer_name
 	layer.texture = texture
 	layer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	layer.stretch_mode = TextureRect.STRETCH_SCALE
 	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.material = _create_motion_mask_material(whip_only)
-	layer.modulate = Color(1.0, 1.0, 1.0, 0.38 if whip_only else 0.24)
+	layer.material = _create_motion_mask_material(motion_region)
+	layer.modulate = Color(1.0, 1.0, 1.0, 0.32 if motion_region == "gold" else 0.22)
 	return layer
 
 
@@ -312,11 +316,11 @@ void fragment() {
 	return material
 
 
-func _create_motion_mask_material(whip_only: bool) -> ShaderMaterial:
+func _create_motion_mask_material(motion_region: String) -> ShaderMaterial:
 	var shader: Shader = Shader.new()
 	shader.code = """
 shader_type canvas_item;
-uniform bool whip_only = false;
+uniform int region = 0;
 uniform vec4 key_color : source_color = vec4(0.0, 1.0, 0.0, 1.0);
 
 void fragment() {
@@ -324,7 +328,19 @@ void fragment() {
 	float keyed = step(0.46, distance(tex.rgb, key_color.rgb));
 	bool gold = tex.r > 0.68 && tex.g > 0.42 && tex.b < 0.32 && tex.r > tex.b * 1.8;
 	bool blue = tex.b > 0.42 && tex.g > 0.30 && tex.r < 0.48 && tex.b > tex.r * 1.35;
-	float selected = whip_only ? float(gold) : float(blue);
+	bool ponytails = blue && (
+		(UV.x > 0.05 && UV.x < 0.34 && UV.y > 0.08 && UV.y < 0.70) ||
+		(UV.x > 0.64 && UV.x < 0.96 && UV.y > 0.09 && UV.y < 0.66)
+	);
+	bool arm = blue && UV.x > 0.58 && UV.x < 0.98 && UV.y > 0.46 && UV.y < 0.82;
+	float selected = 0.0;
+	if (region == 0) {
+		selected = float(gold);
+	} else if (region == 1) {
+		selected = float(ponytails);
+	} else {
+		selected = float(arm);
+	}
 	tex.a *= keyed * selected;
 	COLOR = tex;
 }
@@ -332,7 +348,15 @@ void fragment() {
 
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = shader
-	material.set_shader_parameter("whip_only", whip_only)
+	var region_index: int = 0
+	match motion_region:
+		"ponytails":
+			region_index = 1
+		"arm":
+			region_index = 2
+		_:
+			region_index = 0
+	material.set_shader_parameter("region", region_index)
 	return material
 
 
@@ -416,8 +440,9 @@ func _apply_character_tuning() -> void:
 	_character.position = _character_pos
 	_character.size = _current_character_size()
 	_character.pivot_offset = _character.size * 0.5
-	_apply_motion_layer_base_transform(_body_motion_layer)
 	_apply_motion_layer_base_transform(_whip_motion_layer)
+	_apply_motion_layer_base_transform(_ponytail_motion_layer)
+	_apply_motion_layer_base_transform(_arm_motion_layer)
 	_update_tuning_values_label()
 
 
@@ -435,13 +460,17 @@ func _animate_character_motion_layers() -> void:
 		return
 
 	var t: float = Time.get_ticks_msec() / 1000.0
-	if _body_motion_layer != null:
-		_body_motion_layer.position = _character_pos + Vector2(sin(t * 1.15) * 2.4, sin(t * 0.72 + 1.2) * 1.2)
-		_body_motion_layer.rotation = sin(t * 0.85) * 0.0025
-
 	if _whip_motion_layer != null:
-		_whip_motion_layer.position = _character_pos + Vector2(sin(t * 1.45 + 0.8) * 3.2, sin(t * 1.05) * 1.8)
-		_whip_motion_layer.rotation = sin(t * 0.95 + 0.4) * 0.006
+		_whip_motion_layer.position = _character_pos + Vector2(sin(t * 1.05 + 0.8) * 4.8, sin(t * 0.72) * 2.4)
+		_whip_motion_layer.rotation = sin(t * 0.75 + 0.4) * 0.010
+
+	if _ponytail_motion_layer != null:
+		_ponytail_motion_layer.position = _character_pos + Vector2(sin(t * 0.82 + 1.6) * 3.4, sin(t * 0.62) * 1.2)
+		_ponytail_motion_layer.rotation = sin(t * 0.58 + 0.2) * 0.005
+
+	if _arm_motion_layer != null:
+		_arm_motion_layer.position = _character_pos + Vector2(sin(t * 0.68 + 2.4) * 1.8, sin(t * 0.76 + 0.5) * 1.0)
+		_arm_motion_layer.rotation = sin(t * 0.52 + 1.3) * 0.0035
 
 
 func _build_tuning_panel() -> PanelContainer:
@@ -652,10 +681,12 @@ func _apply_character_variant() -> void:
 
 	var character_texture: Texture2D = _load_character_texture()
 	_character.texture = character_texture
-	if _body_motion_layer != null:
-		_body_motion_layer.texture = character_texture
 	if _whip_motion_layer != null:
 		_whip_motion_layer.texture = character_texture
+	if _ponytail_motion_layer != null:
+		_ponytail_motion_layer.texture = character_texture
+	if _arm_motion_layer != null:
+		_arm_motion_layer.texture = character_texture
 	_build_emitters(character_texture)
 	_clear_particle_layer(_back_particle_layer)
 	_clear_particle_layer(_front_particle_layer)
