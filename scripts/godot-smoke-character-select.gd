@@ -33,5 +33,33 @@ func _init() -> void:
 		quit(1)
 		return
 
+	node._character_pos = Vector2(1010.0, 260.0)
+	node._character_scale = 0.88
+	node._whip_density = 0.33
+	node._drift_density = 1.25
+	node._whip_jitter = 3.5
+	node._save_tuning_values()
+	node.queue_free()
+
+	var restored_node: Control = scene.instantiate()
+	restored_node.size = Vector2(1920.0, 1080.0)
+	root.add_child(restored_node)
+	await process_frame
+
+	if restored_node._character_pos != Vector2(1010.0, 260.0):
+		push_error("Hologirl character-select tuner did not restore saved position.")
+		quit(1)
+		return
+
+	if not is_equal_approx(restored_node._character_scale, 0.88):
+		push_error("Hologirl character-select tuner did not restore saved scale.")
+		quit(1)
+		return
+
+	if not is_equal_approx(restored_node._whip_density, 0.33) or not is_equal_approx(restored_node._drift_density, 1.25) or not is_equal_approx(restored_node._whip_jitter, 3.5):
+		push_error("Hologirl character-select tuner did not restore saved particle values.")
+		quit(1)
+		return
+
 	print("Hologirl character-select scene smoke passed.")
 	quit(0)

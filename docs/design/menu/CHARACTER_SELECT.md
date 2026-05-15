@@ -68,6 +68,8 @@ Hologirl's background should:
 - Default particle direction after `v0.2.21`: fewer gold sparkles, smaller sparkles, lower background glow density, and tighter gold jitter. Keep whip sparks cute and crisp rather than smoky.
 - `v0.2.22` moves the temporary tuning panel out of the virtual art canvas and anchors it to the visible scene bounds. Calibration UI should never be positioned in the cropped/scaled character art coordinate system.
 - `v0.2.23` makes the temporary tuning panel counter-transform itself from viewport coordinates back into the character-select scene root. The root is not clipped while the tuner is enabled, because parent scene offsets can require negative local positions for an onscreen overlay.
+- The temporary tuning panel stores slider values in script-level static variables. Values should survive character-select scene recreation while comparing characters, but they intentionally reset when the game process restarts.
+- Tuner ranges are intentionally broad while calibrating: X `0..2200`, Y `-400..900`, scale `0.25..2.50`, particle densities `0..5`, and gold jitter `0..80`.
 
 ## Open Questions
 

@@ -7,6 +7,12 @@ const HOLOGIRL_TEXTURE: String = "res://Hologirl/images/charui/character_select_
 const SHOW_TUNING_PANEL: bool = true
 const TUNING_PANEL_MARGIN: Vector2 = Vector2(24.0, 24.0)
 
+static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
+static var _saved_character_scale: float = 1.0
+static var _saved_whip_density: float = 0.55
+static var _saved_drift_density: float = 0.70
+static var _saved_whip_jitter: float = 5.0
+
 var _canvas: Control
 var _character: TextureRect
 var _back_particle_layer: Control
@@ -33,6 +39,7 @@ func _ready() -> void:
 	clip_contents = not SHOW_TUNING_PANEL
 	set_process(true)
 	_rng.randomize()
+	_restore_saved_tuning_values()
 	_build_scene()
 	_apply_layout()
 	_spawn_selection_burst()
@@ -332,12 +339,12 @@ func _build_tuning_panel() -> PanelContainer:
 	_tuning_values_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	layout.add_child(_tuning_values_label)
 
-	layout.add_child(_create_tuning_slider("X", "x", 760.0, 1420.0, _character_pos.x, 1.0))
-	layout.add_child(_create_tuning_slider("Y", "y", 120.0, 520.0, _character_pos.y, 1.0))
-	layout.add_child(_create_tuning_slider("Scale", "scale", 0.70, 1.25, _character_scale, 0.01))
-	layout.add_child(_create_tuning_slider("Whip density", "whip_density", 0.0, 2.0, _whip_density, 0.01))
-	layout.add_child(_create_tuning_slider("Drift density", "drift_density", 0.0, 2.0, _drift_density, 0.01))
-	layout.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 24.0, _whip_jitter, 0.5))
+	layout.add_child(_create_tuning_slider("X", "x", 0.0, 2200.0, _character_pos.x, 1.0))
+	layout.add_child(_create_tuning_slider("Y", "y", -400.0, 900.0, _character_pos.y, 1.0))
+	layout.add_child(_create_tuning_slider("Scale", "scale", 0.25, 2.50, _character_scale, 0.01))
+	layout.add_child(_create_tuning_slider("Whip density", "whip_density", 0.0, 5.0, _whip_density, 0.01))
+	layout.add_child(_create_tuning_slider("Drift density", "drift_density", 0.0, 5.0, _drift_density, 0.01))
+	layout.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 80.0, _whip_jitter, 0.5))
 
 	var button_row: HBoxContainer = HBoxContainer.new()
 	layout.add_child(button_row)
@@ -426,6 +433,7 @@ func _on_tuning_slider_changed(value: float, key: String, value_label: Label) ->
 
 	value_label.text = _format_tuning_number(value)
 	_apply_character_tuning()
+	_save_tuning_values()
 
 
 func _reset_tuning_values() -> void:
@@ -441,6 +449,23 @@ func _reset_tuning_values() -> void:
 	_set_slider_value("drift_density", _drift_density)
 	_set_slider_value("whip_jitter", _whip_jitter)
 	_apply_character_tuning()
+	_save_tuning_values()
+
+
+func _restore_saved_tuning_values() -> void:
+	_character_pos = _saved_character_pos
+	_character_scale = _saved_character_scale
+	_whip_density = _saved_whip_density
+	_drift_density = _saved_drift_density
+	_whip_jitter = _saved_whip_jitter
+
+
+func _save_tuning_values() -> void:
+	_saved_character_pos = _character_pos
+	_saved_character_scale = _character_scale
+	_saved_whip_density = _whip_density
+	_saved_drift_density = _drift_density
+	_saved_whip_jitter = _whip_jitter
 
 
 func _set_slider_value(key: String, value: float) -> void:
