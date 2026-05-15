@@ -33,6 +33,18 @@ func _init() -> void:
 		quit(1)
 		return
 
+	var background := node.find_child("SimpleBackground", true, false)
+	if background == null or background.texture == null:
+		push_error("Hologirl character-select generated background texture did not load.")
+		quit(1)
+		return
+
+	var collapse_button := node.find_child("Collapse", true, false)
+	if collapse_button == null:
+		push_error("Hologirl character-select collapse button did not spawn.")
+		quit(1)
+		return
+
 	node._character_pos = Vector2(1010.0, 260.0)
 	node._character_scale = 0.88
 	node._whip_density = 0.33

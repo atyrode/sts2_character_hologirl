@@ -11,11 +11,28 @@ const DEFAULT_WHIP_DENSITY: float = 1.05
 const DEFAULT_DRIFT_DENSITY: float = 0.29
 const DEFAULT_WHIP_JITTER: float = 80.0
 const BACKGROUND_VARIANT_NAMES: Array[String] = [
-	"Digital Night",
-	"Backstage Teal",
-	"Prism Broadcast",
-	"Muted Encore",
-	"Void Spotlight",
+	"Blue Static Idol Flame",
+	"Holo Nebula Spiral",
+	"CRT Aurora",
+	"Golden Fan Sparks",
+	"Projection Pool",
+	"Signal Flower",
+	"Blue Idol Curtain",
+	"Pixel Dust Comet",
+	"Silent Broadcast Ocean",
+	"Soft Cyan Eclipse",
+]
+const BACKGROUND_VARIANT_PATHS: Array[String] = [
+	"res://Hologirl/images/charui/background_variants/bg_01_blue_static_idol_flame.png",
+	"res://Hologirl/images/charui/background_variants/bg_02_holo_nebula_spiral.png",
+	"res://Hologirl/images/charui/background_variants/bg_03_crt_aurora.png",
+	"res://Hologirl/images/charui/background_variants/bg_04_golden_fan_sparks.png",
+	"res://Hologirl/images/charui/background_variants/bg_05_projection_pool.png",
+	"res://Hologirl/images/charui/background_variants/bg_06_signal_flower.png",
+	"res://Hologirl/images/charui/background_variants/bg_07_blue_idol_curtain.png",
+	"res://Hologirl/images/charui/background_variants/bg_08_pixel_dust_comet.png",
+	"res://Hologirl/images/charui/background_variants/bg_09_silent_broadcast_ocean.png",
+	"res://Hologirl/images/charui/background_variants/bg_10_soft_cyan_eclipse.png",
 ]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
@@ -26,11 +43,13 @@ static var _saved_whip_jitter: float = DEFAULT_WHIP_JITTER
 static var _saved_background_variant: int = 0
 
 var _canvas: Control
-var _background: HologirlSimpleBackground
+var _background: TextureRect
 var _character: TextureRect
 var _back_particle_layer: Control
 var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
+var _tuning_body: VBoxContainer
+var _collapse_button: Button
 var _tuning_values_label: Label
 var _background_selector: OptionButton
 var _tuning_sliders: Dictionary = {}
@@ -105,12 +124,14 @@ func _build_scene() -> void:
 	_canvas.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_canvas)
 
-	_background = HologirlSimpleBackground.new()
+	_background = TextureRect.new()
 	_background.name = "SimpleBackground"
 	_background.size = VIRTUAL_SIZE
-	_background.variant = _background_variant
+	_background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_background.stretch_mode = TextureRect.STRETCH_SCALE
 	_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_canvas.add_child(_background)
+	_apply_background_variant()
 
 	_back_particle_layer = _create_particle_layer("HologirlBackParticles")
 	_canvas.add_child(_back_particle_layer)
@@ -347,24 +368,38 @@ func _build_tuning_panel() -> PanelContainer:
 	layout.mouse_filter = Control.MOUSE_FILTER_PASS
 	margin.add_child(layout)
 
+	var header: HBoxContainer = HBoxContainer.new()
+	layout.add_child(header)
+
 	var title: Label = Label.new()
 	title.text = "Hologirl Character Select Tuner"
-	layout.add_child(title)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(title)
+
+	_collapse_button = Button.new()
+	_collapse_button.name = "Collapse"
+	_collapse_button.text = "Collapse"
+	_collapse_button.pressed.connect(_toggle_tuning_panel_collapsed)
+	header.add_child(_collapse_button)
+
+	_tuning_body = VBoxContainer.new()
+	_tuning_body.mouse_filter = Control.MOUSE_FILTER_PASS
+	layout.add_child(_tuning_body)
 
 	_tuning_values_label = Label.new()
 	_tuning_values_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	layout.add_child(_tuning_values_label)
+	_tuning_body.add_child(_tuning_values_label)
 
-	layout.add_child(_create_tuning_slider("X", "x", 0.0, 2200.0, _character_pos.x, 1.0))
-	layout.add_child(_create_tuning_slider("Y", "y", -400.0, 900.0, _character_pos.y, 1.0))
-	layout.add_child(_create_tuning_slider("Scale", "scale", 0.25, 2.50, _character_scale, 0.01))
-	layout.add_child(_create_tuning_slider("Whip density", "whip_density", 0.0, 5.0, _whip_density, 0.01))
-	layout.add_child(_create_tuning_slider("Drift density", "drift_density", 0.0, 5.0, _drift_density, 0.01))
-	layout.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 80.0, _whip_jitter, 0.5))
-	layout.add_child(_create_background_selector())
+	_tuning_body.add_child(_create_tuning_slider("X", "x", 0.0, 2200.0, _character_pos.x, 1.0))
+	_tuning_body.add_child(_create_tuning_slider("Y", "y", -400.0, 900.0, _character_pos.y, 1.0))
+	_tuning_body.add_child(_create_tuning_slider("Scale", "scale", 0.25, 2.50, _character_scale, 0.01))
+	_tuning_body.add_child(_create_tuning_slider("Whip density", "whip_density", 0.0, 5.0, _whip_density, 0.01))
+	_tuning_body.add_child(_create_tuning_slider("Drift density", "drift_density", 0.0, 5.0, _drift_density, 0.01))
+	_tuning_body.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 80.0, _whip_jitter, 0.5))
+	_tuning_body.add_child(_create_background_selector())
 
 	var button_row: HBoxContainer = HBoxContainer.new()
-	layout.add_child(button_row)
+	_tuning_body.add_child(button_row)
 
 	var print_button: Button = Button.new()
 	print_button.text = "Print / Copy Values"
@@ -398,7 +433,7 @@ func _apply_tuning_panel_layout() -> void:
 
 	var panel_screen_size: Vector2 = Vector2(
 		min(500.0, max(320.0, viewport_size.x - TUNING_PANEL_MARGIN.x * 2.0)),
-		min(390.0, max(260.0, viewport_size.y - TUNING_PANEL_MARGIN.y * 2.0))
+		min(_current_tuning_panel_height(), max(56.0, viewport_size.y - TUNING_PANEL_MARGIN.y * 2.0))
 	)
 	_tuning_panel.position = root_transform.affine_inverse() * TUNING_PANEL_MARGIN
 	_tuning_panel.scale = Vector2(1.0 / absf(root_scale.x), 1.0 / absf(root_scale.y))
@@ -475,11 +510,31 @@ func _create_background_selector() -> HBoxContainer:
 
 func _on_background_variant_selected(index: int) -> void:
 	_background_variant = clampi(index, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
-	if _background != null:
-		_background.variant = _background_variant
-		_background.queue_redraw()
+	_apply_background_variant()
 	_update_tuning_values_label()
 	_save_tuning_values()
+
+
+func _apply_background_variant() -> void:
+	if _background == null:
+		return
+
+	var index: int = clampi(_background_variant, 0, BACKGROUND_VARIANT_PATHS.size() - 1)
+	_background.texture = load(BACKGROUND_VARIANT_PATHS[index])
+
+
+func _toggle_tuning_panel_collapsed() -> void:
+	if _tuning_body == null:
+		return
+
+	_tuning_body.visible = not _tuning_body.visible
+	if _collapse_button != null:
+		_collapse_button.text = "Collapse" if _tuning_body.visible else "Expand"
+	_apply_tuning_panel_layout()
+
+
+func _current_tuning_panel_height() -> float:
+	return 390.0 if _tuning_body == null or _tuning_body.visible else 56.0
 
 
 func _reset_tuning_values() -> void:
@@ -498,8 +553,7 @@ func _reset_tuning_values() -> void:
 	if _background_selector != null:
 		_background_selector.select(_background_variant)
 	if _background != null:
-		_background.variant = _background_variant
-		_background.queue_redraw()
+		_apply_background_variant()
 	_apply_character_tuning()
 	_save_tuning_values()
 
@@ -552,158 +606,6 @@ func _tuning_values_text() -> String:
 
 func _format_tuning_number(value: float) -> String:
 	return str(snappedf(value, 0.01))
-
-
-class HologirlSimpleBackground:
-	extends Control
-
-	var variant: int = 0
-
-	func _draw() -> void:
-		match variant:
-			0:
-				_draw_digital_night()
-			1:
-				_draw_backstage_teal()
-			2:
-				_draw_prism_broadcast()
-			3:
-				_draw_muted_encore()
-			4:
-				_draw_void_spotlight()
-			_:
-				_draw_digital_night()
-
-
-	func _draw_digital_night() -> void:
-		var s: Vector2 = size
-		draw_rect(Rect2(Vector2.ZERO, s), Color(0.11, 0.19, 0.25))
-		draw_rect(Rect2(0.0, s.y * 0.57, s.x, s.y * 0.43), Color(0.07, 0.12, 0.18))
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.52, 0.0),
-				Vector2(s.x, 0.0),
-				Vector2(s.x, s.y),
-				Vector2(s.x * 0.70, s.y),
-			],
-			Color(0.16, 0.30, 0.34)
-		)
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.05, s.y * 0.88),
-				Vector2(s.x * 0.34, s.y * 0.24),
-				Vector2(s.x * 0.48, s.y * 0.28),
-				Vector2(s.x * 0.26, s.y),
-			],
-			Color(0.09, 0.15, 0.26, 0.76)
-		)
-		draw_line(Vector2(s.x * 0.08, s.y * 0.74), Vector2(s.x * 0.96, s.y * 0.38), Color(1.0, 0.76, 0.24, 0.17), 9.0)
-		draw_line(Vector2(s.x * 0.13, s.y * 0.81), Vector2(s.x * 0.91, s.y * 0.50), Color(0.26, 0.85, 0.92, 0.16), 7.0)
-
-
-	func _draw_backstage_teal() -> void:
-		var s: Vector2 = size
-		draw_rect(Rect2(Vector2.ZERO, s), Color(0.08, 0.16, 0.17))
-		draw_rect(Rect2(0.0, s.y * 0.60, s.x, s.y * 0.40), Color(0.06, 0.09, 0.12))
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.62, 0.0),
-				Vector2(s.x, 0.0),
-				Vector2(s.x, s.y),
-				Vector2(s.x * 0.82, s.y),
-			],
-			Color(0.13, 0.25, 0.25)
-		)
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.00, s.y * 0.78),
-				Vector2(s.x * 0.22, s.y * 0.26),
-				Vector2(s.x * 0.40, s.y * 0.30),
-				Vector2(s.x * 0.16, s.y),
-			],
-			Color(0.11, 0.20, 0.22, 0.70)
-		)
-		draw_line(Vector2(s.x * 0.12, s.y * 0.70), Vector2(s.x * 0.92, s.y * 0.46), Color(0.24, 0.84, 0.89, 0.13), 11.0)
-		draw_line(Vector2(s.x * 0.20, s.y * 0.84), Vector2(s.x * 0.88, s.y * 0.56), Color(0.95, 0.66, 0.20, 0.15), 7.0)
-
-
-	func _draw_prism_broadcast() -> void:
-		var s: Vector2 = size
-		draw_rect(Rect2(Vector2.ZERO, s), Color(0.14, 0.14, 0.22))
-		draw_rect(Rect2(0.0, s.y * 0.55, s.x, s.y * 0.45), Color(0.09, 0.10, 0.16))
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.42, 0.0),
-				Vector2(s.x, 0.0),
-				Vector2(s.x * 0.90, s.y),
-				Vector2(s.x * 0.58, s.y),
-			],
-			Color(0.20, 0.20, 0.30)
-		)
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.00, s.y),
-				Vector2(s.x * 0.30, s.y * 0.14),
-				Vector2(s.x * 0.48, s.y * 0.20),
-				Vector2(s.x * 0.20, s.y),
-			],
-			Color(0.08, 0.22, 0.26, 0.58)
-		)
-		draw_line(Vector2(s.x * 0.06, s.y * 0.64), Vector2(s.x * 0.94, s.y * 0.27), Color(0.95, 0.72, 0.26, 0.18), 10.0)
-		draw_line(Vector2(s.x * 0.12, s.y * 0.34), Vector2(s.x * 0.72, s.y * 0.18), Color(0.26, 0.76, 0.95, 0.15), 8.0)
-		draw_line(Vector2(s.x * 0.24, s.y * 0.92), Vector2(s.x * 0.96, s.y * 0.62), Color(0.76, 0.56, 0.78, 0.10), 13.0)
-
-
-	func _draw_muted_encore() -> void:
-		var s: Vector2 = size
-		draw_rect(Rect2(Vector2.ZERO, s), Color(0.23, 0.17, 0.23))
-		draw_rect(Rect2(0.0, s.y * 0.58, s.x, s.y * 0.42), Color(0.12, 0.10, 0.16))
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.54, 0.0),
-				Vector2(s.x, 0.0),
-				Vector2(s.x, s.y),
-				Vector2(s.x * 0.72, s.y),
-			],
-			Color(0.28, 0.22, 0.27)
-		)
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.06, s.y),
-				Vector2(s.x * 0.28, s.y * 0.30),
-				Vector2(s.x * 0.44, s.y * 0.34),
-				Vector2(s.x * 0.24, s.y),
-			],
-			Color(0.12, 0.18, 0.25, 0.56)
-		)
-		draw_line(Vector2(s.x * 0.14, s.y * 0.76), Vector2(s.x * 0.92, s.y * 0.42), Color(0.95, 0.70, 0.23, 0.18), 10.0)
-		draw_line(Vector2(s.x * 0.18, s.y * 0.48), Vector2(s.x * 0.82, s.y * 0.30), Color(0.28, 0.84, 0.92, 0.14), 7.0)
-
-
-	func _draw_void_spotlight() -> void:
-		var s: Vector2 = size
-		draw_rect(Rect2(Vector2.ZERO, s), Color(0.07, 0.08, 0.14))
-		draw_rect(Rect2(0.0, s.y * 0.62, s.x, s.y * 0.38), Color(0.04, 0.05, 0.09))
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.56, 0.0),
-				Vector2(s.x, 0.0),
-				Vector2(s.x, s.y),
-				Vector2(s.x * 0.74, s.y),
-			],
-			Color(0.12, 0.13, 0.20)
-		)
-		draw_colored_polygon(
-			[
-				Vector2(s.x * 0.00, s.y),
-				Vector2(s.x * 0.34, s.y * 0.22),
-				Vector2(s.x * 0.48, s.y * 0.28),
-				Vector2(s.x * 0.18, s.y),
-			],
-			Color(0.08, 0.16, 0.22, 0.70)
-		)
-		draw_line(Vector2(s.x * 0.06, s.y * 0.82), Vector2(s.x * 0.96, s.y * 0.34), Color(1.0, 0.74, 0.18, 0.22), 12.0)
-		draw_line(Vector2(s.x * 0.20, s.y * 0.88), Vector2(s.x * 0.76, s.y * 0.58), Color(0.32, 0.86, 0.96, 0.12), 7.0)
 
 
 class HologirlParticle:

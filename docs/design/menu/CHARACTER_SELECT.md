@@ -63,7 +63,7 @@ Hologirl's background should:
 - Full Godot/MegaDot PCK export is now available on the VPS for real packed scenes. Prefer a `.tscn`/`PackedScene` implementation for the next character-select pass instead of more code-built layout patches.
 - As of `v0.2.19`, Hologirl uses `CustomCharacterSelectBg` to load `res://Hologirl/scenes/character_select/hologirl_character_select_bg.tscn` through the vanilla background loader. Do not restore the old `CustomCharacterSelectEntry.CreateCharacterSelectScene()` visual path; it can draw over vanilla UI depending on BaseLib node ordering.
 - Particle emitters should be tied to image content, not hand-estimated screen coordinates. The current scene samples gold pixels from the whip and blue pixels from the hologram body, then maps those normalized image points into the displayed character rectangle.
-- Background palette direction: muted indigo/blue-violet base, darker lower band, limited dusty violet structure, cyan hologram accent, and gold projected-light accent. Avoid making the scene dominantly pink so it does not collapse into Necrobinder's color space.
+- Background palette direction: muted indigo/blue-violet base, cyan hologram accent, and sparse gold projected-light accent. Avoid making the scene dominantly pink so it does not collapse into Necrobinder's color space.
 - `v0.2.21` intentionally ships a temporary in-game `HologirlTuningPanel` on the character-select background. It is a calibration tool for choosing Hologirl's X/Y/scale, whip particle density, drift density, and gold jitter inside the real game layout. Remove or hide this panel once the final values are confirmed.
 - Default particle direction after `v0.2.21`: fewer gold sparkles, smaller sparkles, lower background glow density, and tighter gold jitter. Keep whip sparks cute and crisp rather than smoky.
 - `v0.2.22` moves the temporary tuning panel out of the virtual art canvas and anchors it to the visible scene bounds. Calibration UI should never be positioned in the cropped/scaled character art coordinate system.
@@ -71,13 +71,9 @@ Hologirl's background should:
 - The temporary tuning panel stores slider values in script-level static variables. Values should survive character-select scene recreation while comparing characters, but they intentionally reset when the game process restarts.
 - Tuner ranges are intentionally broad while calibrating: X `0..2200`, Y `-400..900`, scale `0.25..2.50`, particle densities `0..5`, and gold jitter `0..80`.
 - Confirmed tester-preferred temporary framing values: X `842`, Y `120`, scale `1.49`, whip density `1.05`, drift density `0.29`, gold jitter `80`. These are now the tuner defaults until replaced by final constants.
-- Background direction from vanilla comparison: use broad two-tone fields, large quiet negative-space shapes, simple diagonal/spotlight geometry, and only sparse cyan/gold accents. Avoid illustrated rooms, detailed stages, full crowd scenes, and dominant Necrobinder-like pink.
-- Runtime background test variants:
-  - `Digital Night`: dark cyan/indigo base with restrained gold and cyan signal lines. Intended as the most on-brand Hologirl default candidate.
-  - `Backstage Teal`: deeper green-teal backstage palette, quiet and less magical.
-  - `Prism Broadcast`: neutral indigo broadcast/prism feel with a slightly more synthetic palette.
-  - `Muted Encore`: warmer muted mauve/rose option for comparison; should be checked against Necrobinder similarity.
-  - `Void Spotlight`: darkest high-contrast option with one strong gold projection line.
+- `v0.2.25` code-drawn geometric background variants are considered superseded. They were too mathematical and did not match vanilla's hand-drawn accent-color plates.
+- `v0.2.26` switches background testing to generated bitmap plates. Runtime copies live in `Hologirl/images/charui/background_variants/`; originals and prompts live in `docs/design/art_archive/menu/character_select_background/generated-variants-2026-05-15/`.
+- Background direction from vanilla comparison: generated backgrounds should use hand-drawn broad color fields, one strong character accent palette, low detail, and thematic abstract shapes like flames, swirls, curtains, static, or projection haze. Avoid code-drawn geometry, detailed illustrated rooms, full crowd scenes, and dominant Necrobinder-like pink.
 
 ## Open Questions
 
