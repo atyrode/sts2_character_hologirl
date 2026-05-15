@@ -9,6 +9,22 @@ Card portraits must be added in both sizes:
 
 Avoid adding portrait/tall generations and hoping the card crop works. Regenerate or crop deliberately to the target landscape aspect before committing.
 
+## Runtime UI Assets To Replace
+
+The current roadmap includes replacing or validating these non-card-portrait assets:
+
+- Card frame/color treatment: Hologirl periwinkle/accent direction.
+- Energy symbol and energy text.
+- Runtime energy assets are derived from the selected archived concept with `scripts/create-energy-assets.sh <source-png>`, which exports `Hologirl/images/charui/big_energy.png` at 74x74 and `Hologirl/images/charui/text_energy.png` at 24x24.
+- Character icon.
+- Character-select button and locked portrait.
+- Map marker.
+- Starting relic icon and outline.
+- Power placeholder art.
+- Mod image.
+
+Record final dimensions and source paths here as each asset is confirmed in-game.
+
 ## Naming
 
 `HologirlCard.CustomPortraitPath` resolves portraits from the lower-case card id after the `Hologirl` prefix.

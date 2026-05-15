@@ -26,11 +26,6 @@
 - [x] Use `scripts/release.sh` to package and publish a normal GitHub release for the version in `Hologirl.json`.
 - [ ] After each release, test the downloaded mod through the local mod manager before expanding the prototype further.
 
-## Temporary Tuner Cleanup
-
-- [x] Remove the redundant values summary from the top of the character-select tuner.
-- [x] Fix tuner collapse so the panel's bounding box shrinks with the hidden content instead of leaving the full expanded hitbox/visual bounds.
-
 ## Scaffold
 
 - [x] Generate or copy the `Slay the Spire 2 Character` template.
@@ -51,7 +46,26 @@
 - [x] Play the custom card against an enemy.
 - [x] Verify the effect resolves and the combat continues.
 
-## Character Direction
+## Current Roadmap
+
+### 1. Lock The Current Prototype Baseline
+
+- [x] Confirm a run can start and a custom Hologirl card can be played.
+- [x] Replace pure template visuals with Hologirl starter card art and character-select art.
+- [x] Keep character select on the stable PNG cutout path.
+- [x] Hide the temporary character-select tuner behind `F3`.
+- [ ] Test the latest release through the mod manager and in-game character-select screen.
+- [ ] Test the current starter deck in at least one full Act 1 combat.
+
+### 2. Make The Character Read Correctly In The UI
+
+- [ ] Change the actual card frame/color treatment to Hologirl's chosen periwinkle/accent direction.
+- [ ] Design and add Hologirl's energy symbol.
+- [ ] Audit remaining placeholder character UI assets: character icon, map marker, locked portrait, energy text, relic placeholder, power placeholder, and mod image.
+- [ ] Decide which character-select background and PNG cutout are the default, then remove or hide comparison-only variants from normal player-facing builds.
+- [ ] Remove or disable temporary tuner UI once final character-select values are locked.
+
+### 3. Stabilize The Starter Gameplay Loop
 
 - [x] Define Hologirl's character fantasy in `docs/DESIGN.md`.
 - [x] Define the first small mechanical hook.
@@ -66,7 +80,32 @@
 - [x] Add one placeholder 0-cost transformation reward card per form.
 - [x] Add power hover tips and rich text coloring for the first Hologirl resource/form terms.
 - [x] Rename the player-facing transformation term to `Shapeshift` and move the 0-cost card bonus onto the starter relic.
-- [ ] Test the first combat loop locally.
+- [ ] Test the first combat loop locally with `Concert!`, `Livestream`, Fans, Singing, form upkeep, and Prism Pendant reward cards.
+- [ ] Tune starter deck numbers after actual combat testing: `Concert!` fan gain, `Singing` duration, `Livestream` cost, form upkeep, and reward-card usefulness.
+- [ ] Make fan loss and form upkeep predictable in card/power/relic text before expanding the card pool.
+
+### 4. Decide The First Real Mechanical Identity
+
+- [ ] Decide whether the first release identity stays focused on `Fans` + `Shapeshift`, or whether it absorbs a simplified axis model.
+- [ ] If using axes, define only one minimal prototype axis first; do not implement three axes at once.
+- [ ] Decide what each form does passively.
+- [ ] Replace placeholder form reward cards with simple, testable effects.
+- [ ] Add focused tests or manual test cases for each form and reward card.
+
+### 5. Expand Into A Small Card Pool
+
+- [ ] Create a first batch of common cards around the confirmed mechanic.
+- [ ] Add per-card design docs before implementation when a card introduces a new behavior.
+- [ ] Add card art only after the card's gameplay role is stable enough to keep.
+- [ ] Test draft/deckbuilding feel by adding cards gradually, not as one large batch.
+
+### 6. Polish Toward A Playable Public Build
+
+- [ ] Replace remaining placeholder relic, power, and UI art.
+- [ ] Review all wording for keywords, tooltips, and line breaks.
+- [ ] Review mod compatibility risks before adding global hooks or patches.
+- [ ] Test install/update through GitHub release and the mod manager.
+- [ ] Do a final pass on docs so confirmed behavior, setup, and design direction match the build.
 
 ## Design Risks
 

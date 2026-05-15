@@ -32,6 +32,16 @@ Slay the Spire 2-inspired character-select background plate, wide horizontal gam
 
 Signal Bloom itself is not automatically the final palette. Its cyan is a strong style proof, but it can blend into Hologirl's blue body and overlap Defect's accent identity. Use the same motif language to test warmer or off-cyan accent candidates.
 
+## UI Asset Direction
+
+Near-term non-portrait assets still need a dedicated pass:
+
+- Card frame/color treatment should move away from template defaults toward Hologirl's chosen periwinkle/accent direction.
+- Energy symbol direction is selected: a simple periwinkle hexagonal orb/gem, derived from `docs/design/art_archive/ui/energy_symbol/batch-2026-05-15-simple-vanilla/variant-005/`. It should stay closer to vanilla STS2 resource gems than to a detailed hologram logo.
+- Remaining placeholder UI assets need review: character icon, map marker, locked portrait, energy text, relic placeholder, power placeholder, and mod image.
+
+Use the same compatibility rule as code: prefer local asset replacement over broad UI patching. If card color changes require hooks or shared UI changes, document that risk before implementation.
+
 ## Reusable Prompt Pattern
 
 Simple STS2-inspired card portrait, one bold readable [attack/defense/skill] image. [One dominant object/action] across an elegant desaturated pink and deep plum background. The subject is the main shape: thick, smooth, graphic, hard-edged, with minimal glow, one or two white-hot highlight cuts, and a few tiny restrained sparkles implying magic or holographic technology. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, broad background shadow shapes, iconic card readability. No text, no card frame, no UI, no logo.

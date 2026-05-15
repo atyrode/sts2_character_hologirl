@@ -28,6 +28,13 @@ Status: complete.
 
 ## Next Target
 
-Define the first real version of Hologirl's character identity and combat loop, then replace the smoke-test starting deck with a tiny intentional starter kit.
+Stabilize the first real version of Hologirl's character identity and combat loop, then move from prototype visuals into coherent character UI.
 
 Current direction: Hologirl builds `Fans`, uses `Livestream` to transform into a random idol-inspired form, and spends or loses fans to maintain that form. `Concert!` is the first fan-generation card and `Singing` temporarily prevents fan loss.
+
+Near-term order:
+
+- Confirm the current release in-game through the mod manager.
+- Test the starter combat loop with Fans, Singing, Shapeshift, Idol Forms, and Prism Pendant.
+- Replace or validate core UI assets: card color treatment, energy symbol, character icons, map marker, relic/power placeholders, and mod image.
+- Decide whether the Unknown/Popular, Unreal/Real, and Chaos/Order axis idea remains flavor language or becomes a small prototype mechanic later.

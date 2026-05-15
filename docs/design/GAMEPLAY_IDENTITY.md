@@ -10,6 +10,24 @@ Hologirl is a hologram performer who builds an audience, then spends that audien
 - If Hologirl cannot pay upkeep, she returns to base Hologirl form.
 - `Prism Pendant` adds a form-specific 0-cost card when Hologirl Shapeshifts.
 
+## Exploratory Axis Model
+
+An exploratory identity model frames Hologirl around three thematic axes:
+
+- `Unknown` to `Popular`
+- `Unreal` to `Real`
+- `Chaos` to `Order`
+
+Current status: design prompt only, not a committed mechanic.
+
+The idea fits Hologirl's baseline fantasy: she starts as an unknown, unreal hologram, then cards, Fans, forms, and deckbuilding could move her identity along those axes. This may be too complex for the first playable build. If it becomes gameplay, prototype one axis first and prove it creates clear decisions before adding additional axes.
+
+Possible low-risk use before mechanics:
+
+- Use the axes as flavor/design language for card names, form identities, and art direction.
+- Map existing mechanics loosely: Fans trend toward `Popular`, base hologram trends toward `Unreal`, and Shapeshift/form control could explore `Chaos` versus `Order`.
+- Avoid adding visible meters, state machines, or deckbuilding rules until the current Fans/Shapeshift loop is stable.
+
 ## Starter Kit
 
 - 4 `Strike`
@@ -28,3 +46,4 @@ Base Hologirl uses a faint yellow/gold holographic light-whip. The whip should b
 - Whether fan decay should remain linear or become tiered later.
 - What each Idol Form does passively.
 - What each form-specific 0-cost card does.
+- Whether the Unknown/Popular, Unreal/Real, and Chaos/Order axis model should remain flavor-only or become a real mechanic.
