@@ -10,14 +10,20 @@ var _particle_layer: Control
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _spark_timer: float = 0.0
 var _drift_timer: float = 0.0
+var _glow_timer: float = 0.0
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	clip_contents = true
+	set_process(true)
 	_rng.randomize()
 	_build_scene()
 	_apply_layout()
 	_spawn_selection_burst()
+	_spark_timer = 0.02
+	_drift_timer = 0.05
+	_glow_timer = 0.08
 
 
 func _notification(what: int) -> void:
@@ -28,14 +34,19 @@ func _notification(what: int) -> void:
 func _process(delta: float) -> void:
 	_spark_timer -= delta
 	_drift_timer -= delta
+	_glow_timer -= delta
 
 	while _spark_timer <= 0.0:
 		_spawn_whip_spark(false)
-		_spark_timer += 0.045
+		_spark_timer += _rng.randf_range(0.035, 0.070)
 
 	while _drift_timer <= 0.0:
 		_spawn_hologram_drift(false)
-		_drift_timer += 0.13
+		_drift_timer += _rng.randf_range(0.11, 0.18)
+
+	while _glow_timer <= 0.0:
+		_spawn_background_glow(false)
+		_glow_timer += _rng.randf_range(0.22, 0.38)
 
 
 func _build_scene() -> void:
@@ -43,6 +54,7 @@ func _build_scene() -> void:
 	_canvas.name = "VirtualCanvas"
 	_canvas.size = VIRTUAL_SIZE
 	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_canvas.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_canvas)
 
 	var background: HologirlSimpleBackground = HologirlSimpleBackground.new()
@@ -66,6 +78,7 @@ func _build_scene() -> void:
 	_particle_layer.name = "HologirlParticles"
 	_particle_layer.size = VIRTUAL_SIZE
 	_particle_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_particle_layer.process_mode = Node.PROCESS_MODE_ALWAYS
 	_canvas.add_child(_particle_layer)
 
 
@@ -110,6 +123,9 @@ func _spawn_selection_burst() -> void:
 	for i in 18:
 		_spawn_hologram_drift(true)
 
+	for i in 8:
+		_spawn_background_glow(true)
+
 
 func _spawn_whip_spark(burst: bool) -> void:
 	var points: Array[Vector2] = [
@@ -144,6 +160,18 @@ func _spawn_hologram_drift(burst: bool) -> void:
 	_spawn_particle(position, velocity, particle_size, lifetime, color, false)
 
 
+func _spawn_background_glow(burst: bool) -> void:
+	var position: Vector2 = HOLOGIRL_POS + Vector2(
+		_rng.randf_range(0.40, 0.98) * HOLOGIRL_SIZE.x,
+		_rng.randf_range(0.12, 0.72) * HOLOGIRL_SIZE.y
+	)
+	var particle_size: Vector2 = Vector2(_rng.randf_range(18.0, 34.0), _rng.randf_range(18.0, 34.0))
+	var velocity: Vector2 = Vector2(_rng.randf_range(-20.0, 26.0), _rng.randf_range(-68.0, -28.0))
+	var lifetime: float = _rng.randf_range(1.15, 1.75 if burst else 1.45)
+	var color: Color = Color(1.0, 0.68, 0.16, _rng.randf_range(0.26, 0.45))
+	_spawn_particle(position, velocity, particle_size, lifetime, color, true)
+
+
 func _spawn_particle(position: Vector2, velocity: Vector2, particle_size: Vector2, lifetime: float, color: Color, sparkle: bool) -> void:
 	var particle: ColorRect = ColorRect.new()
 	particle.color = color
@@ -151,6 +179,7 @@ func _spawn_particle(position: Vector2, velocity: Vector2, particle_size: Vector
 	particle.position = position - particle_size * 0.5
 	particle.pivot_offset = particle_size * 0.5
 	particle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	particle.process_mode = Node.PROCESS_MODE_ALWAYS
 	if sparkle:
 		particle.rotation = _rng.randf_range(-PI, PI)
 	_particle_layer.add_child(particle)
