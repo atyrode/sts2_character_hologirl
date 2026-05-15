@@ -61,10 +61,11 @@ Hologirl's background should:
 - The scene root uses a negative absolute z-index defensively so BaseLib's custom background cannot draw above the vanilla UI. If Hologirl appears over UI again, investigate BaseLib's actual node insertion order before adding more visual layers.
 - Particle effects must be initialized with non-zero virtual-canvas bounds before any burst is emitted; otherwise the first particles spawn at `(0, 0)` or outside the visible composition.
 - Full Godot/MegaDot PCK export is now available on the VPS for real packed scenes. Prefer a `.tscn`/`PackedScene` implementation for the next character-select pass instead of more code-built layout patches.
+- As of `v0.2.19`, Hologirl uses `CustomCharacterSelectBg` to load `res://Hologirl/scenes/character_select/hologirl_character_select_bg.tscn` through the vanilla background loader. Do not restore the old `CustomCharacterSelectEntry.CreateCharacterSelectScene()` visual path; it can draw over vanilla UI depending on BaseLib node ordering.
 
 ## Open Questions
 
-- Whether to keep a BaseLib `CustomCharacterSelectEntry` for mod-safe custom button behavior, or switch to vanilla model-level `CustomCharacterSelectBg` plus a visible normal character button. The latter is closer to vanilla but needs careful testing around hidden characters and random selection behavior.
+- Whether the vanilla-visible custom model path has any mod-list or random-character side effects with other character mods. Prefer testing this path before revisiting custom-entry buttons.
 - Whether to keep using official Godot `4.5.1.stable.mono` for exports or replace it with MegaDot if a MegaDot-specific editor feature becomes necessary.
 - Whether a C#-built scene can emulate `NCharacterSelectScreenBg` closely enough without fighting BaseLib's lifecycle. If yes, it should use the same root scaling rule and a much simpler visual background.
 - Whether the locked character-select portrait should get a separate desaturated/locked treatment.

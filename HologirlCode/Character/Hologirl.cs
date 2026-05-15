@@ -20,7 +20,7 @@ public class Hologirl : PlaceholderCharacterModel
     public override Color NameColor => Color;
     public override CharacterGender Gender => CharacterGender.Neutral;
     public override int StartingHp => 70;
-    public override bool HideFromVanillaCharacterSelect => true;
+    public override bool HideFromVanillaCharacterSelect => false;
     public override bool AllowInVanillaRandomCharacterSelect => true;
     
     public override IEnumerable<CardModel> StartingDeck => [
@@ -61,5 +61,6 @@ public class Hologirl : PlaceholderCharacterModel
     public override string CustomIconTexturePath => "character_icon_char_name.png".CharacterUiPath();
     public override string CustomCharacterSelectIconPath => "char_select_char_name.png".CharacterUiPath();
     public override string CustomCharacterSelectLockedIconPath => "char_select_char_name_locked.png".CharacterUiPath();
+    public override string CustomCharacterSelectBg => $"{MainFile.ResPath}/scenes/character_select/hologirl_character_select_bg.tscn";
     public override string CustomMapMarkerPath => "map_marker_char_name.png".CharacterUiPath();
 }

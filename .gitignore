@@ -10,4 +10,5 @@ Properties/
 packages/
 .editorconfig
 *.user
+scripts/*.gd.uid
 Directory.Build.props

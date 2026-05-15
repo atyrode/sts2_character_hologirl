@@ -130,10 +130,9 @@ The quick PCK packer supports simple assets such as PNG and JSON, but skips Godo
 
 The VPS currently has official Godot `4.5.1.stable.mono` installed at `/home/alex/.cache/hologirl-tools/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64`, with export templates installed under `/home/alex/.local/share/godot/export_templates/4.5.1.stable`. It emits `libfontconfig.so.1` warnings on this VPS, but headless PCK export still completes.
 
-Vanilla character select loads `CharacterModel.CharacterSelectBg` as a `PackedScene` and adds it to `NCharacterSelectScreen`'s `AnimatedBg` container. BaseLib's `CustomCharacterSelectEntry` also adds its background scene to that container, but via a custom-entry patch and optional foreground layer. Future character-select work should either:
+Vanilla character select loads `CharacterModel.CharacterSelectBg` as a `PackedScene` and adds it to `NCharacterSelectScreen`'s `AnimatedBg` container. BaseLib patches `CustomCharacterModel.CustomCharacterSelectBg` into that getter, which is the preferred path for Hologirl's character-select scene.
 
-- use a true packed scene path once full Godot export is available, or
-- consciously emulate `NCharacterSelectScreenBg` in C# while keeping the visual design simple and vanilla-like.
+Do not use BaseLib's separate `CustomCharacterSelectEntry.CreateCharacterSelectScene()` for Hologirl's visual background. That path can place the custom scene above vanilla UI depending on BaseLib node ordering. Hologirl currently uses `res://Hologirl/scenes/character_select/hologirl_character_select_bg.tscn`, exported through the Godot PCK path.
 
 ## Compatibility Practices
 
