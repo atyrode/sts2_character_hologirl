@@ -49,6 +49,12 @@ const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png",
 	"res://Hologirl/images/charui/character_variants/character_04_soft_vanilla.png",
 ]
+const LAYERED_CHARACTER_VARIANT: int = 2
+const LAYERED_CHARACTER_PATHS: Dictionary = {
+	"gold": "res://Hologirl/images/charui/character_layers/chunky_whip.png",
+	"ponytails": "res://Hologirl/images/charui/character_layers/chunky_ponytails.png",
+	"arm": "res://Hologirl/images/charui/character_layers/chunky_arm.png",
+}
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
 static var _saved_character_scale: float = DEFAULT_HOLOGIRL_SCALE
@@ -206,13 +212,44 @@ func _load_character_texture() -> Texture2D:
 func _create_character_motion_layer(layer_name: String, texture: Texture2D, motion_region: String) -> TextureRect:
 	var layer: TextureRect = TextureRect.new()
 	layer.name = layer_name
-	layer.texture = texture
+	layer.texture = _load_motion_layer_texture(motion_region, texture)
 	layer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	layer.stretch_mode = TextureRect.STRETCH_SCALE
 	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.material = _create_motion_mask_material(motion_region)
-	layer.modulate = Color(1.0, 1.0, 1.0, 0.32 if motion_region == "gold" else 0.22)
+	layer.material = null if _uses_layered_character_assets() else _create_motion_mask_material(motion_region)
+	layer.modulate = Color(1.0, 1.0, 1.0, 0.28 if motion_region == "gold" else 0.18)
 	return layer
+
+
+func _uses_layered_character_assets() -> bool:
+	return _character_variant == LAYERED_CHARACTER_VARIANT
+
+
+func _load_motion_layer_texture(motion_region: String, fallback: Texture2D) -> Texture2D:
+	if _uses_layered_character_assets() and LAYERED_CHARACTER_PATHS.has(motion_region):
+		var path: String = LAYERED_CHARACTER_PATHS[motion_region]
+		var layer_texture: Texture2D = load(path) if ResourceLoader.exists(path) else _load_raw_image_texture(path)
+		if layer_texture != null:
+			return layer_texture
+
+	return fallback
+
+
+func _load_raw_image_texture(path: String) -> Texture2D:
+	var image := Image.new()
+	var error := image.load(path)
+	if error != OK:
+		return null
+
+	return ImageTexture.create_from_image(image)
+
+
+func _configure_motion_layer(layer: TextureRect, texture: Texture2D, motion_region: String) -> void:
+	if layer == null:
+		return
+
+	layer.texture = _load_motion_layer_texture(motion_region, texture)
+	layer.material = null if _uses_layered_character_assets() else _create_motion_mask_material(motion_region)
 
 
 func _build_emitters(texture: Texture2D) -> void:
@@ -681,12 +718,9 @@ func _apply_character_variant() -> void:
 
 	var character_texture: Texture2D = _load_character_texture()
 	_character.texture = character_texture
-	if _whip_motion_layer != null:
-		_whip_motion_layer.texture = character_texture
-	if _ponytail_motion_layer != null:
-		_ponytail_motion_layer.texture = character_texture
-	if _arm_motion_layer != null:
-		_arm_motion_layer.texture = character_texture
+	_configure_motion_layer(_whip_motion_layer, character_texture, "gold")
+	_configure_motion_layer(_ponytail_motion_layer, character_texture, "ponytails")
+	_configure_motion_layer(_arm_motion_layer, character_texture, "arm")
 	_build_emitters(character_texture)
 	_clear_particle_layer(_back_particle_layer)
 	_clear_particle_layer(_front_particle_layer)

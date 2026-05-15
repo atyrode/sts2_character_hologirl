@@ -26,6 +26,11 @@
 - [x] Use `scripts/release.sh` to package and publish a normal GitHub release for the version in `Hologirl.json`.
 - [ ] After each release, test the downloaded mod through the local mod manager before expanding the prototype further.
 
+## Temporary Tuner Cleanup
+
+- [ ] Remove the redundant values summary from the top of the character-select tuner.
+- [ ] Fix tuner collapse so the panel's bounding box shrinks with the hidden content instead of leaving the full expanded hitbox/visual bounds.
+
 ## Scaffold
 
 - [x] Generate or copy the `Slay the Spire 2 Character` template.
