@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://docs/design/art_archive/menu/character_select_layers/layered_puppet_attempt-002/preview/layered_puppet_attempt_002_preview.gd" id="1_preview"]
+
+[node name="LayeredPuppetAttempt002Preview" type="Node2D"]
+script = ExtResource("1_preview")

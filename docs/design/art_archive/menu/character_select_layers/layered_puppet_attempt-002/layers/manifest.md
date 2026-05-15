@@ -1,0 +1,21 @@
+# Split Layers
+
+- `layer_01.png`: source rect x=34, y=5, w=307, h=539, pixels=68237
+- `layer_02.png`: source rect x=977, y=42, w=267, h=511, pixels=59954
+- `layer_03.png`: source rect x=393, y=39, w=308, h=285, pixels=48888
+- `layer_04.png`: source rect x=592, y=456, w=363, h=237, pixels=47828
+- `layer_05.png`: source rect x=713, y=167, w=255, h=293, pixels=40117
+- `layer_06.png`: source rect x=60, y=350, w=320, h=442, pixels=34596
+- `layer_07.png`: source rect x=964, y=442, w=276, h=385, pixels=30676
+- `layer_08.png`: source rect x=1258, y=164, w=266, h=590, pixels=27592
+- `layer_09.png`: source rect x=451, y=675, w=232, h=335, pixels=23801
+- `layer_10.png`: source rect x=402, y=352, w=201, h=313, pixels=20921
+- `layer_11.png`: source rect x=120, y=780, w=206, h=217, pixels=18836
+- `layer_12.png`: source rect x=664, y=803, w=200, h=204, pixels=17202
+- `layer_13.png`: source rect x=338, y=670, w=112, h=274, pixels=15557
+- `layer_14.png`: source rect x=809, y=670, w=124, h=274, pixels=15319
+- `layer_15.png`: source rect x=1080, y=806, w=104, h=120, pixels=1618
+- `layer_16.png`: source rect x=1194, y=759, w=102, h=118, pixels=1536
+- `layer_17.png`: source rect x=1348, y=657, w=99, h=111, pixels=1377
+- `layer_18.png`: source rect x=1350, y=821, w=99, h=111, pixels=1374
+- `layer_19.png`: source rect x=1202, y=883, w=88, h=101, pixels=1035

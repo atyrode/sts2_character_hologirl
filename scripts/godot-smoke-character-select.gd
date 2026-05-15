@@ -62,14 +62,6 @@ func _init() -> void:
 	await process_frame
 	node._apply_tuning_panel_layout()
 
-	var whip_motion := node.find_child("WhipMotionLayer", true, false)
-	var ponytail_motion := node.find_child("PonytailMotionLayer", true, false)
-	var arm_motion := node.find_child("ArmMotionLayer", true, false)
-	if whip_motion == null or ponytail_motion == null or arm_motion == null:
-		push_error("Hologirl character-select motion overlay layers did not spawn.")
-		quit(1)
-		return
-
 	node._character_pos = Vector2(1010.0, 260.0)
 	node._character_scale = 0.88
 	node._whip_density = 0.33

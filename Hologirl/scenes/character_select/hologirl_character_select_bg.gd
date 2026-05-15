@@ -49,13 +49,6 @@ const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png",
 	"res://Hologirl/images/charui/character_variants/character_04_soft_vanilla.png",
 ]
-const LAYERED_CHARACTER_VARIANT: int = 2
-const LAYERED_CHARACTER_BASE_PATH: String = "res://Hologirl/images/charui/character_layers/chunky_base.png"
-const LAYERED_CHARACTER_PATHS: Dictionary = {
-	"gold": "res://Hologirl/images/charui/character_layers/chunky_whip.png",
-	"ponytails": "res://Hologirl/images/charui/character_layers/chunky_ponytails.png",
-	"arm": "res://Hologirl/images/charui/character_layers/chunky_arm.png",
-}
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
 static var _saved_character_scale: float = DEFAULT_HOLOGIRL_SCALE
@@ -68,9 +61,6 @@ static var _saved_character_variant: int = 2
 var _canvas: Control
 var _background: TextureRect
 var _character: TextureRect
-var _whip_motion_layer: TextureRect
-var _ponytail_motion_layer: TextureRect
-var _arm_motion_layer: TextureRect
 var _back_particle_layer: Control
 var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
@@ -116,7 +106,6 @@ func _notification(what: int) -> void:
 
 func _process(delta: float) -> void:
 	_apply_tuning_panel_layout()
-	_animate_character_motion_layers()
 
 	_spark_timer -= delta
 	_drift_timer -= delta
@@ -165,7 +154,7 @@ func _build_scene() -> void:
 	_canvas.add_child(_back_particle_layer)
 
 	var character_texture: Texture2D = _load_character_texture()
-	_build_emitters(_load_full_character_texture())
+	_build_emitters(character_texture)
 
 	_character = TextureRect.new()
 	_character.name = "HologirlLayer"
@@ -175,15 +164,6 @@ func _build_scene() -> void:
 	_character.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_character.material = _create_chroma_key_material()
 	_canvas.add_child(_character)
-
-	_whip_motion_layer = _create_character_motion_layer("WhipMotionLayer", character_texture, "gold")
-	_canvas.add_child(_whip_motion_layer)
-
-	_ponytail_motion_layer = _create_character_motion_layer("PonytailMotionLayer", character_texture, "ponytails")
-	_canvas.add_child(_ponytail_motion_layer)
-
-	_arm_motion_layer = _create_character_motion_layer("ArmMotionLayer", character_texture, "arm")
-	_canvas.add_child(_arm_motion_layer)
 
 	_apply_character_tuning()
 
@@ -206,61 +186,7 @@ func _create_particle_layer(layer_name: String) -> Control:
 
 func _load_character_texture() -> Texture2D:
 	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
-	if index == LAYERED_CHARACTER_VARIANT:
-		var base_texture: Texture2D = load(LAYERED_CHARACTER_BASE_PATH) if ResourceLoader.exists(LAYERED_CHARACTER_BASE_PATH) else _load_raw_image_texture(LAYERED_CHARACTER_BASE_PATH)
-		if base_texture != null:
-			return base_texture
-
 	return load(CHARACTER_VARIANT_PATHS[index])
-
-
-func _load_full_character_texture() -> Texture2D:
-	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
-	return load(CHARACTER_VARIANT_PATHS[index])
-
-
-func _create_character_motion_layer(layer_name: String, texture: Texture2D, motion_region: String) -> TextureRect:
-	var layer: TextureRect = TextureRect.new()
-	layer.name = layer_name
-	layer.texture = _load_motion_layer_texture(motion_region, texture)
-	layer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	layer.stretch_mode = TextureRect.STRETCH_SCALE
-	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.material = null if _uses_layered_character_assets() else _create_motion_mask_material(motion_region)
-	layer.modulate = Color.WHITE if _uses_layered_character_assets() else Color(1.0, 1.0, 1.0, 0.28 if motion_region == "gold" else 0.18)
-	return layer
-
-
-func _uses_layered_character_assets() -> bool:
-	return _character_variant == LAYERED_CHARACTER_VARIANT
-
-
-func _load_motion_layer_texture(motion_region: String, fallback: Texture2D) -> Texture2D:
-	if _uses_layered_character_assets() and LAYERED_CHARACTER_PATHS.has(motion_region):
-		var path: String = LAYERED_CHARACTER_PATHS[motion_region]
-		var layer_texture: Texture2D = load(path) if ResourceLoader.exists(path) else _load_raw_image_texture(path)
-		if layer_texture != null:
-			return layer_texture
-
-	return fallback
-
-
-func _load_raw_image_texture(path: String) -> Texture2D:
-	var image := Image.new()
-	var error := image.load(path)
-	if error != OK:
-		return null
-
-	return ImageTexture.create_from_image(image)
-
-
-func _configure_motion_layer(layer: TextureRect, texture: Texture2D, motion_region: String) -> void:
-	if layer == null:
-		return
-
-	layer.texture = _load_motion_layer_texture(motion_region, texture)
-	layer.material = null if _uses_layered_character_assets() else _create_motion_mask_material(motion_region)
-	layer.modulate = Color.WHITE if _uses_layered_character_assets() else Color(1.0, 1.0, 1.0, 0.28 if motion_region == "gold" else 0.18)
 
 
 func _build_emitters(texture: Texture2D) -> void:
@@ -364,50 +290,6 @@ void fragment() {
 	return material
 
 
-func _create_motion_mask_material(motion_region: String) -> ShaderMaterial:
-	var shader: Shader = Shader.new()
-	shader.code = """
-shader_type canvas_item;
-uniform int region = 0;
-uniform vec4 key_color : source_color = vec4(0.0, 1.0, 0.0, 1.0);
-
-void fragment() {
-	vec4 tex = texture(TEXTURE, UV);
-	float keyed = step(0.46, distance(tex.rgb, key_color.rgb));
-	bool gold = tex.r > 0.68 && tex.g > 0.42 && tex.b < 0.32 && tex.r > tex.b * 1.8;
-	bool blue = tex.b > 0.42 && tex.g > 0.30 && tex.r < 0.48 && tex.b > tex.r * 1.35;
-	bool ponytails = blue && (
-		(UV.x > 0.05 && UV.x < 0.34 && UV.y > 0.08 && UV.y < 0.70) ||
-		(UV.x > 0.64 && UV.x < 0.96 && UV.y > 0.09 && UV.y < 0.66)
-	);
-	bool arm = blue && UV.x > 0.58 && UV.x < 0.98 && UV.y > 0.46 && UV.y < 0.82;
-	float selected = 0.0;
-	if (region == 0) {
-		selected = float(gold);
-	} else if (region == 1) {
-		selected = float(ponytails);
-	} else {
-		selected = float(arm);
-	}
-	tex.a *= keyed * selected;
-	COLOR = tex;
-}
-"""
-
-	var material: ShaderMaterial = ShaderMaterial.new()
-	material.shader = shader
-	var region_index: int = 0
-	match motion_region:
-		"ponytails":
-			region_index = 1
-		"arm":
-			region_index = 2
-		_:
-			region_index = 0
-	material.set_shader_parameter("region", region_index)
-	return material
-
-
 func _spawn_selection_burst() -> void:
 	for i in 10:
 		_spawn_whip_spark(true)
@@ -488,37 +370,7 @@ func _apply_character_tuning() -> void:
 	_character.position = _character_pos
 	_character.size = _current_character_size()
 	_character.pivot_offset = _character.size * 0.5
-	_apply_motion_layer_base_transform(_whip_motion_layer)
-	_apply_motion_layer_base_transform(_ponytail_motion_layer)
-	_apply_motion_layer_base_transform(_arm_motion_layer)
 	_update_tuning_values_label()
-
-
-func _apply_motion_layer_base_transform(layer: TextureRect) -> void:
-	if layer == null:
-		return
-
-	layer.position = _character_pos
-	layer.size = _current_character_size()
-	layer.pivot_offset = layer.size * 0.5
-
-
-func _animate_character_motion_layers() -> void:
-	if _character == null:
-		return
-
-	var t: float = Time.get_ticks_msec() / 1000.0
-	if _whip_motion_layer != null:
-		_whip_motion_layer.position = _character_pos + Vector2(sin(t * 1.05 + 0.8) * 9.0, sin(t * 0.72) * 4.0)
-		_whip_motion_layer.rotation = sin(t * 0.75 + 0.4) * 0.018
-
-	if _ponytail_motion_layer != null:
-		_ponytail_motion_layer.position = _character_pos + Vector2(sin(t * 0.82 + 1.6) * 7.0, sin(t * 0.62) * 2.0)
-		_ponytail_motion_layer.rotation = sin(t * 0.58 + 0.2) * 0.010
-
-	if _arm_motion_layer != null:
-		_arm_motion_layer.position = _character_pos + Vector2(sin(t * 0.68 + 2.4) * 4.0, sin(t * 0.76 + 0.5) * 1.8)
-		_arm_motion_layer.rotation = sin(t * 0.52 + 1.3) * 0.007
 
 
 func _build_tuning_panel() -> PanelContainer:
@@ -724,12 +576,8 @@ func _apply_character_variant() -> void:
 		return
 
 	var character_texture: Texture2D = _load_character_texture()
-	var full_character_texture: Texture2D = _load_full_character_texture()
 	_character.texture = character_texture
-	_configure_motion_layer(_whip_motion_layer, full_character_texture, "gold")
-	_configure_motion_layer(_ponytail_motion_layer, full_character_texture, "ponytails")
-	_configure_motion_layer(_arm_motion_layer, full_character_texture, "arm")
-	_build_emitters(full_character_texture)
+	_build_emitters(character_texture)
 	_clear_particle_layer(_back_particle_layer)
 	_clear_particle_layer(_front_particle_layer)
 	_apply_character_tuning()
