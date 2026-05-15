@@ -33,6 +33,11 @@ func _init() -> void:
 		quit(1)
 		return
 
+	if node.find_child("TuningValues", true, false) != null:
+		push_error("Hologirl character-select tuner still shows the redundant values summary.")
+		quit(1)
+		return
+
 	var background := node.find_child("SimpleBackground", true, false)
 	if background == null or background.texture == null:
 		push_error("Hologirl character-select generated background texture did not load.")
@@ -44,6 +49,18 @@ func _init() -> void:
 		push_error("Hologirl character-select collapse button did not spawn.")
 		quit(1)
 		return
+
+	var expanded_height: float = tuning_panel.size.y
+	collapse_button.pressed.emit()
+	await process_frame
+	node._apply_tuning_panel_layout()
+	if tuning_panel.size.y >= expanded_height - 20.0:
+		push_error("Hologirl character-select tuner collapse did not shrink the panel bounds.")
+		quit(1)
+		return
+	collapse_button.pressed.emit()
+	await process_frame
+	node._apply_tuning_panel_layout()
 
 	var whip_motion := node.find_child("WhipMotionLayer", true, false)
 	var ponytail_motion := node.find_child("PonytailMotionLayer", true, false)

@@ -28,8 +28,8 @@
 
 ## Temporary Tuner Cleanup
 
-- [ ] Remove the redundant values summary from the top of the character-select tuner.
-- [ ] Fix tuner collapse so the panel's bounding box shrinks with the hidden content instead of leaving the full expanded hitbox/visual bounds.
+- [x] Remove the redundant values summary from the top of the character-select tuner.
+- [x] Fix tuner collapse so the panel's bounding box shrinks with the hidden content instead of leaving the full expanded hitbox/visual bounds.
 
 ## Scaffold
 

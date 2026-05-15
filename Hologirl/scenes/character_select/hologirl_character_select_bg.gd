@@ -50,6 +50,7 @@ const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_04_soft_vanilla.png",
 ]
 const LAYERED_CHARACTER_VARIANT: int = 2
+const LAYERED_CHARACTER_BASE_PATH: String = "res://Hologirl/images/charui/character_layers/chunky_base.png"
 const LAYERED_CHARACTER_PATHS: Dictionary = {
 	"gold": "res://Hologirl/images/charui/character_layers/chunky_whip.png",
 	"ponytails": "res://Hologirl/images/charui/character_layers/chunky_ponytails.png",
@@ -75,7 +76,6 @@ var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
 var _tuning_body: VBoxContainer
 var _collapse_button: Button
-var _tuning_values_label: Label
 var _background_selector: OptionButton
 var _character_selector: OptionButton
 var _tuning_sliders: Dictionary = {}
@@ -165,7 +165,7 @@ func _build_scene() -> void:
 	_canvas.add_child(_back_particle_layer)
 
 	var character_texture: Texture2D = _load_character_texture()
-	_build_emitters(character_texture)
+	_build_emitters(_load_full_character_texture())
 
 	_character = TextureRect.new()
 	_character.name = "HologirlLayer"
@@ -206,6 +206,16 @@ func _create_particle_layer(layer_name: String) -> Control:
 
 func _load_character_texture() -> Texture2D:
 	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
+	if index == LAYERED_CHARACTER_VARIANT:
+		var base_texture: Texture2D = load(LAYERED_CHARACTER_BASE_PATH) if ResourceLoader.exists(LAYERED_CHARACTER_BASE_PATH) else _load_raw_image_texture(LAYERED_CHARACTER_BASE_PATH)
+		if base_texture != null:
+			return base_texture
+
+	return load(CHARACTER_VARIANT_PATHS[index])
+
+
+func _load_full_character_texture() -> Texture2D:
+	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
 	return load(CHARACTER_VARIANT_PATHS[index])
 
 
@@ -217,7 +227,7 @@ func _create_character_motion_layer(layer_name: String, texture: Texture2D, moti
 	layer.stretch_mode = TextureRect.STRETCH_SCALE
 	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.material = null if _uses_layered_character_assets() else _create_motion_mask_material(motion_region)
-	layer.modulate = Color(1.0, 1.0, 1.0, 0.28 if motion_region == "gold" else 0.18)
+	layer.modulate = Color.WHITE if _uses_layered_character_assets() else Color(1.0, 1.0, 1.0, 0.28 if motion_region == "gold" else 0.18)
 	return layer
 
 
@@ -250,6 +260,7 @@ func _configure_motion_layer(layer: TextureRect, texture: Texture2D, motion_regi
 
 	layer.texture = _load_motion_layer_texture(motion_region, texture)
 	layer.material = null if _uses_layered_character_assets() else _create_motion_mask_material(motion_region)
+	layer.modulate = Color.WHITE if _uses_layered_character_assets() else Color(1.0, 1.0, 1.0, 0.28 if motion_region == "gold" else 0.18)
 
 
 func _build_emitters(texture: Texture2D) -> void:
@@ -498,16 +509,16 @@ func _animate_character_motion_layers() -> void:
 
 	var t: float = Time.get_ticks_msec() / 1000.0
 	if _whip_motion_layer != null:
-		_whip_motion_layer.position = _character_pos + Vector2(sin(t * 1.05 + 0.8) * 4.8, sin(t * 0.72) * 2.4)
-		_whip_motion_layer.rotation = sin(t * 0.75 + 0.4) * 0.010
+		_whip_motion_layer.position = _character_pos + Vector2(sin(t * 1.05 + 0.8) * 9.0, sin(t * 0.72) * 4.0)
+		_whip_motion_layer.rotation = sin(t * 0.75 + 0.4) * 0.018
 
 	if _ponytail_motion_layer != null:
-		_ponytail_motion_layer.position = _character_pos + Vector2(sin(t * 0.82 + 1.6) * 3.4, sin(t * 0.62) * 1.2)
-		_ponytail_motion_layer.rotation = sin(t * 0.58 + 0.2) * 0.005
+		_ponytail_motion_layer.position = _character_pos + Vector2(sin(t * 0.82 + 1.6) * 7.0, sin(t * 0.62) * 2.0)
+		_ponytail_motion_layer.rotation = sin(t * 0.58 + 0.2) * 0.010
 
 	if _arm_motion_layer != null:
-		_arm_motion_layer.position = _character_pos + Vector2(sin(t * 0.68 + 2.4) * 1.8, sin(t * 0.76 + 0.5) * 1.0)
-		_arm_motion_layer.rotation = sin(t * 0.52 + 1.3) * 0.0035
+		_arm_motion_layer.position = _character_pos + Vector2(sin(t * 0.68 + 2.4) * 4.0, sin(t * 0.76 + 0.5) * 1.8)
+		_arm_motion_layer.rotation = sin(t * 0.52 + 1.3) * 0.007
 
 
 func _build_tuning_panel() -> PanelContainer:
@@ -547,10 +558,6 @@ func _build_tuning_panel() -> PanelContainer:
 	_tuning_body.mouse_filter = Control.MOUSE_FILTER_PASS
 	layout.add_child(_tuning_body)
 
-	_tuning_values_label = Label.new()
-	_tuning_values_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_tuning_body.add_child(_tuning_values_label)
-
 	_tuning_body.add_child(_create_tuning_slider("X", "x", 0.0, 2200.0, _character_pos.x, 1.0))
 	_tuning_body.add_child(_create_tuning_slider("Y", "y", -400.0, 900.0, _character_pos.y, 1.0))
 	_tuning_body.add_child(_create_tuning_slider("Scale", "scale", 0.25, 2.50, _character_scale, 0.01))
@@ -573,7 +580,6 @@ func _build_tuning_panel() -> PanelContainer:
 	reset_button.pressed.connect(_reset_tuning_values)
 	button_row.add_child(reset_button)
 
-	_update_tuning_values_label()
 	_apply_tuning_panel_layout()
 	return panel
 
@@ -597,6 +603,7 @@ func _apply_tuning_panel_layout() -> void:
 		min(500.0, max(320.0, viewport_size.x - TUNING_PANEL_MARGIN.x * 2.0)),
 		min(_current_tuning_panel_height(), max(56.0, viewport_size.y - TUNING_PANEL_MARGIN.y * 2.0))
 	)
+	_tuning_panel.custom_minimum_size = panel_screen_size
 	_tuning_panel.position = root_transform.affine_inverse() * TUNING_PANEL_MARGIN
 	_tuning_panel.scale = Vector2(1.0 / absf(root_scale.x), 1.0 / absf(root_scale.y))
 	_tuning_panel.size = panel_screen_size
@@ -717,11 +724,12 @@ func _apply_character_variant() -> void:
 		return
 
 	var character_texture: Texture2D = _load_character_texture()
+	var full_character_texture: Texture2D = _load_full_character_texture()
 	_character.texture = character_texture
-	_configure_motion_layer(_whip_motion_layer, character_texture, "gold")
-	_configure_motion_layer(_ponytail_motion_layer, character_texture, "ponytails")
-	_configure_motion_layer(_arm_motion_layer, character_texture, "arm")
-	_build_emitters(character_texture)
+	_configure_motion_layer(_whip_motion_layer, full_character_texture, "gold")
+	_configure_motion_layer(_ponytail_motion_layer, full_character_texture, "ponytails")
+	_configure_motion_layer(_arm_motion_layer, full_character_texture, "arm")
+	_build_emitters(full_character_texture)
 	_clear_particle_layer(_back_particle_layer)
 	_clear_particle_layer(_front_particle_layer)
 	_apply_character_tuning()
@@ -808,8 +816,7 @@ func _print_tuning_values() -> void:
 
 
 func _update_tuning_values_label() -> void:
-	if _tuning_values_label != null:
-		_tuning_values_label.text = _tuning_values_text()
+	pass
 
 
 func _tuning_values_text() -> String:
