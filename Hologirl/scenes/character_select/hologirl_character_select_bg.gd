@@ -3,7 +3,6 @@ extends Control
 const VIRTUAL_SIZE: Vector2 = Vector2(2564.0, 1204.0)
 const DEFAULT_HOLOGIRL_POS: Vector2 = Vector2(842.0, 120.0)
 const DEFAULT_HOLOGIRL_SIZE: Vector2 = Vector2(1180.0, 787.0)
-const HOLOGIRL_TEXTURE: String = "res://Hologirl/images/charui/character_select_hologirl.png"
 const SHOW_TUNING_PANEL: bool = true
 const TUNING_PANEL_MARGIN: Vector2 = Vector2(24.0, 24.0)
 const DEFAULT_HOLOGIRL_SCALE: float = 1.49
@@ -14,11 +13,41 @@ const BACKGROUND_VARIANT_NAMES: Array[String] = [
 	"Signal Bloom",
 	"Stage Glow",
 	"Holo Drift",
+	"Ruby Broadcast",
+	"Ember Signal",
+	"Solar Idol",
+	"Mint Stage",
+	"Emerald Pulse",
+	"Lagoon Signal",
+	"Periwinkle Drift",
+	"Violet Broadcast",
+	"Fuchsia Stage",
 ]
 const BACKGROUND_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/background_variants/bg_01_signal_bloom.png",
 	"res://Hologirl/images/charui/background_variants/bg_02_stage_glow.png",
 	"res://Hologirl/images/charui/background_variants/bg_03_holo_drift.png",
+	"res://Hologirl/images/charui/background_variants/bg_04_ruby_broadcast.png",
+	"res://Hologirl/images/charui/background_variants/bg_05_ember_signal.png",
+	"res://Hologirl/images/charui/background_variants/bg_06_solar_idol.png",
+	"res://Hologirl/images/charui/background_variants/bg_07_mint_stage.png",
+	"res://Hologirl/images/charui/background_variants/bg_08_emerald_pulse.png",
+	"res://Hologirl/images/charui/background_variants/bg_09_lagoon_signal.png",
+	"res://Hologirl/images/charui/background_variants/bg_10_periwinkle_drift.png",
+	"res://Hologirl/images/charui/background_variants/bg_11_violet_broadcast.png",
+	"res://Hologirl/images/charui/background_variants/bg_12_fuchsia_stage.png",
+]
+const CHARACTER_VARIANT_NAMES: Array[String] = [
+	"Current",
+	"Vanilla Matte",
+	"Chunky Vanilla",
+	"Soft Vanilla",
+]
+const CHARACTER_VARIANT_PATHS: Array[String] = [
+	"res://Hologirl/images/charui/character_variants/character_01_current.png",
+	"res://Hologirl/images/charui/character_variants/character_02_vanilla_matte.png",
+	"res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png",
+	"res://Hologirl/images/charui/character_variants/character_04_soft_vanilla.png",
 ]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
@@ -27,6 +56,7 @@ static var _saved_whip_density: float = DEFAULT_WHIP_DENSITY
 static var _saved_drift_density: float = DEFAULT_DRIFT_DENSITY
 static var _saved_whip_jitter: float = DEFAULT_WHIP_JITTER
 static var _saved_background_variant: int = 0
+static var _saved_character_variant: int = 0
 
 var _canvas: Control
 var _background: TextureRect
@@ -38,6 +68,7 @@ var _tuning_body: VBoxContainer
 var _collapse_button: Button
 var _tuning_values_label: Label
 var _background_selector: OptionButton
+var _character_selector: OptionButton
 var _tuning_sliders: Dictionary = {}
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _whip_emitters: Array[Vector2] = []
@@ -52,6 +83,7 @@ var _drift_density: float = DEFAULT_DRIFT_DENSITY
 var _glow_density: float = 0.10
 var _whip_jitter: float = DEFAULT_WHIP_JITTER
 var _background_variant: int = 0
+var _character_variant: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -122,7 +154,7 @@ func _build_scene() -> void:
 	_back_particle_layer = _create_particle_layer("HologirlBackParticles")
 	_canvas.add_child(_back_particle_layer)
 
-	var character_texture: Texture2D = load(HOLOGIRL_TEXTURE)
+	var character_texture: Texture2D = _load_character_texture()
 	_build_emitters(character_texture)
 
 	_character = TextureRect.new()
@@ -150,6 +182,11 @@ func _create_particle_layer(layer_name: String) -> Control:
 	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.process_mode = Node.PROCESS_MODE_ALWAYS
 	return layer
+
+
+func _load_character_texture() -> Texture2D:
+	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
+	return load(CHARACTER_VARIANT_PATHS[index])
 
 
 func _build_emitters(texture: Texture2D) -> void:
@@ -338,7 +375,7 @@ func _apply_character_tuning() -> void:
 func _build_tuning_panel() -> PanelContainer:
 	var panel: PanelContainer = PanelContainer.new()
 	panel.name = "HologirlTuningPanel"
-	panel.custom_minimum_size = Vector2(500.0, 390.0)
+	panel.custom_minimum_size = Vector2(500.0, 430.0)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.process_mode = Node.PROCESS_MODE_ALWAYS
 	panel.z_index = 1000
@@ -383,6 +420,7 @@ func _build_tuning_panel() -> PanelContainer:
 	_tuning_body.add_child(_create_tuning_slider("Drift density", "drift_density", 0.0, 5.0, _drift_density, 0.01))
 	_tuning_body.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 80.0, _whip_jitter, 0.5))
 	_tuning_body.add_child(_create_background_selector())
+	_tuning_body.add_child(_create_character_selector())
 
 	var button_row: HBoxContainer = HBoxContainer.new()
 	_tuning_body.add_child(button_row)
@@ -494,6 +532,26 @@ func _create_background_selector() -> HBoxContainer:
 	return row
 
 
+func _create_character_selector() -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.custom_minimum_size = Vector2(0.0, 34.0)
+
+	var name_label: Label = Label.new()
+	name_label.text = "Character"
+	name_label.custom_minimum_size = Vector2(120.0, 0.0)
+	row.add_child(name_label)
+
+	_character_selector = OptionButton.new()
+	_character_selector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_character_selector.mouse_filter = Control.MOUSE_FILTER_STOP
+	for i in CHARACTER_VARIANT_NAMES.size():
+		_character_selector.add_item(CHARACTER_VARIANT_NAMES[i], i)
+	_character_selector.select(clampi(_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1))
+	_character_selector.item_selected.connect(_on_character_variant_selected)
+	row.add_child(_character_selector)
+	return row
+
+
 func _on_background_variant_selected(index: int) -> void:
 	_background_variant = clampi(index, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
 	_apply_background_variant()
@@ -509,6 +567,33 @@ func _apply_background_variant() -> void:
 	_background.texture = load(BACKGROUND_VARIANT_PATHS[index])
 
 
+func _on_character_variant_selected(index: int) -> void:
+	_character_variant = clampi(index, 0, CHARACTER_VARIANT_NAMES.size() - 1)
+	_apply_character_variant()
+	_update_tuning_values_label()
+	_save_tuning_values()
+
+
+func _apply_character_variant() -> void:
+	if _character == null:
+		return
+
+	var character_texture: Texture2D = _load_character_texture()
+	_character.texture = character_texture
+	_build_emitters(character_texture)
+	_clear_particle_layer(_back_particle_layer)
+	_clear_particle_layer(_front_particle_layer)
+	_spawn_selection_burst()
+
+
+func _clear_particle_layer(layer: Control) -> void:
+	if layer == null:
+		return
+
+	for child in layer.get_children():
+		child.queue_free()
+
+
 func _toggle_tuning_panel_collapsed() -> void:
 	if _tuning_body == null:
 		return
@@ -520,7 +605,7 @@ func _toggle_tuning_panel_collapsed() -> void:
 
 
 func _current_tuning_panel_height() -> float:
-	return 390.0 if _tuning_body == null or _tuning_body.visible else 56.0
+	return 430.0 if _tuning_body == null or _tuning_body.visible else 56.0
 
 
 func _reset_tuning_values() -> void:
@@ -530,6 +615,7 @@ func _reset_tuning_values() -> void:
 	_drift_density = DEFAULT_DRIFT_DENSITY
 	_whip_jitter = DEFAULT_WHIP_JITTER
 	_background_variant = 0
+	_character_variant = 0
 	_set_slider_value("x", _character_pos.x)
 	_set_slider_value("y", _character_pos.y)
 	_set_slider_value("scale", _character_scale)
@@ -538,8 +624,12 @@ func _reset_tuning_values() -> void:
 	_set_slider_value("whip_jitter", _whip_jitter)
 	if _background_selector != null:
 		_background_selector.select(_background_variant)
+	if _character_selector != null:
+		_character_selector.select(_character_variant)
 	if _background != null:
 		_apply_background_variant()
+	if _character != null:
+		_apply_character_variant()
 	_apply_character_tuning()
 	_save_tuning_values()
 
@@ -551,6 +641,7 @@ func _restore_saved_tuning_values() -> void:
 	_drift_density = _saved_drift_density
 	_whip_jitter = _saved_whip_jitter
 	_background_variant = clampi(_saved_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
+	_character_variant = clampi(_saved_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)
 
 
 func _save_tuning_values() -> void:
@@ -560,6 +651,7 @@ func _save_tuning_values() -> void:
 	_saved_drift_density = _drift_density
 	_saved_whip_jitter = _whip_jitter
 	_saved_background_variant = _background_variant
+	_saved_character_variant = _character_variant
 
 
 func _set_slider_value(key: String, value: float) -> void:
@@ -579,7 +671,7 @@ func _update_tuning_values_label() -> void:
 
 
 func _tuning_values_text() -> String:
-	return "x=%s y=%s scale=%s whip_density=%s drift_density=%s gold_jitter=%s background=%s" % [
+	return "x=%s y=%s scale=%s whip_density=%s drift_density=%s gold_jitter=%s background=%s character=%s" % [
 		_format_tuning_number(_character_pos.x),
 		_format_tuning_number(_character_pos.y),
 		_format_tuning_number(_character_scale),
@@ -587,6 +679,7 @@ func _tuning_values_text() -> String:
 		_format_tuning_number(_drift_density),
 		_format_tuning_number(_whip_jitter),
 		BACKGROUND_VARIANT_NAMES[clampi(_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)],
+		CHARACTER_VARIANT_NAMES[clampi(_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)],
 	]
 
 

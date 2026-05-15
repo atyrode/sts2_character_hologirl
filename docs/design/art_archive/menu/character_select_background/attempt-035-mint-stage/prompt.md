@@ -1,0 +1,3 @@
+# Prompt
+
+Simple vanilla-feeling Slay the Spire 2-inspired character-select background plate, wide horizontal game UI background, no character. Bright mint-green solid accent field with darker jade-green silhouettes and sparse pale mint highlights. Large hand-painted stage curtain and broadcast-wave silhouettes, abstract and cropped. Leave center-left readable for UI. Broad uneven brush edges, asymmetrical cropped shapes, flat matte masses, low color count. Avoid clean SVG geometry, perfect arcs, plant leaves, forest scenery, centered icons, repeated patterns, texture-heavy painting, detailed scenes, realistic lighting, glossy glow, many colors, UI text, logos, and characters.

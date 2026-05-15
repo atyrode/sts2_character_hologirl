@@ -1,0 +1,3 @@
+# Prompt
+
+Simple vanilla-feeling Slay the Spire 2-inspired character-select background plate, wide horizontal game UI background, no character. Bright periwinkle-blue solid accent field, less cyan than Defect and more lavender-blue, with darker periwinkle-indigo silhouettes and sparse pale lavender-blue highlights. Large hand-painted hologram drift ribbons and cropped signal arcs. Leave center-left readable for UI. Broad uneven brush edges, asymmetrical cropped shapes, flat matte masses, low color count. Avoid pure cyan, lightning, clean SVG geometry, perfect arcs, centered icons, repeated patterns, texture-heavy painting, detailed scenes, realistic lighting, glossy glow, many colors, UI text, logos, and characters.

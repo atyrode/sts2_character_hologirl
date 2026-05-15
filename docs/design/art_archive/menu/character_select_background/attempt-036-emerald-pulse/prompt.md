@@ -1,0 +1,3 @@
+# Prompt
+
+Simple vanilla-feeling Slay the Spire 2-inspired character-select background plate, wide horizontal game UI background, no character. Bright emerald-green solid accent field with darker forest-emerald silhouettes and sparse pale spring-green highlights. Large hand-painted broadcast pulse waves and cropped signal ribbons. Leave center-left readable for UI. Broad uneven brush edges, asymmetrical cropped shapes, flat matte masses, low color count. Avoid clean SVG geometry, perfect arcs, leaves, vines, forest scenery, centered icons, repeated patterns, texture-heavy painting, detailed scenes, realistic lighting, glossy glow, many colors, UI text, logos, and characters.

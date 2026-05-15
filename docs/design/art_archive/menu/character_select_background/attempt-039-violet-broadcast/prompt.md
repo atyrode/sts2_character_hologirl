@@ -1,0 +1,3 @@
+# Prompt
+
+Simple vanilla-feeling Slay the Spire 2-inspired character-select background plate, wide horizontal game UI background, no character. Bright violet solid accent field with darker royal-violet silhouettes and sparse pale lavender highlights. Large hand-painted broadcast-wave silhouettes and signal arcs enter from offscreen and are cropped by image edges. Keep it symbolic and abstract, not magical smoke. Leave center-left readable for UI. Broad uneven brush edges, asymmetrical cropped shapes, flat matte masses, low color count. Avoid clean SVG geometry, perfect arcs, smoke, nebula, stars, centered icons, repeated patterns, texture-heavy painting, detailed scenes, realistic lighting, glossy glow, many colors, UI text, logos, and characters.

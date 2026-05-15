@@ -1,0 +1,3 @@
+# Prompt
+
+Simple vanilla-feeling Slay the Spire 2-inspired character-select background plate, wide horizontal game UI background, no character. Bright fuchsia-magenta solid accent field, distinct from Necrobinder by being cleaner and idol-broadcast themed, with darker raspberry silhouettes and sparse pale pink highlights. Large hand-painted stage-light/crowd and broadcast-wave silhouettes, abstract and cropped. Leave center-left readable for UI. Broad uneven brush edges, asymmetrical cropped shapes, flat matte masses, low color count. Avoid clean SVG geometry, perfect cones, occult flames, skulls, centered icons, repeated patterns, texture-heavy painting, detailed scenes, realistic lighting, glossy glow, many colors, UI text, logos, and characters.

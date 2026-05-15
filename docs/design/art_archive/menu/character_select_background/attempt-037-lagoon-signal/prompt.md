@@ -1,0 +1,3 @@
+# Prompt
+
+Simple vanilla-feeling Slay the Spire 2-inspired character-select background plate, wide horizontal game UI background, no character. Bright teal-green solid accent field, deliberately greener and darker than Defect cyan, with darker deep-teal silhouettes and sparse pale seafoam highlights. Large hand-painted broadcast-wave silhouettes and cropped signal ribbons. Leave center-left readable for UI. Broad uneven brush edges, asymmetrical cropped shapes, flat matte masses, low color count. Avoid pure cyan, electric lightning, clean SVG geometry, perfect arcs, centered icons, repeated patterns, texture-heavy painting, detailed scenes, realistic lighting, glossy glow, many colors, UI text, logos, and characters.

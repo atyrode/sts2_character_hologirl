@@ -22,6 +22,16 @@ Hologirl should read as a blue/cyan hologram girl with two long ponytails/twinta
 
 Starter cards should usually prioritize the tool or action over a full character portrait. Hologirl can appear as a small silhouette, cropped hand, or supporting detail when the card needs her.
 
+## Character Select Background Anchor
+
+`Signal Bloom` from character-select background attempt 029 is the validated style anchor for Hologirl's menu background language. It matches the vanilla character-select vibe because it uses a bright single-hue field, two close value variants, broad cropped hand-painted motifs, very sparse highlight marks, and no clean geometric construction.
+
+The reusable background prompt recipe is:
+
+Slay the Spire 2-inspired character-select background plate, wide horizontal game UI background, no character. Bright solid accent field with only two close same-hue variants. Large hand-painted broadcast-wave, stage-light, signal, or hologram-drift silhouettes enter from offscreen and are cropped by the image edges. Leave center-left readable for UI. Use broad uneven brush edges, asymmetrical composition, simple graphic readability, matte flat color masses, and sparse highlights. Avoid clean SVG geometry, perfect arcs, centered icons, repeated patterns, detailed scenes, texture-heavy painting, realistic lighting, smoky effects, glossy glow, many colors, UI text, logos, and characters.
+
+Signal Bloom itself is not automatically the final palette. Its cyan is a strong style proof, but it can blend into Hologirl's blue body and overlap Defect's accent identity. Use the same motif language to test warmer or off-cyan accent candidates.
+
 ## Reusable Prompt Pattern
 
 Simple STS2-inspired card portrait, one bold readable [attack/defense/skill] image. [One dominant object/action] across an elegant desaturated pink and deep plum background. The subject is the main shape: thick, smooth, graphic, hard-edged, with minimal glow, one or two white-hot highlight cuts, and a few tiny restrained sparkles implying magic or holographic technology. Flat chunky shapes, low color count, abrupt silhouettes, smooth matte shading, broad background shadow shapes, iconic card readability. No text, no card frame, no UI, no logo.
