@@ -66,6 +66,7 @@ Hologirl's background should:
 - Background palette direction: muted indigo/blue-violet base, darker lower band, limited dusty violet structure, cyan hologram accent, and gold projected-light accent. Avoid making the scene dominantly pink so it does not collapse into Necrobinder's color space.
 - `v0.2.21` intentionally ships a temporary in-game `HologirlTuningPanel` on the character-select background. It is a calibration tool for choosing Hologirl's X/Y/scale, whip particle density, drift density, and gold jitter inside the real game layout. Remove or hide this panel once the final values are confirmed.
 - Default particle direction after `v0.2.21`: fewer gold sparkles, smaller sparkles, lower background glow density, and tighter gold jitter. Keep whip sparks cute and crisp rather than smoky.
+- `v0.2.22` moves the temporary tuning panel out of the virtual art canvas and anchors it to the visible scene bounds. Calibration UI should never be positioned in the cropped/scaled character art coordinate system.
 
 ## Open Questions
 

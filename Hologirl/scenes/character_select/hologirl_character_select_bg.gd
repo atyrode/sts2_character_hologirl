@@ -5,11 +5,13 @@ const DEFAULT_HOLOGIRL_POS: Vector2 = Vector2(1145.0, 305.0)
 const DEFAULT_HOLOGIRL_SIZE: Vector2 = Vector2(1180.0, 787.0)
 const HOLOGIRL_TEXTURE: String = "res://Hologirl/images/charui/character_select_hologirl.png"
 const SHOW_TUNING_PANEL: bool = true
+const TUNING_PANEL_MARGIN: Vector2 = Vector2(24.0, 24.0)
 
 var _canvas: Control
 var _character: TextureRect
 var _back_particle_layer: Control
 var _front_particle_layer: Control
+var _tuning_panel: PanelContainer
 var _tuning_values_label: Label
 var _tuning_sliders: Dictionary = {}
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -105,7 +107,8 @@ func _build_scene() -> void:
 	_canvas.add_child(_front_particle_layer)
 
 	if SHOW_TUNING_PANEL:
-		_canvas.add_child(_build_tuning_panel())
+		_tuning_panel = _build_tuning_panel()
+		add_child(_tuning_panel)
 
 
 func _create_particle_layer(layer_name: String) -> Control:
@@ -194,6 +197,7 @@ func _apply_layout() -> void:
 	var scale_value: float = max(bounds.x / VIRTUAL_SIZE.x, bounds.y / VIRTUAL_SIZE.y)
 	_canvas.scale = Vector2.ONE * scale_value
 	_canvas.position = (bounds - VIRTUAL_SIZE * scale_value) * 0.5
+	_apply_tuning_panel_layout(bounds)
 
 
 func _create_chroma_key_material() -> ShaderMaterial:
@@ -302,10 +306,10 @@ func _apply_character_tuning() -> void:
 func _build_tuning_panel() -> PanelContainer:
 	var panel: PanelContainer = PanelContainer.new()
 	panel.name = "HologirlTuningPanel"
-	panel.position = Vector2(36.0, 36.0)
-	panel.size = Vector2(500.0, 390.0)
+	panel.custom_minimum_size = Vector2(500.0, 390.0)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.process_mode = Node.PROCESS_MODE_ALWAYS
+	panel.z_index = 1000
 
 	var margin: MarginContainer = MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 12)
@@ -347,7 +351,23 @@ func _build_tuning_panel() -> PanelContainer:
 	button_row.add_child(reset_button)
 
 	_update_tuning_values_label()
+	_apply_tuning_panel_layout(size)
 	return panel
+
+
+func _apply_tuning_panel_layout(bounds: Vector2) -> void:
+	if _tuning_panel == null:
+		return
+
+	if bounds.x <= 0.0 or bounds.y <= 0.0:
+		bounds = get_viewport_rect().size
+
+	var panel_size: Vector2 = Vector2(
+		min(500.0, max(320.0, bounds.x - TUNING_PANEL_MARGIN.x * 2.0)),
+		min(390.0, max(260.0, bounds.y - TUNING_PANEL_MARGIN.y * 2.0))
+	)
+	_tuning_panel.position = TUNING_PANEL_MARGIN
+	_tuning_panel.size = panel_size
 
 
 func _create_tuning_slider(label_text: String, key: String, min_value: float, max_value: float, value: float, step: float) -> HBoxContainer:
