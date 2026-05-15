@@ -27,5 +27,11 @@ func _init() -> void:
 		quit(1)
 		return
 
+	var tuning_panel := node.find_child("HologirlTuningPanel", true, false)
+	if tuning_panel == null:
+		push_error("Hologirl character-select tuning panel did not spawn.")
+		quit(1)
+		return
+
 	print("Hologirl character-select scene smoke passed.")
 	quit(0)

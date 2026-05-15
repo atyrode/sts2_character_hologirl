@@ -1,23 +1,33 @@
 extends Control
 
 const VIRTUAL_SIZE: Vector2 = Vector2(2564.0, 1204.0)
-const HOLOGIRL_POS: Vector2 = Vector2(1145.0, 305.0)
-const HOLOGIRL_SIZE: Vector2 = Vector2(1180.0, 787.0)
+const DEFAULT_HOLOGIRL_POS: Vector2 = Vector2(1145.0, 305.0)
+const DEFAULT_HOLOGIRL_SIZE: Vector2 = Vector2(1180.0, 787.0)
 const HOLOGIRL_TEXTURE: String = "res://Hologirl/images/charui/character_select_hologirl.png"
+const SHOW_TUNING_PANEL: bool = true
 
 var _canvas: Control
+var _character: TextureRect
 var _back_particle_layer: Control
 var _front_particle_layer: Control
+var _tuning_values_label: Label
+var _tuning_sliders: Dictionary = {}
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _whip_emitters: Array[Vector2] = []
 var _body_emitters: Array[Vector2] = []
 var _spark_timer: float = 0.0
 var _drift_timer: float = 0.0
 var _glow_timer: float = 0.0
+var _character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
+var _character_scale: float = 1.0
+var _whip_density: float = 0.55
+var _drift_density: float = 0.70
+var _glow_density: float = 0.10
+var _whip_jitter: float = 5.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mouse_filter = Control.MOUSE_FILTER_PASS if SHOW_TUNING_PANEL else Control.MOUSE_FILTER_IGNORE
 	clip_contents = true
 	set_process(true)
 	_rng.randomize()
@@ -39,17 +49,26 @@ func _process(delta: float) -> void:
 	_drift_timer -= delta
 	_glow_timer -= delta
 
-	while _spark_timer <= 0.0:
-		_spawn_whip_spark(false)
-		_spark_timer += _rng.randf_range(0.035, 0.070)
+	if _whip_density > 0.0:
+		while _spark_timer <= 0.0:
+			_spawn_whip_spark(false)
+			_spark_timer += _rng.randf_range(0.070, 0.130) / _whip_density
+	else:
+		_spark_timer = 0.25
 
-	while _drift_timer <= 0.0:
-		_spawn_hologram_drift(false)
-		_drift_timer += _rng.randf_range(0.11, 0.18)
+	if _drift_density > 0.0:
+		while _drift_timer <= 0.0:
+			_spawn_hologram_drift(false)
+			_drift_timer += _rng.randf_range(0.13, 0.22) / _drift_density
+	else:
+		_drift_timer = 0.25
 
-	while _glow_timer <= 0.0:
-		_spawn_background_glow(false)
-		_glow_timer += _rng.randf_range(0.22, 0.38)
+	if _glow_density > 0.0:
+		while _glow_timer <= 0.0:
+			_spawn_background_glow(false)
+			_glow_timer += _rng.randf_range(0.35, 0.65) / _glow_density
+	else:
+		_glow_timer = 0.50
 
 
 func _build_scene() -> void:
@@ -72,19 +91,21 @@ func _build_scene() -> void:
 	var character_texture: Texture2D = load(HOLOGIRL_TEXTURE)
 	_build_emitters(character_texture)
 
-	var character: TextureRect = TextureRect.new()
-	character.name = "HologirlLayer"
-	character.texture = character_texture
-	character.position = HOLOGIRL_POS
-	character.size = HOLOGIRL_SIZE
-	character.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	character.stretch_mode = TextureRect.STRETCH_SCALE
-	character.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	character.material = _create_chroma_key_material()
-	_canvas.add_child(character)
+	_character = TextureRect.new()
+	_character.name = "HologirlLayer"
+	_character.texture = character_texture
+	_character.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_character.stretch_mode = TextureRect.STRETCH_SCALE
+	_character.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_character.material = _create_chroma_key_material()
+	_canvas.add_child(_character)
+	_apply_character_tuning()
 
 	_front_particle_layer = _create_particle_layer("HologirlFrontParticles")
 	_canvas.add_child(_front_particle_layer)
+
+	if SHOW_TUNING_PANEL:
+		_canvas.add_child(_build_tuning_panel())
 
 
 func _create_particle_layer(layer_name: String) -> Control:
@@ -197,21 +218,21 @@ void fragment() {
 
 
 func _spawn_selection_burst() -> void:
-	for i in 26:
+	for i in 10:
 		_spawn_whip_spark(true)
 
-	for i in 18:
+	for i in 12:
 		_spawn_hologram_drift(true)
 
-	for i in 8:
+	for i in 2:
 		_spawn_background_glow(true)
 
 
 func _spawn_whip_spark(burst: bool) -> void:
 	var anchor: Vector2 = _sample_character_point(_whip_emitters)
-	var jitter: Vector2 = Vector2(_rng.randf_range(-8.0, 8.0), _rng.randf_range(-8.0, 8.0))
+	var jitter: Vector2 = Vector2(_rng.randf_range(-_whip_jitter, _whip_jitter), _rng.randf_range(-_whip_jitter, _whip_jitter))
 	var lifetime: float = _rng.randf_range(0.55, 1.0 if burst else 0.78)
-	var particle_size: Vector2 = Vector2(_rng.randf_range(9.0, 17.0), _rng.randf_range(9.0, 17.0))
+	var particle_size: Vector2 = Vector2(_rng.randf_range(7.0, 13.0), _rng.randf_range(7.0, 13.0))
 	var velocity: Vector2 = Vector2(_rng.randf_range(-14.0, 20.0), _rng.randf_range(-30.0, -8.0))
 	var color: Color = Color(1.0, 0.82, 0.22, _rng.randf_range(0.72, 1.0))
 	_spawn_particle(anchor + jitter, velocity, particle_size, lifetime, color, true, _front_particle_layer)
@@ -241,7 +262,7 @@ func _sample_character_point(points: Array[Vector2]) -> Vector2:
 		_add_fallback_emitters()
 
 	var normalized: Vector2 = points[_rng.randi_range(0, points.size() - 1)]
-	return HOLOGIRL_POS + normalized * HOLOGIRL_SIZE
+	return _character_pos + normalized * _current_character_size()
 
 
 func _spawn_particle(position: Vector2, velocity: Vector2, particle_size: Vector2, lifetime: float, color: Color, sparkle: bool, layer: Control) -> void:
@@ -263,6 +284,163 @@ func _spawn_particle(position: Vector2, velocity: Vector2, particle_size: Vector
 	tween.tween_property(particle, "modulate:a", 0.0, lifetime)
 	tween.tween_property(particle, "scale", Vector2.ONE * (1.75 if sparkle else 1.10), lifetime)
 	tween.tween_callback(particle.queue_free).set_delay(lifetime)
+
+
+func _current_character_size() -> Vector2:
+	return DEFAULT_HOLOGIRL_SIZE * _character_scale
+
+
+func _apply_character_tuning() -> void:
+	if _character == null:
+		return
+
+	_character.position = _character_pos
+	_character.size = _current_character_size()
+	_update_tuning_values_label()
+
+
+func _build_tuning_panel() -> PanelContainer:
+	var panel: PanelContainer = PanelContainer.new()
+	panel.name = "HologirlTuningPanel"
+	panel.position = Vector2(36.0, 36.0)
+	panel.size = Vector2(500.0, 390.0)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.process_mode = Node.PROCESS_MODE_ALWAYS
+
+	var margin: MarginContainer = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+
+	var layout: VBoxContainer = VBoxContainer.new()
+	layout.mouse_filter = Control.MOUSE_FILTER_PASS
+	margin.add_child(layout)
+
+	var title: Label = Label.new()
+	title.text = "Hologirl Character Select Tuner"
+	layout.add_child(title)
+
+	_tuning_values_label = Label.new()
+	_tuning_values_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	layout.add_child(_tuning_values_label)
+
+	layout.add_child(_create_tuning_slider("X", "x", 760.0, 1420.0, _character_pos.x, 1.0))
+	layout.add_child(_create_tuning_slider("Y", "y", 120.0, 520.0, _character_pos.y, 1.0))
+	layout.add_child(_create_tuning_slider("Scale", "scale", 0.70, 1.25, _character_scale, 0.01))
+	layout.add_child(_create_tuning_slider("Whip density", "whip_density", 0.0, 2.0, _whip_density, 0.01))
+	layout.add_child(_create_tuning_slider("Drift density", "drift_density", 0.0, 2.0, _drift_density, 0.01))
+	layout.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 24.0, _whip_jitter, 0.5))
+
+	var button_row: HBoxContainer = HBoxContainer.new()
+	layout.add_child(button_row)
+
+	var print_button: Button = Button.new()
+	print_button.text = "Print / Copy Values"
+	print_button.pressed.connect(_print_tuning_values)
+	button_row.add_child(print_button)
+
+	var reset_button: Button = Button.new()
+	reset_button.text = "Reset"
+	reset_button.pressed.connect(_reset_tuning_values)
+	button_row.add_child(reset_button)
+
+	_update_tuning_values_label()
+	return panel
+
+
+func _create_tuning_slider(label_text: String, key: String, min_value: float, max_value: float, value: float, step: float) -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.custom_minimum_size = Vector2(0.0, 34.0)
+
+	var name_label: Label = Label.new()
+	name_label.text = label_text
+	name_label.custom_minimum_size = Vector2(120.0, 0.0)
+	row.add_child(name_label)
+
+	var slider: HSlider = HSlider.new()
+	slider.min_value = min_value
+	slider.max_value = max_value
+	slider.step = step
+	slider.value = value
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.mouse_filter = Control.MOUSE_FILTER_STOP
+	row.add_child(slider)
+	_tuning_sliders[key] = slider
+
+	var value_label: Label = Label.new()
+	value_label.text = _format_tuning_number(value)
+	value_label.custom_minimum_size = Vector2(58.0, 0.0)
+	row.add_child(value_label)
+
+	slider.value_changed.connect(_on_tuning_slider_changed.bind(key, value_label))
+	return row
+
+
+func _on_tuning_slider_changed(value: float, key: String, value_label: Label) -> void:
+	match key:
+		"x":
+			_character_pos.x = value
+		"y":
+			_character_pos.y = value
+		"scale":
+			_character_scale = value
+		"whip_density":
+			_whip_density = value
+		"drift_density":
+			_drift_density = value
+		"whip_jitter":
+			_whip_jitter = value
+
+	value_label.text = _format_tuning_number(value)
+	_apply_character_tuning()
+
+
+func _reset_tuning_values() -> void:
+	_character_pos = DEFAULT_HOLOGIRL_POS
+	_character_scale = 1.0
+	_whip_density = 0.55
+	_drift_density = 0.70
+	_whip_jitter = 5.0
+	_set_slider_value("x", _character_pos.x)
+	_set_slider_value("y", _character_pos.y)
+	_set_slider_value("scale", _character_scale)
+	_set_slider_value("whip_density", _whip_density)
+	_set_slider_value("drift_density", _drift_density)
+	_set_slider_value("whip_jitter", _whip_jitter)
+	_apply_character_tuning()
+
+
+func _set_slider_value(key: String, value: float) -> void:
+	if _tuning_sliders.has(key):
+		_tuning_sliders[key].value = value
+
+
+func _print_tuning_values() -> void:
+	var values: String = _tuning_values_text()
+	DisplayServer.clipboard_set(values)
+	print(values)
+
+
+func _update_tuning_values_label() -> void:
+	if _tuning_values_label != null:
+		_tuning_values_label.text = _tuning_values_text()
+
+
+func _tuning_values_text() -> String:
+	return "x=%s y=%s scale=%s whip_density=%s drift_density=%s gold_jitter=%s" % [
+		_format_tuning_number(_character_pos.x),
+		_format_tuning_number(_character_pos.y),
+		_format_tuning_number(_character_scale),
+		_format_tuning_number(_whip_density),
+		_format_tuning_number(_drift_density),
+		_format_tuning_number(_whip_jitter),
+	]
+
+
+func _format_tuning_number(value: float) -> String:
+	return str(snappedf(value, 0.01))
 
 
 class HologirlSimpleBackground:

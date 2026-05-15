@@ -64,6 +64,8 @@ Hologirl's background should:
 - As of `v0.2.19`, Hologirl uses `CustomCharacterSelectBg` to load `res://Hologirl/scenes/character_select/hologirl_character_select_bg.tscn` through the vanilla background loader. Do not restore the old `CustomCharacterSelectEntry.CreateCharacterSelectScene()` visual path; it can draw over vanilla UI depending on BaseLib node ordering.
 - Particle emitters should be tied to image content, not hand-estimated screen coordinates. The current scene samples gold pixels from the whip and blue pixels from the hologram body, then maps those normalized image points into the displayed character rectangle.
 - Background palette direction: muted indigo/blue-violet base, darker lower band, limited dusty violet structure, cyan hologram accent, and gold projected-light accent. Avoid making the scene dominantly pink so it does not collapse into Necrobinder's color space.
+- `v0.2.21` intentionally ships a temporary in-game `HologirlTuningPanel` on the character-select background. It is a calibration tool for choosing Hologirl's X/Y/scale, whip particle density, drift density, and gold jitter inside the real game layout. Remove or hide this panel once the final values are confirmed.
+- Default particle direction after `v0.2.21`: fewer gold sparkles, smaller sparkles, lower background glow density, and tighter gold jitter. Keep whip sparks cute and crisp rather than smoky.
 
 ## Open Questions
 
