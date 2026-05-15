@@ -4,12 +4,15 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 version="${1:-"$("$repo_root/scripts/mod-version.sh")"}"
 tag="$version"
-asset="$repo_root/dist/Hologirl-$version.zip"
-title="Hologirl $version"
-notes_file="$repo_root/docs/releases/$version.md"
+if [[ "$tag" != v* ]]; then
+  tag="v$tag"
+fi
+asset="$repo_root/dist/Hologirl-$tag.zip"
+title="Hologirl $tag"
+notes_file="$repo_root/docs/releases/$tag.md"
 notes="${2:-""}"
 
-"$repo_root/scripts/package.sh" "$version"
+"$repo_root/scripts/package.sh" "$tag"
 
 cd "$repo_root"
 
@@ -19,7 +22,7 @@ if gh release view "$tag" >/dev/null 2>&1; then
     gh release edit "$tag" --latest --prerelease=false --title "$title" --notes-file "$notes_file"
   else
     if [[ -z "$notes" ]]; then
-      notes="Playable Hologirl prototype $version."
+      notes="Playable Hologirl prototype $tag."
     fi
     gh release edit "$tag" --latest --prerelease=false --title "$title" --notes "$notes"
   fi
@@ -28,7 +31,7 @@ else
     gh release create "$tag" "$asset" --latest --title "$title" --notes-file "$notes_file"
   else
     if [[ -z "$notes" ]]; then
-      notes="Playable Hologirl prototype $version."
+      notes="Playable Hologirl prototype $tag."
     fi
     gh release create "$tag" "$asset" --latest --title "$title" --notes "$notes"
   fi

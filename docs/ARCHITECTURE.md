@@ -125,6 +125,7 @@ scripts/release.sh
 - `scripts/export-pck-godot.sh` is the direct Godot/MegaDot PCK export helper. It sets `DOTNET_ROOT` to `/home/alex/.dotnet` by default and prepends it to `PATH` for Godot's C# tooling.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
+- `Hologirl.json` stores the plain semantic version without a leading `v`. GitHub release tags and release-note filenames keep the `v` prefix, and `scripts/release.sh` normalizes either input form to the tagged form.
 
 The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. Use the Godot/MegaDot export path when shipping vanilla-style character-select scenes, `GpuParticles2D`, or other resources that require Godot import metadata.
 

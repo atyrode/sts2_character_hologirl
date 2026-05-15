@@ -5,9 +5,9 @@ const DEFAULT_HOLOGIRL_POS: Vector2 = Vector2(842.0, 120.0)
 const DEFAULT_HOLOGIRL_SIZE: Vector2 = Vector2(1180.0, 787.0)
 const SHOW_TUNING_PANEL: bool = true
 const TUNING_PANEL_MARGIN: Vector2 = Vector2(24.0, 24.0)
-const DEFAULT_HOLOGIRL_SCALE: float = 1.49
-const DEFAULT_WHIP_DENSITY: float = 1.05
-const DEFAULT_DRIFT_DENSITY: float = 0.29
+const DEFAULT_HOLOGIRL_SCALE: float = 1.51
+const DEFAULT_WHIP_DENSITY: float = 5.0
+const DEFAULT_DRIFT_DENSITY: float = 1.3
 const DEFAULT_WHIP_JITTER: float = 80.0
 const BACKGROUND_VARIANT_NAMES: Array[String] = [
 	"Signal Bloom",
@@ -55,12 +55,14 @@ static var _saved_character_scale: float = DEFAULT_HOLOGIRL_SCALE
 static var _saved_whip_density: float = DEFAULT_WHIP_DENSITY
 static var _saved_drift_density: float = DEFAULT_DRIFT_DENSITY
 static var _saved_whip_jitter: float = DEFAULT_WHIP_JITTER
-static var _saved_background_variant: int = 0
-static var _saved_character_variant: int = 0
+static var _saved_background_variant: int = 9
+static var _saved_character_variant: int = 2
 
 var _canvas: Control
 var _background: TextureRect
 var _character: TextureRect
+var _body_motion_layer: TextureRect
+var _whip_motion_layer: TextureRect
 var _back_particle_layer: Control
 var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
@@ -82,8 +84,8 @@ var _whip_density: float = DEFAULT_WHIP_DENSITY
 var _drift_density: float = DEFAULT_DRIFT_DENSITY
 var _glow_density: float = 0.10
 var _whip_jitter: float = DEFAULT_WHIP_JITTER
-var _background_variant: int = 0
-var _character_variant: int = 0
+var _background_variant: int = 9
+var _character_variant: int = 2
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -107,6 +109,7 @@ func _notification(what: int) -> void:
 
 func _process(delta: float) -> void:
 	_apply_tuning_panel_layout()
+	_animate_character_motion_layers()
 
 	_spark_timer -= delta
 	_drift_timer -= delta
@@ -165,6 +168,13 @@ func _build_scene() -> void:
 	_character.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_character.material = _create_chroma_key_material()
 	_canvas.add_child(_character)
+
+	_body_motion_layer = _create_character_motion_layer("HologramMotionLayer", character_texture, false)
+	_canvas.add_child(_body_motion_layer)
+
+	_whip_motion_layer = _create_character_motion_layer("WhipMotionLayer", character_texture, true)
+	_canvas.add_child(_whip_motion_layer)
+
 	_apply_character_tuning()
 
 	_front_particle_layer = _create_particle_layer("HologirlFrontParticles")
@@ -187,6 +197,18 @@ func _create_particle_layer(layer_name: String) -> Control:
 func _load_character_texture() -> Texture2D:
 	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
 	return load(CHARACTER_VARIANT_PATHS[index])
+
+
+func _create_character_motion_layer(layer_name: String, texture: Texture2D, whip_only: bool) -> TextureRect:
+	var layer: TextureRect = TextureRect.new()
+	layer.name = layer_name
+	layer.texture = texture
+	layer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	layer.stretch_mode = TextureRect.STRETCH_SCALE
+	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.material = _create_motion_mask_material(whip_only)
+	layer.modulate = Color(1.0, 1.0, 1.0, 0.38 if whip_only else 0.24)
+	return layer
 
 
 func _build_emitters(texture: Texture2D) -> void:
@@ -290,6 +312,30 @@ void fragment() {
 	return material
 
 
+func _create_motion_mask_material(whip_only: bool) -> ShaderMaterial:
+	var shader: Shader = Shader.new()
+	shader.code = """
+shader_type canvas_item;
+uniform bool whip_only = false;
+uniform vec4 key_color : source_color = vec4(0.0, 1.0, 0.0, 1.0);
+
+void fragment() {
+	vec4 tex = texture(TEXTURE, UV);
+	float keyed = step(0.46, distance(tex.rgb, key_color.rgb));
+	bool gold = tex.r > 0.68 && tex.g > 0.42 && tex.b < 0.32 && tex.r > tex.b * 1.8;
+	bool blue = tex.b > 0.42 && tex.g > 0.30 && tex.r < 0.48 && tex.b > tex.r * 1.35;
+	float selected = whip_only ? float(gold) : float(blue);
+	tex.a *= keyed * selected;
+	COLOR = tex;
+}
+"""
+
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = shader
+	material.set_shader_parameter("whip_only", whip_only)
+	return material
+
+
 func _spawn_selection_burst() -> void:
 	for i in 10:
 		_spawn_whip_spark(true)
@@ -369,7 +415,33 @@ func _apply_character_tuning() -> void:
 
 	_character.position = _character_pos
 	_character.size = _current_character_size()
+	_character.pivot_offset = _character.size * 0.5
+	_apply_motion_layer_base_transform(_body_motion_layer)
+	_apply_motion_layer_base_transform(_whip_motion_layer)
 	_update_tuning_values_label()
+
+
+func _apply_motion_layer_base_transform(layer: TextureRect) -> void:
+	if layer == null:
+		return
+
+	layer.position = _character_pos
+	layer.size = _current_character_size()
+	layer.pivot_offset = layer.size * 0.5
+
+
+func _animate_character_motion_layers() -> void:
+	if _character == null:
+		return
+
+	var t: float = Time.get_ticks_msec() / 1000.0
+	if _body_motion_layer != null:
+		_body_motion_layer.position = _character_pos + Vector2(sin(t * 1.15) * 2.4, sin(t * 0.72 + 1.2) * 1.2)
+		_body_motion_layer.rotation = sin(t * 0.85) * 0.0025
+
+	if _whip_motion_layer != null:
+		_whip_motion_layer.position = _character_pos + Vector2(sin(t * 1.45 + 0.8) * 3.2, sin(t * 1.05) * 1.8)
+		_whip_motion_layer.rotation = sin(t * 0.95 + 0.4) * 0.006
 
 
 func _build_tuning_panel() -> PanelContainer:
@@ -580,9 +652,14 @@ func _apply_character_variant() -> void:
 
 	var character_texture: Texture2D = _load_character_texture()
 	_character.texture = character_texture
+	if _body_motion_layer != null:
+		_body_motion_layer.texture = character_texture
+	if _whip_motion_layer != null:
+		_whip_motion_layer.texture = character_texture
 	_build_emitters(character_texture)
 	_clear_particle_layer(_back_particle_layer)
 	_clear_particle_layer(_front_particle_layer)
+	_apply_character_tuning()
 	_spawn_selection_burst()
 
 
@@ -614,8 +691,8 @@ func _reset_tuning_values() -> void:
 	_whip_density = DEFAULT_WHIP_DENSITY
 	_drift_density = DEFAULT_DRIFT_DENSITY
 	_whip_jitter = DEFAULT_WHIP_JITTER
-	_background_variant = 0
-	_character_variant = 0
+	_background_variant = 9
+	_character_variant = 2
 	_set_slider_value("x", _character_pos.x)
 	_set_slider_value("y", _character_pos.y)
 	_set_slider_value("scale", _character_scale)
