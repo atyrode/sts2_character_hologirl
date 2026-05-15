@@ -33,6 +33,18 @@ func _init() -> void:
 		quit(1)
 		return
 
+	if tuning_panel.visible:
+		push_error("Hologirl character-select tuning panel should start hidden behind F3.")
+		quit(1)
+		return
+
+	node._toggle_tuning_panel_visible()
+	await process_frame
+	if not tuning_panel.visible:
+		push_error("Hologirl character-select tuning panel did not become visible after toggling.")
+		quit(1)
+		return
+
 	if node.find_child("TuningValues", true, false) != null:
 		push_error("Hologirl character-select tuner still shows the redundant values summary.")
 		quit(1)
@@ -102,43 +114,15 @@ func _init() -> void:
 		quit(1)
 		return
 
-	restored_node._character_variant = 4
-	restored_node._apply_character_variant()
-	await process_frame
-	var puppet := restored_node.find_child("HologirlPuppetAttempt002", true, false)
 	var stable_cutout := restored_node.find_child("HologirlLayer", true, false)
-	var puppet_tuning_section := restored_node.find_child("PuppetTuningSection", true, false)
-	var puppet_part_selector := restored_node.find_child("PuppetPart", true, false)
-	if puppet == null or not puppet.visible:
-		push_error("Hologirl puppet attempt 002 did not become visible after selecting the runtime variant.")
+	if stable_cutout == null or not stable_cutout.visible:
+		push_error("Hologirl stable cutout is not visible after removing the runtime puppet variant.")
 		quit(1)
 		return
-	if stable_cutout == null or stable_cutout.visible:
-		push_error("Hologirl stable cutout is still visible over the puppet runtime variant.")
+	if restored_node.find_child("HologirlPuppetAttempt002", true, false) != null:
+		push_error("Hologirl runtime puppet node still exists after reverting to PNG cutouts.")
 		quit(1)
 		return
-	if puppet.get_child_count() < 10:
-		push_error("Hologirl puppet attempt 002 did not build enough runtime parts.")
-		quit(1)
-		return
-	if puppet_tuning_section == null or not puppet_tuning_section.visible:
-		push_error("Hologirl puppet tuning section did not become visible for the puppet runtime variant.")
-		quit(1)
-		return
-	if puppet_part_selector == null or puppet_part_selector.item_count < 10:
-		push_error("Hologirl puppet part selector did not include the runtime puppet parts.")
-		quit(1)
-		return
-	for holder in puppet.get_children():
-		if holder.get_child_count() == 0:
-			push_error("Hologirl puppet runtime part has no sprite: %s" % holder.name)
-			quit(1)
-			return
-		var sprite := holder.get_child(0) as Sprite2D
-		if sprite == null or sprite.texture == null:
-			push_error("Hologirl puppet runtime part has no texture: %s" % holder.name)
-			quit(1)
-			return
 
 	print("Hologirl character-select scene smoke passed.")
 	quit(0)
