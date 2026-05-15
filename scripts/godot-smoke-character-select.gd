@@ -107,6 +107,8 @@ func _init() -> void:
 	await process_frame
 	var puppet := restored_node.find_child("HologirlPuppetAttempt002", true, false)
 	var stable_cutout := restored_node.find_child("HologirlLayer", true, false)
+	var puppet_tuning_section := restored_node.find_child("PuppetTuningSection", true, false)
+	var puppet_part_selector := restored_node.find_child("PuppetPart", true, false)
 	if puppet == null or not puppet.visible:
 		push_error("Hologirl puppet attempt 002 did not become visible after selecting the runtime variant.")
 		quit(1)
@@ -117,6 +119,14 @@ func _init() -> void:
 		return
 	if puppet.get_child_count() < 10:
 		push_error("Hologirl puppet attempt 002 did not build enough runtime parts.")
+		quit(1)
+		return
+	if puppet_tuning_section == null or not puppet_tuning_section.visible:
+		push_error("Hologirl puppet tuning section did not become visible for the puppet runtime variant.")
+		quit(1)
+		return
+	if puppet_part_selector == null or puppet_part_selector.item_count < 10:
+		push_error("Hologirl puppet part selector did not include the runtime puppet parts.")
 		quit(1)
 		return
 	for holder in puppet.get_children():

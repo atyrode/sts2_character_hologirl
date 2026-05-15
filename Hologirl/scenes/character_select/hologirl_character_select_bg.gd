@@ -92,12 +92,17 @@ static var _saved_drift_density: float = DEFAULT_DRIFT_DENSITY
 static var _saved_whip_jitter: float = DEFAULT_WHIP_JITTER
 static var _saved_background_variant: int = 9
 static var _saved_character_variant: int = 2
+static var _saved_puppet_part_tuning: Array[Dictionary] = []
+static var _saved_puppet_motion_enabled: bool = true
 
 var _canvas: Control
 var _background: TextureRect
 var _character: TextureRect
 var _puppet_root: Node2D
 var _puppet_parts: Array[Node2D] = []
+var _puppet_part_tuning: Array[Dictionary] = []
+var _selected_puppet_part: int = 0
+var _puppet_motion_enabled: bool = true
 var _back_particle_layer: Control
 var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
@@ -105,6 +110,10 @@ var _tuning_body: VBoxContainer
 var _collapse_button: Button
 var _background_selector: OptionButton
 var _character_selector: OptionButton
+var _puppet_tuning_section: VBoxContainer
+var _puppet_part_selector: OptionButton
+var _puppet_motion_toggle: CheckBox
+var _puppet_sliders: Dictionary = {}
 var _tuning_sliders: Dictionary = {}
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _whip_emitters: Array[Vector2] = []
@@ -240,6 +249,29 @@ func _uses_puppet_character() -> bool:
 	return _character_variant == PUPPET_CHARACTER_VARIANT
 
 
+func _default_puppet_part_tuning() -> Array[Dictionary]:
+	var values: Array[Dictionary] = []
+	for _part in PUPPET_PARTS:
+		values.append({
+			"offset": Vector2.ZERO,
+			"rotation": 0.0,
+			"scale": 1.0,
+		})
+	return values
+
+
+func _ensure_puppet_part_tuning() -> void:
+	while _puppet_part_tuning.size() < PUPPET_PARTS.size():
+		_puppet_part_tuning.append({
+			"offset": Vector2.ZERO,
+			"rotation": 0.0,
+			"scale": 1.0,
+		})
+
+	if _puppet_part_tuning.size() > PUPPET_PARTS.size():
+		_puppet_part_tuning.resize(PUPPET_PARTS.size())
+
+
 func _build_puppet_parts() -> void:
 	if _puppet_root == null:
 		return
@@ -248,6 +280,7 @@ func _build_puppet_parts() -> void:
 		child.queue_free()
 
 	_puppet_parts.clear()
+	_ensure_puppet_part_tuning()
 	for part in PUPPET_PARTS:
 		var holder := Node2D.new()
 		holder.name = part["name"]
@@ -261,6 +294,26 @@ func _build_puppet_parts() -> void:
 		sprite.position = -part["pivot"]
 		holder.add_child(sprite)
 		_puppet_parts.append(holder)
+
+	_apply_all_puppet_part_tuning()
+
+
+func _apply_all_puppet_part_tuning() -> void:
+	for index in _puppet_parts.size():
+		_apply_puppet_part_tuning(index)
+
+
+func _apply_puppet_part_tuning(index: int, motion_rotation: float = 0.0) -> void:
+	if index < 0 or index >= _puppet_parts.size() or index >= PUPPET_PARTS.size():
+		return
+
+	_ensure_puppet_part_tuning()
+	var holder: Node2D = _puppet_parts[index]
+	var part: Dictionary = PUPPET_PARTS[index]
+	var tuning: Dictionary = _puppet_part_tuning[index]
+	holder.position = part["pos"] + tuning["offset"]
+	holder.rotation = deg_to_rad(tuning["rotation"]) + motion_rotation
+	holder.scale = Vector2.ONE * tuning["scale"]
 
 
 func _load_texture(path: String) -> Texture2D:
@@ -464,6 +517,7 @@ func _apply_character_tuning() -> void:
 	_puppet_root.visible = _uses_puppet_character()
 	_puppet_root.position = _character_pos + Vector2(_current_character_size().x * 0.07, _current_character_size().y * 0.03)
 	_puppet_root.scale = Vector2.ONE * (_current_character_size().x / PUPPET_BASE_SIZE.x)
+	_apply_puppet_tuning_section_visibility()
 	_update_tuning_values_label()
 
 
@@ -473,9 +527,9 @@ func _animate_puppet_parts() -> void:
 
 	var t: float = Time.get_ticks_msec() / 1000.0
 	for index in _puppet_parts.size():
-		var holder: Node2D = _puppet_parts[index]
 		var part: Dictionary = PUPPET_PARTS[index]
-		holder.rotation = sin(t * 0.85 + part["phase"]) * part["amp"]
+		var motion_rotation: float = sin(t * 0.85 + part["phase"]) * part["amp"] if _puppet_motion_enabled else 0.0
+		_apply_puppet_part_tuning(index, motion_rotation)
 
 
 func _build_tuning_panel() -> PanelContainer:
@@ -523,6 +577,7 @@ func _build_tuning_panel() -> PanelContainer:
 	_tuning_body.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 80.0, _whip_jitter, 0.5))
 	_tuning_body.add_child(_create_background_selector())
 	_tuning_body.add_child(_create_character_selector())
+	_tuning_body.add_child(_create_puppet_tuning_section())
 
 	var button_row: HBoxContainer = HBoxContainer.new()
 	_tuning_body.add_child(button_row)
@@ -614,6 +669,85 @@ func _on_tuning_slider_changed(value: float, key: String, value_label: Label) ->
 	_save_tuning_values()
 
 
+func _on_puppet_part_selected(index: int) -> void:
+	_selected_puppet_part = clampi(index, 0, PUPPET_PARTS.size() - 1)
+	_refresh_puppet_tuning_controls()
+
+
+func _on_puppet_slider_changed(value: float, key: String, value_label: Label) -> void:
+	_ensure_puppet_part_tuning()
+	var index: int = clampi(_selected_puppet_part, 0, _puppet_part_tuning.size() - 1)
+	var tuning: Dictionary = _puppet_part_tuning[index]
+	match key:
+		"x":
+			tuning["offset"] = Vector2(value, tuning["offset"].y)
+		"y":
+			tuning["offset"] = Vector2(tuning["offset"].x, value)
+		"rotation":
+			tuning["rotation"] = value
+		"scale":
+			tuning["scale"] = value
+	_puppet_part_tuning[index] = tuning
+	value_label.text = _format_tuning_number(value)
+	_apply_puppet_part_tuning(index)
+	_save_tuning_values()
+
+
+func _on_puppet_motion_toggled(enabled: bool) -> void:
+	_puppet_motion_enabled = enabled
+	_apply_all_puppet_part_tuning()
+	_save_tuning_values()
+
+
+func _refresh_puppet_tuning_controls() -> void:
+	if _puppet_sliders.is_empty():
+		return
+
+	_ensure_puppet_part_tuning()
+	var index: int = clampi(_selected_puppet_part, 0, _puppet_part_tuning.size() - 1)
+	var tuning: Dictionary = _puppet_part_tuning[index]
+	_set_puppet_slider_value("x", tuning["offset"].x)
+	_set_puppet_slider_value("y", tuning["offset"].y)
+	_set_puppet_slider_value("rotation", tuning["rotation"])
+	_set_puppet_slider_value("scale", tuning["scale"])
+	if _puppet_part_selector != null:
+		_puppet_part_selector.select(index)
+	if _puppet_motion_toggle != null:
+		_puppet_motion_toggle.button_pressed = _puppet_motion_enabled
+
+
+func _set_puppet_slider_value(key: String, value: float) -> void:
+	if _puppet_sliders.has(key):
+		_puppet_sliders[key].value = value
+
+
+func _apply_puppet_tuning_section_visibility() -> void:
+	if _puppet_tuning_section == null:
+		return
+
+	_puppet_tuning_section.visible = _uses_puppet_character()
+	_apply_tuning_panel_layout()
+
+
+func _reset_selected_puppet_part() -> void:
+	_ensure_puppet_part_tuning()
+	var index: int = clampi(_selected_puppet_part, 0, _puppet_part_tuning.size() - 1)
+	_puppet_part_tuning[index] = {
+		"offset": Vector2.ZERO,
+		"rotation": 0.0,
+		"scale": 1.0,
+	}
+	_apply_puppet_part_tuning(index)
+	_refresh_puppet_tuning_controls()
+	_save_tuning_values()
+
+
+func _print_puppet_pose_values() -> void:
+	var values: String = _puppet_pose_values_text()
+	DisplayServer.clipboard_set(values)
+	print(values)
+
+
 func _create_background_selector() -> HBoxContainer:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.custom_minimum_size = Vector2(0.0, 34.0)
@@ -654,6 +788,89 @@ func _create_character_selector() -> HBoxContainer:
 	return row
 
 
+func _create_puppet_tuning_section() -> VBoxContainer:
+	_puppet_tuning_section = VBoxContainer.new()
+	_puppet_tuning_section.name = "PuppetTuningSection"
+
+	var separator := HSeparator.new()
+	_puppet_tuning_section.add_child(separator)
+
+	var part_row := HBoxContainer.new()
+	part_row.custom_minimum_size = Vector2(0.0, 34.0)
+	_puppet_tuning_section.add_child(part_row)
+
+	var part_label := Label.new()
+	part_label.text = "Puppet part"
+	part_label.custom_minimum_size = Vector2(120.0, 0.0)
+	part_row.add_child(part_label)
+
+	_puppet_part_selector = OptionButton.new()
+	_puppet_part_selector.name = "PuppetPart"
+	_puppet_part_selector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_puppet_part_selector.mouse_filter = Control.MOUSE_FILTER_STOP
+	for i in PUPPET_PARTS.size():
+		_puppet_part_selector.add_item(PUPPET_PARTS[i]["name"], i)
+	_puppet_part_selector.select(_selected_puppet_part)
+	_puppet_part_selector.item_selected.connect(_on_puppet_part_selected)
+	part_row.add_child(_puppet_part_selector)
+
+	_puppet_tuning_section.add_child(_create_puppet_slider("Part X", "x", -650.0, 650.0, 0.0, 1.0))
+	_puppet_tuning_section.add_child(_create_puppet_slider("Part Y", "y", -650.0, 650.0, 0.0, 1.0))
+	_puppet_tuning_section.add_child(_create_puppet_slider("Rotation", "rotation", -180.0, 180.0, 0.0, 0.5))
+	_puppet_tuning_section.add_child(_create_puppet_slider("Part scale", "scale", 0.10, 2.50, 1.0, 0.01))
+
+	var control_row := HBoxContainer.new()
+	_puppet_tuning_section.add_child(control_row)
+
+	_puppet_motion_toggle = CheckBox.new()
+	_puppet_motion_toggle.text = "Motion"
+	_puppet_motion_toggle.button_pressed = _puppet_motion_enabled
+	_puppet_motion_toggle.toggled.connect(_on_puppet_motion_toggled)
+	control_row.add_child(_puppet_motion_toggle)
+
+	var reset_part_button := Button.new()
+	reset_part_button.text = "Reset Part"
+	reset_part_button.pressed.connect(_reset_selected_puppet_part)
+	control_row.add_child(reset_part_button)
+
+	var print_puppet_button := Button.new()
+	print_puppet_button.text = "Copy Pose"
+	print_puppet_button.pressed.connect(_print_puppet_pose_values)
+	control_row.add_child(print_puppet_button)
+
+	_refresh_puppet_tuning_controls()
+	_apply_puppet_tuning_section_visibility()
+	return _puppet_tuning_section
+
+
+func _create_puppet_slider(label_text: String, key: String, min_value: float, max_value: float, value: float, step: float) -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.custom_minimum_size = Vector2(0.0, 34.0)
+
+	var name_label: Label = Label.new()
+	name_label.text = label_text
+	name_label.custom_minimum_size = Vector2(120.0, 0.0)
+	row.add_child(name_label)
+
+	var slider: HSlider = HSlider.new()
+	slider.min_value = min_value
+	slider.max_value = max_value
+	slider.step = step
+	slider.value = value
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.mouse_filter = Control.MOUSE_FILTER_STOP
+	row.add_child(slider)
+	_puppet_sliders[key] = slider
+
+	var value_label: Label = Label.new()
+	value_label.text = _format_tuning_number(value)
+	value_label.custom_minimum_size = Vector2(58.0, 0.0)
+	row.add_child(value_label)
+
+	slider.value_changed.connect(_on_puppet_slider_changed.bind(key, value_label))
+	return row
+
+
 func _on_background_variant_selected(index: int) -> void:
 	_background_variant = clampi(index, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
 	_apply_background_variant()
@@ -672,6 +889,7 @@ func _apply_background_variant() -> void:
 func _on_character_variant_selected(index: int) -> void:
 	_character_variant = clampi(index, 0, CHARACTER_VARIANT_NAMES.size() - 1)
 	_apply_character_variant()
+	_apply_puppet_tuning_section_visibility()
 	_update_tuning_values_label()
 	_save_tuning_values()
 
@@ -708,7 +926,7 @@ func _toggle_tuning_panel_collapsed() -> void:
 
 
 func _current_tuning_panel_height() -> float:
-	return 430.0 if _tuning_body == null or _tuning_body.visible else 56.0
+	return 650.0 if _tuning_body == null or _tuning_body.visible else 56.0
 
 
 func _reset_tuning_values() -> void:
@@ -719,6 +937,9 @@ func _reset_tuning_values() -> void:
 	_whip_jitter = DEFAULT_WHIP_JITTER
 	_background_variant = 9
 	_character_variant = 2
+	_selected_puppet_part = 0
+	_puppet_part_tuning = _default_puppet_part_tuning()
+	_puppet_motion_enabled = true
 	_set_slider_value("x", _character_pos.x)
 	_set_slider_value("y", _character_pos.y)
 	_set_slider_value("scale", _character_scale)
@@ -729,6 +950,9 @@ func _reset_tuning_values() -> void:
 		_background_selector.select(_background_variant)
 	if _character_selector != null:
 		_character_selector.select(_character_variant)
+	if _puppet_part_selector != null:
+		_puppet_part_selector.select(_selected_puppet_part)
+	_refresh_puppet_tuning_controls()
 	if _background != null:
 		_apply_background_variant()
 	if _character != null:
@@ -745,6 +969,9 @@ func _restore_saved_tuning_values() -> void:
 	_whip_jitter = _saved_whip_jitter
 	_background_variant = clampi(_saved_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
 	_character_variant = clampi(_saved_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)
+	_puppet_motion_enabled = _saved_puppet_motion_enabled
+	_puppet_part_tuning = _saved_puppet_part_tuning.duplicate(true) if not _saved_puppet_part_tuning.is_empty() else _default_puppet_part_tuning()
+	_ensure_puppet_part_tuning()
 
 
 func _save_tuning_values() -> void:
@@ -755,6 +982,8 @@ func _save_tuning_values() -> void:
 	_saved_whip_jitter = _whip_jitter
 	_saved_background_variant = _background_variant
 	_saved_character_variant = _character_variant
+	_saved_puppet_motion_enabled = _puppet_motion_enabled
+	_saved_puppet_part_tuning = _puppet_part_tuning.duplicate(true)
 
 
 func _set_slider_value(key: String, value: float) -> void:
@@ -783,6 +1012,23 @@ func _tuning_values_text() -> String:
 		BACKGROUND_VARIANT_NAMES[clampi(_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)],
 		CHARACTER_VARIANT_NAMES[clampi(_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)],
 	]
+
+
+func _puppet_pose_values_text() -> String:
+	_ensure_puppet_part_tuning()
+	var lines: Array[String] = ["puppet_motion=%s" % str(_puppet_motion_enabled).to_lower()]
+	for index in PUPPET_PARTS.size():
+		var part: Dictionary = PUPPET_PARTS[index]
+		var tuning: Dictionary = _puppet_part_tuning[index]
+		var offset: Vector2 = tuning["offset"]
+		lines.append("%s x=%s y=%s rotation=%s scale=%s" % [
+			part["name"],
+			_format_tuning_number(offset.x),
+			_format_tuning_number(offset.y),
+			_format_tuning_number(tuning["rotation"]),
+			_format_tuning_number(tuning["scale"]),
+		])
+	return "\n".join(lines)
 
 
 func _format_tuning_number(value: float) -> String:
