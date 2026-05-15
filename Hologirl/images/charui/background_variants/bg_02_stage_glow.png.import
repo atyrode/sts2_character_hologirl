@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jtbnsvctukw8"
-path="res://.godot/imported/bg_05_gold_halo.png-21221b31fab0cf9ffa419139d6b6d7c3.ctex"
+uid="uid://wis1nqg1736e"
+path="res://.godot/imported/bg_02_stage_glow.png-19f3d03a1e7ba4097dc78c6174a744b1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Hologirl/images/charui/background_variants/bg_05_gold_halo.png"
-dest_files=["res://.godot/imported/bg_05_gold_halo.png-21221b31fab0cf9ffa419139d6b6d7c3.ctex"]
+source_file="res://Hologirl/images/charui/background_variants/bg_02_stage_glow.png"
+dest_files=["res://.godot/imported/bg_02_stage_glow.png-19f3d03a1e7ba4097dc78c6174a744b1.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chmoomg0ccpgd"
-path="res://.godot/imported/bg_01_cyan_lightning.png-409f131ab0e0725b4d4cbe1931474246.ctex"
+uid="uid://bwspfanbc5c58"
+path="res://.godot/imported/bg_03_holo_drift.png-373e8f29e15131e789ee8e1a838f5b8b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Hologirl/images/charui/background_variants/bg_01_cyan_lightning.png"
-dest_files=["res://.godot/imported/bg_01_cyan_lightning.png-409f131ab0e0725b4d4cbe1931474246.ctex"]
+source_file="res://Hologirl/images/charui/background_variants/bg_03_holo_drift.png"
+dest_files=["res://.godot/imported/bg_03_holo_drift.png-373e8f29e15131e789ee8e1a838f5b8b.ctex"]
 
 [params]
 

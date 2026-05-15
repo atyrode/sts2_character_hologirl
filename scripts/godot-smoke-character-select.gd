@@ -50,7 +50,7 @@ func _init() -> void:
 	node._whip_density = 0.33
 	node._drift_density = 1.25
 	node._whip_jitter = 3.5
-	node._background_variant = 3
+	node._background_variant = 2
 	node._save_tuning_values()
 	node.queue_free()
 
@@ -74,7 +74,7 @@ func _init() -> void:
 		quit(1)
 		return
 
-	if restored_node._background_variant != 3:
+	if restored_node._background_variant != 2:
 		push_error("Hologirl character-select tuner did not restore saved background variant.")
 		quit(1)
 		return

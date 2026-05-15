@@ -11,18 +11,14 @@ const DEFAULT_WHIP_DENSITY: float = 1.05
 const DEFAULT_DRIFT_DENSITY: float = 0.29
 const DEFAULT_WHIP_JITTER: float = 80.0
 const BACKGROUND_VARIANT_NAMES: Array[String] = [
-	"Cyan Lightning",
-	"Cobalt Flame",
-	"Rose Curtain",
-	"Mint Signal",
-	"Gold Halo",
+	"Signal Bloom",
+	"Stage Glow",
+	"Holo Drift",
 ]
 const BACKGROUND_VARIANT_PATHS: Array[String] = [
-	"res://Hologirl/images/charui/background_variants/bg_01_cyan_lightning.png",
-	"res://Hologirl/images/charui/background_variants/bg_02_cobalt_flame.png",
-	"res://Hologirl/images/charui/background_variants/bg_03_rose_curtain.png",
-	"res://Hologirl/images/charui/background_variants/bg_04_mint_signal.png",
-	"res://Hologirl/images/charui/background_variants/bg_05_gold_halo.png",
+	"res://Hologirl/images/charui/background_variants/bg_01_signal_bloom.png",
+	"res://Hologirl/images/charui/background_variants/bg_02_stage_glow.png",
+	"res://Hologirl/images/charui/background_variants/bg_03_holo_drift.png",
 ]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
