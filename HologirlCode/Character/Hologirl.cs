@@ -5,6 +5,7 @@ using Hologirl.HologirlCode.Extensions;
 using Hologirl.HologirlCode.Relics;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
@@ -14,6 +15,7 @@ namespace Hologirl.HologirlCode.Character;
 public class Hologirl : CustomCharacterModel
 {
     public const string CharacterId = "Hologirl";
+    private const string TemporaryBaseCharacterId = "ironclad";
     
     public static readonly Color Color = new("aab2ff");
 
@@ -23,10 +25,32 @@ public class Hologirl : CustomCharacterModel
     public override bool HideFromVanillaCharacterSelect => false;
     public override bool AllowInVanillaRandomCharacterSelect => true;
     public override string CharacterSelectSfx => "";
-    public override string CustomAttackSfx => "";
-    public override string CustomCastSfx => "";
-    public override string CustomDeathSfx => "";
-    public override List<string> GetArchitectAttackVfx() => [];
+
+    // Hologirl has custom select/menu assets, but not a full run/combat rig yet.
+    // Keep this explicit while using CustomCharacterModel so missing run-start
+    // surfaces do not silently fall through template placeholder inheritance.
+    public override string CustomVisualPath => SceneHelper.GetScenePath($"creature_visuals/{TemporaryBaseCharacterId}");
+    public override string CustomTrailPath => SceneHelper.GetScenePath($"vfx/card_trail_{TemporaryBaseCharacterId}");
+    public override string CustomEnergyCounterPath => SceneHelper.GetScenePath($"combat/energy_counters/{TemporaryBaseCharacterId}_energy_counter");
+    public override string CustomRestSiteAnimPath => SceneHelper.GetScenePath($"rest_site/characters/{TemporaryBaseCharacterId}_rest_site");
+    public override string CustomMerchantAnimPath => SceneHelper.GetScenePath($"merchant/characters/{TemporaryBaseCharacterId}_merchant");
+    public override string CustomArmPointingTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_point.png");
+    public override string CustomArmRockTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_rock.png");
+    public override string CustomArmPaperTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_paper.png");
+    public override string CustomArmScissorsTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_scissors.png");
+    public override string CustomCharacterSelectTransitionPath => $"res://materials/transitions/{TemporaryBaseCharacterId}_transition_mat.tres";
+    public override string CharacterTransitionSfx => $"event:/sfx/ui/wipe_{TemporaryBaseCharacterId}";
+    public override string CustomAttackSfx => $"event:/sfx/characters/{TemporaryBaseCharacterId}/{TemporaryBaseCharacterId}_attack";
+    public override string CustomCastSfx => $"event:/sfx/characters/{TemporaryBaseCharacterId}/{TemporaryBaseCharacterId}_cast";
+    public override string CustomDeathSfx => $"event:/sfx/characters/{TemporaryBaseCharacterId}/{TemporaryBaseCharacterId}_die";
+    public override List<string> GetArchitectAttackVfx() =>
+    [
+        "vfx/vfx_attack_blunt",
+        "vfx/vfx_heavy_blunt",
+        "vfx/vfx_attack_slash",
+        "vfx/vfx_bloody_impact",
+        "vfx/vfx_rock_shatter"
+    ];
     
     public override IEnumerable<CardModel> StartingDeck => [
         ModelDb.Card<HoloStrike>(),

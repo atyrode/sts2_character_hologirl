@@ -32,6 +32,7 @@
 - [x] Set mod id and display name.
 - [x] Keep template placeholder assets until the first card is proven in-game.
 - [x] Move the character model off BaseLib's placeholder character class once Hologirl-owned select art and audio exist.
+- [x] Keep temporary in-run Ironclad asset routing explicit on `CustomCharacterModel` until Hologirl-owned combat/rest/transition assets exist.
 - [x] Build the DLL.
 - [x] Generate the PCK.
 - [x] Copy the mod folder outputs into the game `mods/` directory.
@@ -105,6 +106,7 @@
 ### 6. Polish Toward A Playable Public Build
 
 - [ ] Replace remaining placeholder relic, power, and UI art.
+- [ ] Replace explicit temporary Ironclad in-run routing with Hologirl-owned combat visual, transition, energy counter, rest/merchant animation, hand textures, and combat sounds.
 - [ ] Review all wording for keywords, tooltips, and line breaks.
 - [ ] Review mod compatibility risks before adding global hooks or patches.
 - [ ] Test install/update through GitHub release and the mod manager.
