@@ -38,6 +38,7 @@ This is not the same stack as Slay the Spire 1 Java mods.
   https://github.com/Alchyr/ModTemplate-StS2/wiki/Modding-Basics
 - Mod template testing wiki:
   https://github.com/Alchyr/ModTemplate-StS2/wiki/Testing-and-Debugging
+- Hologirl's in-run F3 debug panel lives under `HologirlCode/Debug/` and is injected after `NRun._Ready`. It delegates execution to the game's `DevConsole.ProcessCommand` path so room, fight, and event jumps use the same backend as the built-in console.
 - `harsh2204/STS2-Buu`: working playable character mod reference.
   https://github.com/harsh2204/STS2-Buu
 - Nexus Mods `The Hermit`: working playable character mod, with notes that STS2 beta updates can break mod APIs.

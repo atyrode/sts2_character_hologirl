@@ -123,5 +123,6 @@
 
 - [ ] Enable BaseLib's log window on startup, or use the dev console `showlog` command.
 - [ ] Use the dev console to inspect commands with `help`.
+- [x] Add Hologirl's in-run F3 debug panel. It is a thin UI over the game's dev console commands rather than a separate room/combat implementation.
 - [ ] Use saved logs from the platform log directory when crashes or softlocks occur.
 - [ ] Record every successful test step and every failure mode in this checklist.
