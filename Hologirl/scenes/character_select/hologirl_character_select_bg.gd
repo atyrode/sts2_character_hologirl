@@ -16,6 +16,7 @@ const DEFAULT_SHIMMER_STRENGTH: float = 0.04
 const DEFAULT_SCANLINE_STRENGTH: float = 0.34
 const DEFAULT_SCANLINE_SPEED: float = 0.43
 const DEFAULT_SCANLINE_SPACING: float = 87.0
+const DEFAULT_BODY_OPACITY: float = 0.86
 const BACKGROUND_VARIANT_NAMES: Array[String] = [
 	"Signal Bloom",
 	"Stage Glow",
@@ -59,6 +60,11 @@ const CHARACTER_VARIANT_NAMES: Array[String] = [
 	"Thin Outline Spire",
 	"Thin Outline Calm",
 	"Thin Outline Angular",
+	"Humanoid Hologram A",
+	"Humanoid Hologram B",
+	"Humanoid Hologram C",
+	"Humanoid Hologram D",
+	"Humanoid Hologram E",
 ]
 const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_01_current.png",
@@ -75,6 +81,11 @@ const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_12_thin_outline_spire.png",
 	"res://Hologirl/images/charui/character_variants/character_13_thin_outline_calm.png",
 	"res://Hologirl/images/charui/character_variants/character_14_thin_outline_angular.png",
+	"res://Hologirl/images/charui/character_variants/character_15_humanoid_hologram_a.png",
+	"res://Hologirl/images/charui/character_variants/character_16_humanoid_hologram_b.png",
+	"res://Hologirl/images/charui/character_variants/character_17_humanoid_hologram_c.png",
+	"res://Hologirl/images/charui/character_variants/character_18_humanoid_hologram_d.png",
+	"res://Hologirl/images/charui/character_variants/character_19_humanoid_hologram_e.png",
 ]
 const CHARACTER_HOLOGRAM_TINTS: Array[float] = [
 	0.0,
@@ -91,8 +102,18 @@ const CHARACTER_HOLOGRAM_TINTS: Array[float] = [
 	0.18,
 	0.18,
 	0.18,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
 ]
 const CHARACTER_TEAR_STRENGTHS: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
 	0.0,
 	0.0,
 	0.0,
@@ -123,12 +144,22 @@ const CHARACTER_TEAR_FREQUENCIES: Array[float] = [
 	24.0,
 	24.0,
 	24.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
 ]
 const CHARACTER_SHIMMER_STRENGTHS: Array[float] = [
 	0.0,
 	0.0,
 	0.0,
 	0.0,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
 	0.04,
 	0.04,
 	0.04,
@@ -155,6 +186,11 @@ const CHARACTER_SCANLINE_STRENGTHS: Array[float] = [
 	0.09,
 	0.09,
 	0.09,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
 ]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
@@ -169,6 +205,7 @@ static var _saved_shimmer_strength: float = DEFAULT_SHIMMER_STRENGTH
 static var _saved_scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
 static var _saved_scanline_speed: float = DEFAULT_SCANLINE_SPEED
 static var _saved_scanline_spacing: float = DEFAULT_SCANLINE_SPACING
+static var _saved_body_opacity: float = DEFAULT_BODY_OPACITY
 static var _saved_background_variant: int = 9
 static var _saved_character_variant: int = 10
 
@@ -203,6 +240,7 @@ var _shimmer_strength: float = DEFAULT_SHIMMER_STRENGTH
 var _scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
 var _scanline_speed: float = DEFAULT_SCANLINE_SPEED
 var _scanline_spacing: float = DEFAULT_SCANLINE_SPACING
+var _body_opacity: float = DEFAULT_BODY_OPACITY
 var _background_variant: int = 9
 var _character_variant: int = 10
 
@@ -413,6 +451,7 @@ uniform float shimmer_strength = 0.0;
 uniform float scanline_strength = 0.0;
 uniform float scanline_speed = 0.65;
 uniform float scanline_spacing = 56.0;
+uniform float body_opacity = 1.0;
 uniform vec3 hologram_color = vec3(0.18, 0.82, 1.0);
 
 void fragment() {
@@ -433,6 +472,8 @@ void fragment() {
 	float scanline_band = smoothstep(0.02, 0.08, scanline_phase) * (1.0 - smoothstep(0.16, 0.30, scanline_phase));
 	tex.rgb += hologram_color * scanline_band * scanline_strength * 0.22;
 	tex.a *= 1.0 - scanline_band * scanline_strength * 0.18;
+	float gold_preserve = step(0.62, tex.r) * step(0.36, tex.g) * step(tex.b, 0.36) * step(tex.b * 1.55, tex.r);
+	tex.a *= mix(body_opacity, 1.0, gold_preserve);
 	tex.a *= keyed;
 	COLOR = tex;
 }
@@ -576,6 +617,7 @@ func _build_tuning_panel() -> PanelContainer:
 	_tuning_body.add_child(_create_tuning_slider("Scanline", "scanline_strength", 0.0, 1.5, _scanline_strength, 0.01))
 	_tuning_body.add_child(_create_tuning_slider("Scan speed", "scanline_speed", -5.0, 5.0, _scanline_speed, 0.01))
 	_tuning_body.add_child(_create_tuning_slider("Scan spacing", "scanline_spacing", 4.0, 180.0, _scanline_spacing, 1.0))
+	_tuning_body.add_child(_create_tuning_slider("Body opacity", "body_opacity", 0.25, 1.25, _body_opacity, 0.01))
 	_tuning_body.add_child(_create_background_selector())
 	_tuning_body.add_child(_create_character_selector())
 
@@ -688,6 +730,9 @@ func _on_tuning_slider_changed(value: float, key: String, value_label: Label) ->
 		"scanline_spacing":
 			_scanline_spacing = value
 			_apply_character_effect_profile()
+		"body_opacity":
+			_body_opacity = value
+			_apply_character_effect_profile()
 
 	value_label.text = _format_tuning_number(value)
 	_apply_character_tuning()
@@ -787,6 +832,7 @@ func _apply_character_effect_profile() -> void:
 	material.set_shader_parameter("scanline_strength", _scanline_strength)
 	material.set_shader_parameter("scanline_speed", _scanline_speed)
 	material.set_shader_parameter("scanline_spacing", _scanline_spacing)
+	material.set_shader_parameter("body_opacity", _body_opacity)
 
 
 func _apply_character_profile_defaults(index: int) -> void:
@@ -808,6 +854,7 @@ func _update_effect_sliders() -> void:
 	_set_slider_value("scanline_strength", _scanline_strength)
 	_set_slider_value("scanline_speed", _scanline_speed)
 	_set_slider_value("scanline_spacing", _scanline_spacing)
+	_set_slider_value("body_opacity", _body_opacity)
 
 
 func _clear_particle_layer(layer: Control) -> void:
@@ -854,6 +901,7 @@ func _reset_tuning_values() -> void:
 	_scanline_strength = DEFAULT_SCANLINE_STRENGTH
 	_scanline_speed = DEFAULT_SCANLINE_SPEED
 	_scanline_spacing = DEFAULT_SCANLINE_SPACING
+	_body_opacity = DEFAULT_BODY_OPACITY
 	_background_variant = 9
 	_character_variant = 10
 	_set_slider_value("x", _character_pos.x)
@@ -869,6 +917,7 @@ func _reset_tuning_values() -> void:
 	_set_slider_value("scanline_strength", _scanline_strength)
 	_set_slider_value("scanline_speed", _scanline_speed)
 	_set_slider_value("scanline_spacing", _scanline_spacing)
+	_set_slider_value("body_opacity", _body_opacity)
 	if _background_selector != null:
 		_background_selector.select(_background_variant)
 	if _character_selector != null:
@@ -894,6 +943,7 @@ func _restore_saved_tuning_values() -> void:
 	_scanline_strength = _saved_scanline_strength
 	_scanline_speed = _saved_scanline_speed
 	_scanline_spacing = _saved_scanline_spacing
+	_body_opacity = _saved_body_opacity
 	_background_variant = clampi(_saved_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
 	_character_variant = clampi(_saved_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)
 
@@ -911,6 +961,7 @@ func _save_tuning_values() -> void:
 	_saved_scanline_strength = _scanline_strength
 	_saved_scanline_speed = _scanline_speed
 	_saved_scanline_spacing = _scanline_spacing
+	_saved_body_opacity = _body_opacity
 	_saved_background_variant = _background_variant
 	_saved_character_variant = _character_variant
 
@@ -931,7 +982,7 @@ func _update_tuning_values_label() -> void:
 
 
 func _tuning_values_text() -> String:
-	return "x=%s y=%s scale=%s whip_density=%s drift_density=%s gold_jitter=%s holo_tint=%s tear=%s tear_frequency=%s shimmer=%s scanline=%s scan_speed=%s scan_spacing=%s background=%s character=%s" % [
+	return "x=%s y=%s scale=%s whip_density=%s drift_density=%s gold_jitter=%s holo_tint=%s tear=%s tear_frequency=%s shimmer=%s scanline=%s scan_speed=%s scan_spacing=%s body_opacity=%s background=%s character=%s" % [
 		_format_tuning_number(_character_pos.x),
 		_format_tuning_number(_character_pos.y),
 		_format_tuning_number(_character_scale),
@@ -945,6 +996,7 @@ func _tuning_values_text() -> String:
 		_format_tuning_number(_scanline_strength),
 		_format_tuning_number(_scanline_speed),
 		_format_tuning_number(_scanline_spacing),
+		_format_tuning_number(_body_opacity),
 		BACKGROUND_VARIANT_NAMES[clampi(_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)],
 		CHARACTER_VARIANT_NAMES[clampi(_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)],
 	]

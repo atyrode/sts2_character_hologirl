@@ -43,6 +43,7 @@ Near-term non-portrait assets still need a dedicated pass:
 - Base Hologirl can have visibly colored clothing, especially white and gold outfit accents that echo the golden light-whip, as long as the full character remains blue-tinted enough to read as a holographic projection.
 - Source cutout art should avoid baked scanlines/glitch bars when possible. Prefer clean source art plus procedural in-game hologram effects such as shimmer, subtle horizontal tearing, and moving scanlines.
 - Character-select hologram shader values are exposed in the F3 tuner while we refine them. Tearing should stay subtle; scanlines should read as a light hologram pass rather than the dominant effect.
+- Character-select cutouts should read as a humanoid hologram girl, not a slime, crystal, or gem person. Hair should keep the two-twintail silhouette but read as projected hair made of light, with broad hair masses and only selective shadow cuts.
 - Character cutout outlines should be selective rather than a uniform sticker border. Vanilla-like candidates use dark outlines as shadow planes, occlusion seams, and underside accents, with intermittent pale cyan/white rim accents on lit edges.
 - Remaining placeholder UI assets need review: character icon, map marker, locked portrait, energy text, relic placeholder, power placeholder, and mod image.
 
