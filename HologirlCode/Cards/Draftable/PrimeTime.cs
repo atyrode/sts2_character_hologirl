@@ -8,35 +8,31 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 
-namespace Hologirl.HologirlCode.Cards.Basic;
+namespace Hologirl.HologirlCode.Cards.Draftable;
 
 [Pool(typeof(HologirlCardPool))]
-public sealed class Concert() : HologirlCard(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
+public sealed class PrimeTime() : HologirlCard(3, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
-    private const int FansBase = 3;
-    private const int FansUpgraded = 5;
-    private const int SingingTurns = 2;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<FansPower>(FansBase),
-        new PowerVar<SingingPower>(SingingTurns)
+        new PowerVar<BroadcastLoopPower>(3),
+        new PowerVar<FansPower>(3)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
-        HoverTipFactory.FromPower<FansPower>(),
-        HoverTipFactory.FromPower<SingingPower>()
+        HoverTipFactory.FromPower<BroadcastLoopPower>(),
+        HoverTipFactory.FromPower<FansPower>()
     ];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await ApplyOrIncreasePower<BroadcastLoopPower>(DynamicVars["BroadcastLoopPower"].IntValue);
         await ApplyOrIncreasePower<FansPower>(DynamicVars["FansPower"].IntValue);
-        await ApplyOrIncreasePower<SingingPower>(DynamicVars["SingingPower"].IntValue);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["FansPower"].UpgradeValueBy(FansUpgraded - FansBase);
+        DynamicVars["BroadcastLoopPower"].UpgradeValueBy(1);
     }
 }

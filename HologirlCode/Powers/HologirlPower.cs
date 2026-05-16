@@ -6,26 +6,23 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 namespace Hologirl.HologirlCode.Powers;
 
 /// <summary>
-/// This is the base class for your mod's powers, which is set up to load the power's images from your mod's resources.
-/// When creating a power, right click the Powers folder and create a new file with the Custom Power template.
-/// This will generate a class that extends this one.
-/// You can also just create the class manually; just make sure to inherit from this class.
+/// Base class for Hologirl-owned powers. Inheriting from this class keeps power
+/// icon paths consistent with the mod asset layout:
+/// Hologirl/images/powers/{power_id}.png and Hologirl/images/powers/big/{power_id}.png.
 /// </summary>
 public abstract class HologirlPower : CustomPowerModel
 {
-    //Loads from Hologirl/images/powers/your_power.png
     public override string CustomPackedIconPath => $"{Id.Entry.RemovePrefix().ToLowerInvariant()}.png".PowerImagePath();
     public override string CustomBigIconPath => $"{Id.Entry.RemovePrefix().ToLowerInvariant()}.png".BigPowerImagePath();
 
     /// <summary>
-    /// Whether this power is a buff or debuff.
+    /// Whether this power is displayed and treated as a buff or debuff.
     /// </summary>
     public abstract override PowerType Type { get; }
-    
+
     /// <summary>
-    /// How this power stacks if reapplied. Counter is the most common type, where applying the power again just
-    /// adds to the amount. Single means the power does not stack, like Barricade. None functions identically to
-    /// Single, but you're suggested to use Single as it is more explicit about how it will work.
+    /// How repeated applications of this power combine. Most Hologirl counters
+    /// use Counter; form identity powers should be explicit about their stacking behavior.
     /// </summary>
     public abstract override PowerStackType StackType { get; }
 }

@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace Hologirl.HologirlCode.Cards.Tokens;
 
 [Pool(typeof(HologirlCardPool))]
-public sealed class FaunaBloom() : HologirlCard(0, CardType.Skill, CardRarity.Basic, TargetType.Self)
+public sealed class FaunaBloom() : HologirlCard(0, CardType.Skill, CardRarity.Token, TargetType.Self)
 {
     public override bool GainsBlock => true;
 

@@ -36,6 +36,16 @@ Possible low-risk use before mechanics:
 - 1 `Livestream`
 - 1 starting relic: `Prism Pendant`
 
+## Draftable Safety Pool
+
+The first draftable pool exists to keep normal reward, merchant, and event card-generation paths from seeing an empty Hologirl pool. These cards are intentionally simple and can be redesigned later.
+
+- Common: `Signal Jab`, `Fan Meetup`, `Broadcast Loop`
+- Uncommon: `Lightwhip Flourish`, `Glitch Waltz`, `Encore Engine`
+- Rare: `Radiant Whip`, `Viral Moment`, `Prime Time`
+
+Form reward cards from `Prism Pendant` are tokens, not normal draftable cards.
+
 ## Weapon
 
 Base Hologirl uses a faint yellow/gold holographic light-whip. The whip should be the visual focus for base attack art and future base attack animation.

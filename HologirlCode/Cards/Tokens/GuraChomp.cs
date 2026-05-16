@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace Hologirl.HologirlCode.Cards.Tokens;
 
 [Pool(typeof(HologirlCardPool))]
-public sealed class GuraChomp() : HologirlCard(0, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
+public sealed class GuraChomp() : HologirlCard(0, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(5m, ValueProp.Move)];
 

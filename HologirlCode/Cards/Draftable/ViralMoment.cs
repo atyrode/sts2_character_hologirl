@@ -8,19 +8,15 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 
-namespace Hologirl.HologirlCode.Cards.Basic;
+namespace Hologirl.HologirlCode.Cards.Draftable;
 
 [Pool(typeof(HologirlCardPool))]
-public sealed class Concert() : HologirlCard(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
+public sealed class ViralMoment() : HologirlCard(2, CardType.Skill, CardRarity.Rare, TargetType.Self)
 {
-    private const int FansBase = 3;
-    private const int FansUpgraded = 5;
-    private const int SingingTurns = 2;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<FansPower>(FansBase),
-        new PowerVar<SingingPower>(SingingTurns)
+        new PowerVar<FansPower>(6),
+        new PowerVar<SingingPower>(2)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
@@ -37,6 +33,6 @@ public sealed class Concert() : HologirlCard(1, CardType.Skill, CardRarity.Basic
 
     protected override void OnUpgrade()
     {
-        DynamicVars["FansPower"].UpgradeValueBy(FansUpgraded - FansBase);
+        DynamicVars["FansPower"].UpgradeValueBy(2);
     }
 }

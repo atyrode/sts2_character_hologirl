@@ -94,6 +94,7 @@
 - [ ] If using axes, define only one minimal prototype axis first; do not implement three axes at once.
 - [ ] Decide what each form does passively.
 - [x] Replace placeholder form reward cards with simple, testable effects.
+- [x] Add a small Common/Uncommon/Rare draftable card pool so merchant and reward generation have valid Hologirl card options.
 - [ ] Add focused tests or manual test cases for each form and reward card.
 
 ### 5. Expand Into A Small Card Pool
@@ -123,6 +124,6 @@
 
 - [ ] Enable BaseLib's log window on startup, or use the dev console `showlog` command.
 - [ ] Use the dev console to inspect commands with `help`.
-- [x] Add Hologirl's in-run F3 debug panel. It is a thin UI over the game's dev console commands rather than a separate room/combat implementation.
+- [x] Remove Hologirl's in-run F3 debug panel after adopting DevMode for broad manual testing.
 - [ ] Use saved logs from the platform log directory when crashes or softlocks occur.
 - [ ] Record every successful test step and every failure mode in this checklist.

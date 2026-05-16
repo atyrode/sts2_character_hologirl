@@ -20,11 +20,14 @@ This is not the same stack as Slay the Spire 1 Java mods.
 - `Hologirl.json`: mod manifest.
 - `HologirlCode/`: gameplay code.
 - `Hologirl/`: mod assets and localization packed into `Hologirl.pck`.
-- `HologirlCode/Cards/Basic/HoloStrike.cs`: first custom card.
-- `HologirlCode/Character/Hologirl.cs`: character model and starting deck.
-- `HologirlCode/Character/HologirlCharacterSelectEntry.cs`: BaseLib character-select entry that builds Hologirl's static selection background in C#.
+- `HologirlCode/Cards/`: Hologirl's card models.
+- `HologirlCode/Powers/`: Hologirl's local gameplay powers, including `Fans`, `Singing`, and form powers.
+- `HologirlCode/Relics/`: Hologirl relic models.
+- `HologirlCode/Character/Hologirl.cs`: character model, starting deck, starting relics, and explicit temporary Ironclad run-asset fallbacks.
+- `Hologirl/scenes/character_select/hologirl_character_select_bg.tscn`: vanilla-style BaseLib character-select background scene.
 - `global.json`: pins the .NET SDK line to 9.0.
 - `Directory.Build.props`: ignored local file for machine-specific paths such as `Sts2Path`.
+- `docs/modding/LIBRARY_REFERENCE.md`: current STS2 library/tooling reference for BaseLib, RitsuLib, ModConfig, DevMode, and reusable implementation sources.
 
 ## Confirmed Sources
 
@@ -38,7 +41,7 @@ This is not the same stack as Slay the Spire 1 Java mods.
   https://github.com/Alchyr/ModTemplate-StS2/wiki/Modding-Basics
 - Mod template testing wiki:
   https://github.com/Alchyr/ModTemplate-StS2/wiki/Testing-and-Debugging
-- Hologirl's in-run F3 debug panel lives under `HologirlCode/Debug/` and is injected after `NRun._Ready`. It delegates execution to the game's `DevConsole.ProcessCommand` path so room, fight, and event jumps use the same backend as the built-in console.
+- Hologirl does not ship an in-run debug panel. Use DevMode for room, fight, event, inventory, console, and state-inspection workflows during development.
 - `harsh2204/STS2-Buu`: working playable character mod reference.
   https://github.com/harsh2204/STS2-Buu
 - Nexus Mods `The Hermit`: working playable character mod, with notes that STS2 beta updates can break mod APIs.
@@ -143,6 +146,7 @@ Do not use BaseLib's separate `CustomCharacterSelectEntry.CreateCharacterSelectS
 
 Hologirl should be conservative around shared game state and other mods.
 
+- Before implementing reusable infrastructure, check `docs/modding/LIBRARY_REFERENCE.md` and current upstream sources for BaseLib, RitsuLib, ModConfig, DevMode, and other active library/tooling options. Do not reimplement settings UI, persistence, audio routing, lifecycle hooks, asset fallback profiles, diagnostics, hotkeys, debug panels, content registration, or shared UI systems without first documenting why the existing libraries are not a fit.
 - Use mod-scoped ids and localization keys.
 - Prefer BaseLib's local content model APIs over global patches.
 - Avoid custom enum/keyword registration for glossary terms unless a real keyword behavior is needed. For now, `Shapeshift` is represented through a Hologirl-local tooltip power rather than a global `CardKeyword`.

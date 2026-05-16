@@ -7,7 +7,7 @@ Slay the Spire 2 playable character mod project.
 - Persistent agent/contributor workflow rules: [AGENTS.md](AGENTS.md).
 - Confirmed project goal and current research live in [docs/](docs/).
 - STS2 character mod scaffold: `Hologirl.csproj`, `HologirlCode/`, and `Hologirl/`.
-- First custom card: `HoloStrike`, currently added to the starting deck.
+- Current prototype: Hologirl starter deck, Prism Pendant starter relic, `Fans`, `Singing`, and `Shapeshift` form powers.
 
 ## Development
 

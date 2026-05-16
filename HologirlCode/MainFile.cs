@@ -1,5 +1,4 @@
 using Godot;
-using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 
 namespace Hologirl.HologirlCode;
@@ -16,8 +15,5 @@ public partial class MainFile : Node
     {
         //If you want to use scripts defined in your mod for Godot scenes, uncomment the following line.
         //Godot.Bridge.ScriptManagerBridge.LookupScriptsInAssembly(Assembly.GetExecutingAssembly());
-        Harmony harmony = new(ModId);
-
-        harmony.PatchAll();
     }
 }
