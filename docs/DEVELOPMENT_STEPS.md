@@ -61,6 +61,7 @@
 
 - [ ] Change the actual card frame/color treatment to Hologirl's chosen periwinkle/accent direction.
 - [ ] Design and add Hologirl's energy symbol.
+  - [ ] Revisit energy symbol selection from the archived deep one-element batch before replacing the current runtime energy gem.
 - [ ] Audit remaining placeholder character UI assets: character icon, map marker, locked portrait, energy text, relic placeholder, power placeholder, and mod image.
 - [ ] Decide which character-select background and PNG cutout are the default, then remove or hide comparison-only variants from normal player-facing builds.
 - [ ] Remove or disable temporary tuner UI once final character-select values are locked.

@@ -15,7 +15,7 @@ public class Hologirl : PlaceholderCharacterModel
 {
     public const string CharacterId = "Hologirl";
     
-    public static readonly Color Color = new("ffffff");
+    public static readonly Color Color = new("aab2ff");
 
     public override Color NameColor => Color;
     public override CharacterGender Gender => CharacterGender.Neutral;

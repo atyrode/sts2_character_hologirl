@@ -15,7 +15,9 @@ The current roadmap includes replacing or validating these non-card-portrait ass
 
 - Card frame/color treatment: Hologirl periwinkle/accent direction.
 - Energy symbol and energy text.
-- Runtime energy assets are derived from the selected archived concept with `scripts/create-energy-assets.sh <source-png>`, which exports `Hologirl/images/charui/big_energy.png` at 74x74 and `Hologirl/images/charui/text_energy.png` at 24x24.
+- Runtime energy assets are derived from the selected archived concept with `scripts/create-energy-assets.sh <source-png>`, which exports `Hologirl/images/charui/big_energy.png` at 74x74 and `Hologirl/images/charui/text_energy.png` at 24x24. The current runtime choice may change after review of the deeper one-element variant batch.
+- Card frame color should stay on the vanilla/BaseLib shader frame path. Adjust `HologirlCardPool` HSV values rather than adding custom card-frame art unless a future test proves the shader cannot reach the intended periwinkle.
+- Character-select cutout variants can be added to `Hologirl/images/charui/character_variants/` and wired into `Hologirl/scenes/character_select/hologirl_character_select_bg.gd`. New cutout PNGs should use a flat green chroma-key background; the shader handles keying plus subtle procedural hologram tint/shimmer/tearing.
 - Character icon.
 - Character-select button and locked portrait.
 - Map marker.

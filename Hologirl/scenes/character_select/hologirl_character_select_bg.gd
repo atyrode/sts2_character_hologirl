@@ -42,12 +42,55 @@ const CHARACTER_VARIANT_NAMES: Array[String] = [
 	"Vanilla Matte",
 	"Chunky Vanilla",
 	"Soft Vanilla",
+	"White Gold Blue",
+	"White Gold Pink",
+	"White Gold Navy",
+	"White Gold Rose",
+	"White Gold Deep Blue",
 ]
 const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_01_current.png",
 	"res://Hologirl/images/charui/character_variants/character_02_vanilla_matte.png",
 	"res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png",
 	"res://Hologirl/images/charui/character_variants/character_04_soft_vanilla.png",
+	"res://Hologirl/images/charui/character_variants/character_05_white_gold_blue.png",
+	"res://Hologirl/images/charui/character_variants/character_06_white_gold_pink.png",
+	"res://Hologirl/images/charui/character_variants/character_07_white_gold_navy.png",
+	"res://Hologirl/images/charui/character_variants/character_08_white_gold_rose.png",
+	"res://Hologirl/images/charui/character_variants/character_09_white_gold_deep_blue.png",
+]
+const CHARACTER_HOLOGRAM_TINTS: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.18,
+	0.16,
+	0.16,
+	0.15,
+	0.18,
+]
+const CHARACTER_TEAR_STRENGTHS: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.006,
+	0.008,
+	0.007,
+	0.006,
+	0.008,
+]
+const CHARACTER_SHIMMER_STRENGTHS: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.55,
+	0.60,
+	0.52,
+	0.50,
+	0.58,
 ]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
@@ -172,6 +215,7 @@ func _build_scene() -> void:
 	_character.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_character.material = _create_chroma_key_material()
 	_canvas.add_child(_character)
+	_apply_character_effect_profile()
 
 	_apply_character_tuning()
 
@@ -284,10 +328,22 @@ shader_type canvas_item;
 uniform vec4 key_color : source_color = vec4(0.0, 1.0, 0.0, 1.0);
 uniform float threshold = 0.46;
 uniform float softness = 0.08;
+uniform float hologram_tint = 0.0;
+uniform float tear_strength = 0.0;
+uniform float shimmer_strength = 0.0;
+uniform vec3 hologram_color = vec3(0.18, 0.82, 1.0);
 
 void fragment() {
-	vec4 tex = texture(TEXTURE, UV);
+	vec2 uv = UV;
+	float tear_band = step(0.91, fract(sin(floor(UV.y * 24.0) + TIME * 4.7) * 43758.5453));
+	float tear_wave = sin(UV.y * 80.0 + TIME * 7.0);
+	uv.x += tear_strength * tear_band * tear_wave;
+
+	vec4 tex = texture(TEXTURE, uv);
 	float keyed = smoothstep(threshold, threshold + softness, distance(tex.rgb, key_color.rgb));
+	float shimmer = 1.0 + shimmer_strength * (0.035 * sin(TIME * 4.3 + UV.y * 70.0) + 0.018 * sin(TIME * 2.1 + UV.x * 38.0));
+	tex.rgb *= shimmer;
+	tex.rgb = mix(tex.rgb, tex.rgb * vec3(0.82, 0.95, 1.10) + hologram_color * 0.035, hologram_tint);
 	tex.a *= keyed;
 	COLOR = tex;
 }
@@ -589,11 +645,26 @@ func _apply_character_variant() -> void:
 
 	var character_texture: Texture2D = _load_character_texture()
 	_character.texture = character_texture
+	_apply_character_effect_profile()
 	_build_emitters(character_texture)
 	_clear_particle_layer(_back_particle_layer)
 	_clear_particle_layer(_front_particle_layer)
 	_apply_character_tuning()
 	_spawn_selection_burst()
+
+
+func _apply_character_effect_profile() -> void:
+	if _character == null or _character.material == null:
+		return
+
+	var material := _character.material as ShaderMaterial
+	if material == null:
+		return
+
+	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
+	material.set_shader_parameter("hologram_tint", CHARACTER_HOLOGRAM_TINTS[index])
+	material.set_shader_parameter("tear_strength", CHARACTER_TEAR_STRENGTHS[index])
+	material.set_shader_parameter("shimmer_strength", CHARACTER_SHIMMER_STRENGTHS[index])
 
 
 func _clear_particle_layer(layer: Control) -> void:
