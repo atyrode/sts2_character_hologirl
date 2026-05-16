@@ -8,6 +8,7 @@ func _init() -> void:
 		return
 
 	var node: Control = scene.instantiate()
+	node.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	node.size = Vector2(1920.0, 1080.0)
 	root.add_child(node)
 
@@ -79,12 +80,22 @@ func _init() -> void:
 	node._whip_density = 0.33
 	node._drift_density = 1.25
 	node._whip_jitter = 3.5
-	node._background_variant = 2
-	node._character_variant = 2
+	node._hologram_tint = 0.44
+	node._tear_strength = 0.012
+	node._tear_frequency = 0.90
+	node._shimmer_strength = 0.21
+	node._scanline_strength = 0.18
+	node._scanline_speed = 1.20
+	node._scanline_spacing = 72.0
+	node._body_opacity = 0.66
 	node._save_tuning_values()
+	_stop_select_sound(node)
+	await create_timer(0.10).timeout
 	node.queue_free()
+	await process_frame
 
 	var restored_node: Control = scene.instantiate()
+	restored_node.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	restored_node.size = Vector2(1920.0, 1080.0)
 	root.add_child(restored_node)
 	await process_frame
@@ -104,13 +115,23 @@ func _init() -> void:
 		quit(1)
 		return
 
-	if restored_node._background_variant != 2:
-		push_error("Hologirl character-select tuner did not restore saved background variant.")
+	if not is_equal_approx(restored_node._hologram_tint, 0.44) or not is_equal_approx(restored_node._tear_strength, 0.012) or not is_equal_approx(restored_node._tear_frequency, 0.90):
+		push_error("Hologirl character-select tuner did not restore saved hologram effect values.")
 		quit(1)
 		return
 
-	if restored_node._character_variant != 2:
-		push_error("Hologirl character-select tuner did not restore saved character variant.")
+	if not is_equal_approx(restored_node._shimmer_strength, 0.21) or not is_equal_approx(restored_node._scanline_strength, 0.18) or not is_equal_approx(restored_node._scanline_speed, 1.20) or not is_equal_approx(restored_node._scanline_spacing, 72.0) or not is_equal_approx(restored_node._body_opacity, 0.66):
+		push_error("Hologirl character-select tuner did not restore saved scanline/body effect values.")
+		quit(1)
+		return
+
+	if _has_property(restored_node, "BACKGROUND_VARIANT_PATHS") or _has_property(restored_node, "_background_variant"):
+		push_error("Hologirl character-select scene still exposes runtime background variants.")
+		quit(1)
+		return
+
+	if _has_property(restored_node, "CHARACTER_VARIANT_PATHS") or _has_property(restored_node, "_character_variant"):
+		push_error("Hologirl character-select scene still exposes runtime character variants.")
 		quit(1)
 		return
 
@@ -124,5 +145,29 @@ func _init() -> void:
 		quit(1)
 		return
 
+	_stop_select_sound(restored_node)
+	await create_timer(0.10).timeout
+	restored_node.queue_free()
+	await process_frame
+	restored_node = null
+	node = null
+	scene = null
+	await process_frame
+
 	print("Hologirl character-select scene smoke passed.")
 	quit(0)
+
+
+func _has_property(node: Object, property_name: String) -> bool:
+	for property in node.get_property_list():
+		if property.get("name") == property_name:
+			return true
+	return false
+
+
+func _stop_select_sound(node: Node) -> void:
+	var player := node.find_child("HologirlSelectSound", true, false)
+	if player is AudioStreamPlayer:
+		player.stop()
+		player.stream = null
+		player.free()

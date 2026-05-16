@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 version="${1:-"$("$repo_root/scripts/mod-version.sh")"}"
-mods_dir="${STS2_MODS_DIR:-/home/alex/games/slay-the-spire-2/mods}"
+mods_dir="${STS2_MODS_DIR:-/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2/mods}"
 mod_dir="$mods_dir/Hologirl"
 dist_dir="$repo_root/dist"
 asset="$dist_dir/Hologirl-$version.zip"

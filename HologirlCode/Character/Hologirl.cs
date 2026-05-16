@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Relics;
 
 namespace Hologirl.HologirlCode.Character;
 
-public class Hologirl : PlaceholderCharacterModel
+public class Hologirl : CustomCharacterModel
 {
     public const string CharacterId = "Hologirl";
     
@@ -22,6 +22,11 @@ public class Hologirl : PlaceholderCharacterModel
     public override int StartingHp => 70;
     public override bool HideFromVanillaCharacterSelect => false;
     public override bool AllowInVanillaRandomCharacterSelect => true;
+    public override string CharacterSelectSfx => "";
+    public override string CustomAttackSfx => "";
+    public override string CustomCastSfx => "";
+    public override string CustomDeathSfx => "";
+    public override List<string> GetArchitectAttackVfx() => [];
     
     public override IEnumerable<CardModel> StartingDeck => [
         ModelDb.Card<HoloStrike>(),
@@ -45,10 +50,6 @@ public class Hologirl : PlaceholderCharacterModel
     public override RelicPoolModel RelicPool => ModelDb.RelicPool<HologirlRelicPool>();
     public override PotionPoolModel PotionPool => ModelDb.PotionPool<HologirlPotionPool>();
     
-    /*  PlaceholderCharacterModel will utilize placeholder basegame assets for most of your character assets until you
-        override all the other methods that define those assets. 
-        These are just some of the simplest assets, given some placeholders to differentiate your character with. 
-        You don't have to, but you're suggested to rename these images. */
     public override Control CustomIcon
     {
         get

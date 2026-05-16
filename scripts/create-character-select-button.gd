@@ -1,10 +1,10 @@
 extends SceneTree
 
 const OUTPUT_SIZE: Vector2i = Vector2i(132, 195)
-const BACKGROUND_PATH: String = "res://Hologirl/images/charui/background_variants/bg_10_periwinkle_drift.png"
-const CHARACTER_PATH: String = "res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png"
+const BACKGROUND_PATH: String = "res://Hologirl/images/charui/character_select_bg.png"
+const CHARACTER_PATH: String = "res://Hologirl/images/charui/character_select_hologirl.png"
 const RUNTIME_OUTPUT_PATH: String = "res://Hologirl/images/charui/char_select_char_name.png"
-const ARCHIVE_OUTPUT_PATH: String = "res://docs/design/art_archive/menu/character_select_button/attempt-002/result.png"
+const ARCHIVE_OUTPUT_PATH: String = "res://docs/design/art_archive/menu/character_select_button/production-selected/result.png"
 const PREVIEW_OUTPUT_PATH: String = "res://docs/design/art_archive/menu/character_select_button/left-shift-preview.png"
 const PREVIEW_ATTEMPTS: Array[Dictionary] = [
 	{"attempt": "attempt-003", "offset": Vector2i(-6, 2), "crop_bias": 0.40},
@@ -52,7 +52,7 @@ func _init() -> void:
 		quit(1)
 		return
 
-	print("Created Hologirl character-select button from Chunky Vanilla over Periwinkle Drift, plus left-shift previews.")
+	print("Created Hologirl character-select button from production character-select art, plus left-shift previews.")
 	quit(0)
 
 

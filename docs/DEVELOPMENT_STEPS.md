@@ -31,6 +31,7 @@
 - [x] Generate or copy the `Slay the Spire 2 Character` template.
 - [x] Set mod id and display name.
 - [x] Keep template placeholder assets until the first card is proven in-game.
+- [x] Move the character model off BaseLib's placeholder character class once Hologirl-owned select art and audio exist.
 - [x] Build the DLL.
 - [x] Generate the PCK.
 - [x] Copy the mod folder outputs into the game `mods/` directory.
@@ -63,7 +64,7 @@
 - [ ] Design and add Hologirl's energy symbol.
   - [ ] Revisit energy symbol selection from the archived deep one-element batch before replacing the current runtime energy gem.
 - [ ] Audit remaining placeholder character UI assets: character icon, map marker, locked portrait, energy text, relic placeholder, power placeholder, and mod image.
-- [ ] Decide which character-select background and PNG cutout are the default, then remove or hide comparison-only variants from normal player-facing builds.
+- [x] Decide which character-select background and PNG cutout are the default, then remove comparison-only variants from normal player-facing builds.
 - [ ] Use F3 tuner feedback to lock final character-select hologram shader values for tearing, tear speed, shimmer, and scanline behavior.
 - [ ] Remove or disable temporary tuner UI once final character-select values are locked.
 
@@ -79,7 +80,7 @@
 - [x] Add `Concert!`: gain 3 Fans and Singing for 2 turns.
 - [x] Add `Livestream`: transform into a random form.
 - [x] Add a placeholder starting relic that documents transformation reward cards.
-- [x] Add one placeholder 0-cost transformation reward card per form.
+- [x] Add one simple 0-cost transformation reward card per form.
 - [x] Add power hover tips and rich text coloring for the first Hologirl resource/form terms.
 - [x] Rename the player-facing transformation term to `Shapeshift` and move the 0-cost card bonus onto the starter relic.
 - [ ] Test the first combat loop locally with `Concert!`, `Livestream`, Fans, Singing, form upkeep, and Prism Pendant reward cards.
@@ -91,7 +92,7 @@
 - [ ] Decide whether the first release identity stays focused on `Fans` + `Shapeshift`, or whether it absorbs a simplified axis model.
 - [ ] If using axes, define only one minimal prototype axis first; do not implement three axes at once.
 - [ ] Decide what each form does passively.
-- [ ] Replace placeholder form reward cards with simple, testable effects.
+- [x] Replace placeholder form reward cards with simple, testable effects.
 - [ ] Add focused tests or manual test cases for each form and reward card.
 
 ### 5. Expand Into A Small Card Pool

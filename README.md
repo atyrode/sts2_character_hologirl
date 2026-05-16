@@ -18,12 +18,13 @@ git fetch
 git status --short --branch
 ```
 
-Current VPS state:
+Current local toolchain state:
 
-- STS2 game files are installed at `/home/alex/games/slay-the-spire-2`.
-- `.NET 9 SDK` is installed at `/home/alex/.dotnet`.
-- BaseLib `v3.1.3` is installed at `/home/alex/games/slay-the-spire-2/mods/BaseLib`.
-- The Hologirl build copies `Hologirl.dll`, `Hologirl.pdb`, `Hologirl.json`, and `Hologirl.pck` to `/home/alex/games/slay-the-spire-2/mods/Hologirl`.
+- Shared STS2 game files are installed at `/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2`.
+- Shared `.NET 9 SDK` is installed at `/mnt/HC_Volume_105232828/shared/tools/dotnet`.
+- Shared Godot/MegaDot `4.5.1` is installed at `/mnt/HC_Volume_105232828/shared/tools/godot/godot-4.5.1`.
+- BaseLib `v3.1.3` is installed at `/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2/mods/BaseLib`.
+- The Hologirl build copies `Hologirl.dll`, `Hologirl.pdb`, `Hologirl.json`, and `Hologirl.pck` to `/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2/mods/Hologirl`.
 - Headless game launch reaches startup, but gameplay testing is blocked on the VPS because Steamworks still requires a running Steam client.
 
 Create local build settings in ignored `Directory.Build.props` when needed:
@@ -41,7 +42,7 @@ When project tooling is added, document the setup, run commands, generated outpu
 Build:
 
 ```sh
-/home/alex/.dotnet/dotnet build Hologirl.csproj
+scripts/build.sh
 ```
 
 Package with the default quick PCK packer:
@@ -53,12 +54,17 @@ scripts/package.sh
 Package with Godot/MegaDot export when the mod needs packed Godot resources such as `.tscn` scenes:
 
 ```sh
-GODOT_BIN=/home/alex/.cache/hologirl-tools/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64 \
 HOLOGIRL_PCK_EXPORTER=godot \
 scripts/package.sh
 ```
 
-The Godot path is intentionally supplied through `GODOT_BIN` so the repository does not commit machine-specific editor paths.
+Run the character-select scene smoke check:
+
+```sh
+scripts/godot-smoke-character-select.sh
+```
+
+Godot and `.NET` paths are resolved by `scripts/godot-env.sh`. Override `GODOT_BIN`, `DOTNET_ROOT`, `STS2_MODS_DIR`, or `HOLOGIRL_SHARED_ROOT` when working from a different install.
 
 ## Documents
 

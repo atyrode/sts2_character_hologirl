@@ -17,252 +17,11 @@ const DEFAULT_SCANLINE_STRENGTH: float = 0.25
 const DEFAULT_SCANLINE_SPEED: float = 1.08
 const DEFAULT_SCANLINE_SPACING: float = 87.0
 const DEFAULT_BODY_OPACITY: float = 0.83
+const CHARACTER_SELECT_BACKGROUND_NAME: String = "Periwinkle Drift"
+const CHARACTER_SELECT_CHARACTER_NAME: String = "Linework No Ref 02"
+const BACKGROUND_TEXTURE_PATH: String = "res://Hologirl/images/charui/character_select_bg.png"
+const CHARACTER_TEXTURE_PATH: String = "res://Hologirl/images/charui/character_select_hologirl.png"
 const SELECT_SOUND_PATH: String = "res://Hologirl/audio/char_select/hologram.mp3"
-const BACKGROUND_VARIANT_NAMES: Array[String] = [
-	"Signal Bloom",
-	"Stage Glow",
-	"Holo Drift",
-	"Ruby Broadcast",
-	"Ember Signal",
-	"Solar Idol",
-	"Mint Stage",
-	"Emerald Pulse",
-	"Lagoon Signal",
-	"Periwinkle Drift",
-	"Violet Broadcast",
-	"Fuchsia Stage",
-]
-const BACKGROUND_VARIANT_PATHS: Array[String] = [
-	"res://Hologirl/images/charui/background_variants/bg_01_signal_bloom.png",
-	"res://Hologirl/images/charui/background_variants/bg_02_stage_glow.png",
-	"res://Hologirl/images/charui/background_variants/bg_03_holo_drift.png",
-	"res://Hologirl/images/charui/background_variants/bg_04_ruby_broadcast.png",
-	"res://Hologirl/images/charui/background_variants/bg_05_ember_signal.png",
-	"res://Hologirl/images/charui/background_variants/bg_06_solar_idol.png",
-	"res://Hologirl/images/charui/background_variants/bg_07_mint_stage.png",
-	"res://Hologirl/images/charui/background_variants/bg_08_emerald_pulse.png",
-	"res://Hologirl/images/charui/background_variants/bg_09_lagoon_signal.png",
-	"res://Hologirl/images/charui/background_variants/bg_10_periwinkle_drift.png",
-	"res://Hologirl/images/charui/background_variants/bg_11_violet_broadcast.png",
-	"res://Hologirl/images/charui/background_variants/bg_12_fuchsia_stage.png",
-]
-const CHARACTER_VARIANT_NAMES: Array[String] = [
-	"Current",
-	"Vanilla Matte",
-	"Chunky Vanilla",
-	"Soft Vanilla",
-	"White Gold Blue",
-	"White Gold Pink",
-	"White Gold Navy",
-	"White Gold Rose",
-	"White Gold Deep Blue",
-	"Thin Outline Ready",
-	"Thin Outline Compact",
-	"Thin Outline Spire",
-	"Thin Outline Calm",
-	"Thin Outline Angular",
-	"Humanoid Hologram A",
-	"Humanoid Hologram B",
-	"Humanoid Hologram C",
-	"Humanoid Hologram D",
-	"Humanoid Hologram E",
-	"Linework No Ref 01",
-	"Linework No Ref 02",
-	"Linework No Ref 03",
-	"Linework No Ref 04",
-	"Linework No Ref 05",
-	"Linework No Ref 06",
-	"Linework No Ref 07",
-	"Linework No Ref 08",
-	"Linework No Ref 09",
-	"Linework No Ref 10",
-]
-const CHARACTER_VARIANT_PATHS: Array[String] = [
-	"res://Hologirl/images/charui/character_variants/character_01_current.png",
-	"res://Hologirl/images/charui/character_variants/character_02_vanilla_matte.png",
-	"res://Hologirl/images/charui/character_variants/character_03_chunky_vanilla.png",
-	"res://Hologirl/images/charui/character_variants/character_04_soft_vanilla.png",
-	"res://Hologirl/images/charui/character_variants/character_05_white_gold_blue.png",
-	"res://Hologirl/images/charui/character_variants/character_06_white_gold_pink.png",
-	"res://Hologirl/images/charui/character_variants/character_07_white_gold_navy.png",
-	"res://Hologirl/images/charui/character_variants/character_08_white_gold_rose.png",
-	"res://Hologirl/images/charui/character_variants/character_09_white_gold_deep_blue.png",
-	"res://Hologirl/images/charui/character_variants/character_10_thin_outline_ready.png",
-	"res://Hologirl/images/charui/character_variants/character_11_thin_outline_compact.png",
-	"res://Hologirl/images/charui/character_variants/character_12_thin_outline_spire.png",
-	"res://Hologirl/images/charui/character_variants/character_13_thin_outline_calm.png",
-	"res://Hologirl/images/charui/character_variants/character_14_thin_outline_angular.png",
-	"res://Hologirl/images/charui/character_variants/character_15_humanoid_hologram_a.png",
-	"res://Hologirl/images/charui/character_variants/character_16_humanoid_hologram_b.png",
-	"res://Hologirl/images/charui/character_variants/character_17_humanoid_hologram_c.png",
-	"res://Hologirl/images/charui/character_variants/character_18_humanoid_hologram_d.png",
-	"res://Hologirl/images/charui/character_variants/character_19_humanoid_hologram_e.png",
-	"res://Hologirl/images/charui/character_variants/character_20_linework_no_ref_01.png",
-	"res://Hologirl/images/charui/character_variants/character_21_linework_no_ref_02.png",
-	"res://Hologirl/images/charui/character_variants/character_22_linework_no_ref_03.png",
-	"res://Hologirl/images/charui/character_variants/character_23_linework_no_ref_04.png",
-	"res://Hologirl/images/charui/character_variants/character_24_linework_no_ref_05.png",
-	"res://Hologirl/images/charui/character_variants/character_25_linework_no_ref_06.png",
-	"res://Hologirl/images/charui/character_variants/character_26_linework_no_ref_07.png",
-	"res://Hologirl/images/charui/character_variants/character_27_linework_no_ref_08.png",
-	"res://Hologirl/images/charui/character_variants/character_28_linework_no_ref_09.png",
-	"res://Hologirl/images/charui/character_variants/character_29_linework_no_ref_10.png",
-]
-const CHARACTER_HOLOGRAM_TINTS: Array[float] = [
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.18,
-	0.16,
-	0.16,
-	0.15,
-	0.18,
-	0.18,
-	0.18,
-	0.18,
-	0.18,
-	0.18,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-	1.0,
-]
-const CHARACTER_TEAR_STRENGTHS: Array[float] = [
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-]
-const CHARACTER_TEAR_FREQUENCIES: Array[float] = [
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	24.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-	4.0,
-]
-const CHARACTER_SHIMMER_STRENGTHS: Array[float] = [
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-	0.04,
-]
-const CHARACTER_SCANLINE_STRENGTHS: Array[float] = [
-	0.0,
-	0.0,
-	0.0,
-	0.0,
-	0.09,
-	0.09,
-	0.09,
-	0.09,
-	0.09,
-	0.09,
-	0.09,
-	0.09,
-	0.09,
-	0.09,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-	0.34,
-]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
 static var _saved_character_scale: float = DEFAULT_HOLOGIRL_SCALE
@@ -277,8 +36,6 @@ static var _saved_scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
 static var _saved_scanline_speed: float = DEFAULT_SCANLINE_SPEED
 static var _saved_scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 static var _saved_body_opacity: float = DEFAULT_BODY_OPACITY
-static var _saved_background_variant: int = 9
-static var _saved_character_variant: int = 20
 static var _saved_tuning_panel_visible: bool = TUNING_PANEL_START_VISIBLE
 
 var _canvas: Control
@@ -289,8 +46,6 @@ var _front_particle_layer: Control
 var _tuning_panel: PanelContainer
 var _tuning_body: VBoxContainer
 var _collapse_button: Button
-var _background_selector: OptionButton
-var _character_selector: OptionButton
 var _tuning_sliders: Dictionary = {}
 var _tuning_panel_visible: bool = TUNING_PANEL_START_VISIBLE
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -313,8 +68,6 @@ var _scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
 var _scanline_speed: float = DEFAULT_SCANLINE_SPEED
 var _scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 var _body_opacity: float = DEFAULT_BODY_OPACITY
-var _background_variant: int = 9
-var _character_variant: int = 20
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -388,7 +141,7 @@ func _build_scene() -> void:
 	_background.stretch_mode = TextureRect.STRETCH_SCALE
 	_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_canvas.add_child(_background)
-	_apply_background_variant()
+	_apply_background_texture()
 
 	_back_particle_layer = _create_particle_layer("HologirlBackParticles")
 	_canvas.add_child(_back_particle_layer)
@@ -426,8 +179,7 @@ func _create_particle_layer(layer_name: String) -> Control:
 
 
 func _load_character_texture() -> Texture2D:
-	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
-	return load(CHARACTER_VARIANT_PATHS[index])
+	return load(CHARACTER_TEXTURE_PATH)
 
 
 func _build_emitters(texture: Texture2D) -> void:
@@ -704,8 +456,6 @@ func _build_tuning_panel() -> PanelContainer:
 	_tuning_body.add_child(_create_tuning_slider("Scan speed", "scanline_speed", -5.0, 5.0, _scanline_speed, 0.01))
 	_tuning_body.add_child(_create_tuning_slider("Scan spacing", "scanline_spacing", 4.0, 180.0, _scanline_spacing, 1.0))
 	_tuning_body.add_child(_create_tuning_slider("Body opacity", "body_opacity", 0.25, 1.25, _body_opacity, 0.01))
-	_tuning_body.add_child(_create_background_selector())
-	_tuning_body.add_child(_create_character_selector())
 
 	var button_row: HBoxContainer = HBoxContainer.new()
 	_tuning_body.add_child(button_row)
@@ -825,71 +575,14 @@ func _on_tuning_slider_changed(value: float, key: String, value_label: Label) ->
 	_save_tuning_values()
 
 
-func _create_background_selector() -> HBoxContainer:
-	var row: HBoxContainer = HBoxContainer.new()
-	row.custom_minimum_size = Vector2(0.0, 34.0)
-
-	var name_label: Label = Label.new()
-	name_label.text = "Background"
-	name_label.custom_minimum_size = Vector2(120.0, 0.0)
-	row.add_child(name_label)
-
-	_background_selector = OptionButton.new()
-	_background_selector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_background_selector.mouse_filter = Control.MOUSE_FILTER_STOP
-	for i in BACKGROUND_VARIANT_NAMES.size():
-		_background_selector.add_item(BACKGROUND_VARIANT_NAMES[i], i)
-	_background_selector.select(clampi(_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1))
-	_background_selector.item_selected.connect(_on_background_variant_selected)
-	row.add_child(_background_selector)
-	return row
-
-
-func _create_character_selector() -> HBoxContainer:
-	var row: HBoxContainer = HBoxContainer.new()
-	row.custom_minimum_size = Vector2(0.0, 34.0)
-
-	var name_label: Label = Label.new()
-	name_label.text = "Character"
-	name_label.custom_minimum_size = Vector2(120.0, 0.0)
-	row.add_child(name_label)
-
-	_character_selector = OptionButton.new()
-	_character_selector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_character_selector.mouse_filter = Control.MOUSE_FILTER_STOP
-	for i in CHARACTER_VARIANT_NAMES.size():
-		_character_selector.add_item(CHARACTER_VARIANT_NAMES[i], i)
-	_character_selector.select(clampi(_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1))
-	_character_selector.item_selected.connect(_on_character_variant_selected)
-	row.add_child(_character_selector)
-	return row
-
-
-func _on_background_variant_selected(index: int) -> void:
-	_background_variant = clampi(index, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
-	_apply_background_variant()
-	_update_tuning_values_label()
-	_save_tuning_values()
-
-
-func _apply_background_variant() -> void:
+func _apply_background_texture() -> void:
 	if _background == null:
 		return
 
-	var index: int = clampi(_background_variant, 0, BACKGROUND_VARIANT_PATHS.size() - 1)
-	_background.texture = load(BACKGROUND_VARIANT_PATHS[index])
+	_background.texture = load(BACKGROUND_TEXTURE_PATH)
 
 
-func _on_character_variant_selected(index: int) -> void:
-	_character_variant = clampi(index, 0, CHARACTER_VARIANT_NAMES.size() - 1)
-	_apply_character_profile_defaults(_character_variant)
-	_update_effect_sliders()
-	_apply_character_variant()
-	_update_tuning_values_label()
-	_save_tuning_values()
-
-
-func _apply_character_variant() -> void:
+func _reload_character_texture() -> void:
 	if _character == null:
 		return
 
@@ -921,35 +614,15 @@ func _apply_character_effect_profile() -> void:
 	material.set_shader_parameter("body_opacity", _body_opacity)
 
 
-func _apply_character_profile_defaults(index: int) -> void:
-	index = clampi(index, 0, CHARACTER_VARIANT_PATHS.size() - 1)
-	_hologram_tint = CHARACTER_HOLOGRAM_TINTS[index]
-	_tear_strength = CHARACTER_TEAR_STRENGTHS[index]
-	_tear_frequency = CHARACTER_TEAR_FREQUENCIES[index]
-	_shimmer_strength = CHARACTER_SHIMMER_STRENGTHS[index]
-	_scanline_strength = CHARACTER_SCANLINE_STRENGTHS[index]
-	_scanline_speed = DEFAULT_SCANLINE_SPEED if index >= 4 else 0.0
+func _apply_default_effect_values() -> void:
+	_hologram_tint = DEFAULT_HOLOGRAM_TINT
+	_tear_strength = DEFAULT_TEAR_STRENGTH
+	_tear_frequency = DEFAULT_TEAR_FREQUENCY
+	_shimmer_strength = DEFAULT_SHIMMER_STRENGTH
+	_scanline_strength = DEFAULT_SCANLINE_STRENGTH
+	_scanline_speed = DEFAULT_SCANLINE_SPEED
 	_scanline_spacing = DEFAULT_SCANLINE_SPACING
-	if CHARACTER_VARIANT_NAMES[index] == "Linework No Ref 02":
-		_hologram_tint = DEFAULT_HOLOGRAM_TINT
-		_tear_strength = DEFAULT_TEAR_STRENGTH
-		_tear_frequency = DEFAULT_TEAR_FREQUENCY
-		_shimmer_strength = DEFAULT_SHIMMER_STRENGTH
-		_scanline_strength = DEFAULT_SCANLINE_STRENGTH
-		_scanline_speed = DEFAULT_SCANLINE_SPEED
-		_scanline_spacing = DEFAULT_SCANLINE_SPACING
-		_body_opacity = DEFAULT_BODY_OPACITY
-
-
-func _update_effect_sliders() -> void:
-	_set_slider_value("hologram_tint", _hologram_tint)
-	_set_slider_value("tear_strength", _tear_strength)
-	_set_slider_value("tear_frequency", _tear_frequency)
-	_set_slider_value("shimmer_strength", _shimmer_strength)
-	_set_slider_value("scanline_strength", _scanline_strength)
-	_set_slider_value("scanline_speed", _scanline_speed)
-	_set_slider_value("scanline_spacing", _scanline_spacing)
-	_set_slider_value("body_opacity", _body_opacity)
+	_body_opacity = DEFAULT_BODY_OPACITY
 
 
 func _clear_particle_layer(layer: Control) -> void:
@@ -990,16 +663,7 @@ func _reset_tuning_values() -> void:
 	_whip_density = DEFAULT_WHIP_DENSITY
 	_drift_density = DEFAULT_DRIFT_DENSITY
 	_whip_jitter = DEFAULT_WHIP_JITTER
-	_hologram_tint = DEFAULT_HOLOGRAM_TINT
-	_tear_strength = DEFAULT_TEAR_STRENGTH
-	_tear_frequency = DEFAULT_TEAR_FREQUENCY
-	_shimmer_strength = DEFAULT_SHIMMER_STRENGTH
-	_scanline_strength = DEFAULT_SCANLINE_STRENGTH
-	_scanline_speed = DEFAULT_SCANLINE_SPEED
-	_scanline_spacing = DEFAULT_SCANLINE_SPACING
-	_body_opacity = DEFAULT_BODY_OPACITY
-	_background_variant = 9
-	_character_variant = 20
+	_apply_default_effect_values()
 	_set_slider_value("x", _character_pos.x)
 	_set_slider_value("y", _character_pos.y)
 	_set_slider_value("scale", _character_scale)
@@ -1014,14 +678,10 @@ func _reset_tuning_values() -> void:
 	_set_slider_value("scanline_speed", _scanline_speed)
 	_set_slider_value("scanline_spacing", _scanline_spacing)
 	_set_slider_value("body_opacity", _body_opacity)
-	if _background_selector != null:
-		_background_selector.select(_background_variant)
-	if _character_selector != null:
-		_character_selector.select(_character_variant)
 	if _background != null:
-		_apply_background_variant()
+		_apply_background_texture()
 	if _character != null:
-		_apply_character_variant()
+		_reload_character_texture()
 	_apply_character_tuning()
 	_save_tuning_values()
 
@@ -1040,8 +700,6 @@ func _restore_saved_tuning_values() -> void:
 	_scanline_speed = _saved_scanline_speed
 	_scanline_spacing = _saved_scanline_spacing
 	_body_opacity = _saved_body_opacity
-	_background_variant = clampi(_saved_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
-	_character_variant = clampi(_saved_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)
 	_tuning_panel_visible = _saved_tuning_panel_visible
 	mouse_filter = Control.MOUSE_FILTER_PASS if _tuning_panel_visible else Control.MOUSE_FILTER_IGNORE
 	clip_contents = not _tuning_panel_visible
@@ -1061,8 +719,6 @@ func _save_tuning_values() -> void:
 	_saved_scanline_speed = _scanline_speed
 	_saved_scanline_spacing = _scanline_spacing
 	_saved_body_opacity = _body_opacity
-	_saved_background_variant = _background_variant
-	_saved_character_variant = _character_variant
 	_saved_tuning_panel_visible = _tuning_panel_visible
 
 
@@ -1097,8 +753,8 @@ func _tuning_values_text() -> String:
 		_format_tuning_number(_scanline_speed),
 		_format_tuning_number(_scanline_spacing),
 		_format_tuning_number(_body_opacity),
-		BACKGROUND_VARIANT_NAMES[clampi(_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)],
-		CHARACTER_VARIANT_NAMES[clampi(_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)],
+		CHARACTER_SELECT_BACKGROUND_NAME,
+		CHARACTER_SELECT_CHARACTER_NAME,
 	]
 
 

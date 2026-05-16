@@ -22,7 +22,7 @@ if gh release view "$tag" >/dev/null 2>&1; then
     gh release edit "$tag" --latest --prerelease=false --title "$title" --notes-file "$notes_file"
   else
     if [[ -z "$notes" ]]; then
-      notes="Playable Hologirl prototype $tag."
+      notes="Playable Hologirl mod $tag."
     fi
     gh release edit "$tag" --latest --prerelease=false --title "$title" --notes "$notes"
   fi
@@ -31,7 +31,7 @@ else
     gh release create "$tag" "$asset" --latest --title "$title" --notes-file "$notes_file"
   else
     if [[ -z "$notes" ]]; then
-      notes="Playable Hologirl prototype $tag."
+      notes="Playable Hologirl mod $tag."
     fi
     gh release create "$tag" "$asset" --latest --title "$title" --notes "$notes"
   fi

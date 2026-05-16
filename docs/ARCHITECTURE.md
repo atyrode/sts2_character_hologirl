@@ -79,11 +79,11 @@ BaseLib must be installed in the game's `mods/BaseLib/` folder before BaseLib-de
 
 The current character template provides:
 
-- A `PlaceholderCharacterModel` subclass for the character.
+- A `CustomCharacterModel` subclass for the character. Hologirl intentionally does not inherit BaseLib's `PlaceholderCharacterModel`; any missing visual/audio surface should be treated as a Hologirl asset gap instead of silently falling back to Ironclad placeholder behavior.
 - A starting deck.
 - starting relics.
 - card, relic, and potion pools.
-- placeholder character UI asset paths.
+- character UI asset paths.
 - a base custom card class marked with the character card pool.
 - localization files under `localization/eng/`.
 
@@ -98,12 +98,12 @@ Working card examples use `CustomCardModel` through a mod-specific base card cla
 ## Local Environment Status
 
 - OS checked: Ubuntu 24.04.3 LTS.
-- STS2 is installed at `/home/alex/games/slay-the-spire-2`.
-- Game assembly path: `/home/alex/games/slay-the-spire-2/data_sts2_linuxbsd_x86_64/sts2.dll`.
+- STS2 is installed at `/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2`.
+- Game assembly path: `/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2/data_sts2_linuxbsd_x86_64/sts2.dll`.
 - The game targets `net9.0` with `Microsoft.NETCore.App` `9.0.7`.
-- .NET SDK `9.0.314` is installed in `/home/alex/.dotnet`.
-- BaseLib `v3.1.3` is installed in `/home/alex/games/slay-the-spire-2/mods/BaseLib`.
-- `Hologirl` builds successfully and installs into `/home/alex/games/slay-the-spire-2/mods/Hologirl`.
+- .NET SDK `9.0.314` is installed in `/mnt/HC_Volume_105232828/shared/tools/dotnet`.
+- BaseLib `v3.1.3` is installed in `/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2/mods/BaseLib`.
+- `Hologirl` builds successfully and installs into `/mnt/HC_Volume_105232828/shared/games/slay-the-spire-2/mods/Hologirl`.
 - Normal game launch fails on the VPS because no X11/Wayland display server is available.
 - `--headless` launch reaches game startup, but Steamworks fails because no Steam client is running. This blocks actual run/card gameplay testing on the VPS.
 
@@ -121,15 +121,17 @@ scripts/release.sh
 
 - `scripts/build.sh` runs `dotnet build Hologirl.csproj`. The project's MSBuild targets copy the DLL, PDB, manifest, and generated PCK into the local STS2 mod folder.
 - `scripts/package.sh` builds first, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
-- `scripts/package.sh` uses the quick PCK packer by default. Set `HOLOGIRL_PCK_EXPORTER=godot` and `GODOT_BIN=/path/to/Godot_v4.5.1-stable_mono_linux.x86_64` to overwrite the PCK through Godot's headless `--export-pack` path before zipping.
-- `scripts/export-pck-godot.sh` is the direct Godot/MegaDot PCK export helper. It sets `DOTNET_ROOT` to `/home/alex/.dotnet` by default and prepends it to `PATH` for Godot's C# tooling.
+- `scripts/package.sh` uses the quick PCK packer by default. Set `HOLOGIRL_PCK_EXPORTER=godot` to overwrite the PCK through Godot's headless `--export-pack` path before zipping.
+- `scripts/godot-env.sh` centralizes local Godot, `.NET`, STS2 mods, and fontconfig environment setup. It prefers the shared `/mnt/HC_Volume_105232828/shared` toolchain and still allows `GODOT_BIN`, `DOTNET_ROOT`, `STS2_MODS_DIR`, and `HOLOGIRL_SHARED_ROOT` overrides.
+- `scripts/export-pck-godot.sh` is the direct Godot/MegaDot PCK export helper.
+- `scripts/godot-smoke-character-select.sh` runs the character-select scene smoke check through the same normalized Godot environment.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
 - `Hologirl.json` stores the plain semantic version without a leading `v`. GitHub release tags and release-note filenames keep the `v` prefix, and `scripts/release.sh` normalizes either input form to the tagged form.
 
 The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. Use the Godot/MegaDot export path when shipping vanilla-style character-select scenes, `GpuParticles2D`, or other resources that require Godot import metadata.
 
-The VPS currently has official Godot `4.5.1.stable.mono` installed at `/home/alex/.cache/hologirl-tools/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64`, with export templates installed under `/home/alex/.local/share/godot/export_templates/4.5.1.stable`. It emits `libfontconfig.so.1` warnings on this VPS, but headless PCK export still completes.
+The shared toolchain has official Godot `4.5.1.stable.mono` installed at `/mnt/HC_Volume_105232828/shared/tools/godot/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64`. `scripts/godot-env.sh` also wires available Nix fontconfig files so headless Godot runs do not emit the previous missing `libfontconfig.so.1` warnings on this machine.
 
 Vanilla character select loads `CharacterModel.CharacterSelectBg` as a `PackedScene` and adds it to `NCharacterSelectScreen`'s `AnimatedBg` container. BaseLib patches `CustomCharacterModel.CustomCharacterSelectBg` into that getter, which is the preferred path for Hologirl's character-select scene.
 

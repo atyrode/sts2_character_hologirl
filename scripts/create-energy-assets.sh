@@ -8,7 +8,7 @@ fi
 
 source_png="$1"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-dotnet_bin="${DOTNET_BIN:-/home/alex/.dotnet/dotnet}"
+dotnet_bin="${DOTNET_BIN:-/mnt/HC_Volume_105232828/shared/tools/dotnet/dotnet}"
 tool_dir="${TMPDIR:-/tmp}/hologirl-energy-assets"
 
 if [[ ! -f "$source_png" ]]; then

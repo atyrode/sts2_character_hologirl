@@ -10,7 +10,7 @@ source_png="$1"
 big_output="$2"
 small_output="$3"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-dotnet_bin="${DOTNET_BIN:-/home/alex/.dotnet/dotnet}"
+dotnet_bin="${DOTNET_BIN:-/mnt/HC_Volume_105232828/shared/tools/dotnet/dotnet}"
 tool_dir="${TMPDIR:-/tmp}/hologirl-image-resize"
 
 if [[ ! -f "$source_png" ]]; then

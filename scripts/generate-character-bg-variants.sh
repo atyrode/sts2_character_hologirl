@@ -2,13 +2,13 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-dotnet_bin="${DOTNET_BIN:-/home/alex/.dotnet/dotnet}"
+dotnet_bin="${DOTNET_BIN:-/mnt/HC_Volume_105232828/shared/tools/dotnet/dotnet}"
 tool_dir="${TMPDIR:-/tmp}/hologirl-flat-character-bg"
 
 archive_dir="$repo_root/docs/design/art_archive/menu/character_select_background/flat-variants-2026-05-15"
-runtime_dir="$repo_root/Hologirl/images/charui/background_variants"
+preview_dir="$archive_dir/runtime-size-previews"
 
-mkdir -p "$tool_dir" "$archive_dir" "$runtime_dir"
+mkdir -p "$tool_dir" "$archive_dir" "$preview_dir"
 
 cat > "$tool_dir/hologirl-flat-character-bg.csproj" <<'CSProj'
 <Project Sdk="Microsoft.NET.Sdk">
@@ -34,14 +34,14 @@ using SixLabors.ImageSharp.Processing;
 
 if (args.Length != 2)
 {
-    Console.Error.WriteLine("Usage: <archive-dir> <runtime-dir>");
+    Console.Error.WriteLine("Usage: <archive-dir> <preview-dir>");
     return 1;
 }
 
 var archiveDir = args[0];
-var runtimeDir = args[1];
+var previewDir = args[1];
 Directory.CreateDirectory(archiveDir);
-Directory.CreateDirectory(runtimeDir);
+Directory.CreateDirectory(previewDir);
 
 const int archiveWidth = 2564;
 const int archiveHeight = 1204;
@@ -70,9 +70,9 @@ foreach (var variant in variants)
 
     using var runtime = image.Clone(ctx => ctx.Resize(runtimeWidth, runtimeHeight));
     var runtimeSlug = variant.Slug.Replace("-", "_");
-    var runtimePath = System.IO.Path.Combine(runtimeDir, $"bg_{runtimeSlug}.png");
-    runtime.SaveAsPng(runtimePath);
-    Console.WriteLine($"{variant.Name}: {runtimePath}");
+    var previewPath = System.IO.Path.Combine(previewDir, $"bg_{runtimeSlug}.png");
+    runtime.SaveAsPng(previewPath);
+    Console.WriteLine($"{variant.Name}: {previewPath}");
 }
 
 return 0;
@@ -209,4 +209,4 @@ static PointF P(float x, float y) => new(x, y);
 record Variant(string Slug, string Name, string Base, string Dark, string Light, Action<IImageProcessingContext, Variant> Draw);
 CS
 
-"$dotnet_bin" run --project "$tool_dir/hologirl-flat-character-bg.csproj" -- "$archive_dir" "$runtime_dir"
+"$dotnet_bin" run --project "$tool_dir/hologirl-flat-character-bg.csproj" -- "$archive_dir" "$preview_dir"

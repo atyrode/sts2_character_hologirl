@@ -8,11 +8,11 @@
   "HOLOGIRL-LIVESTREAM.title": "Livestream",
   "HOLOGIRL-LIVESTREAM.description": "[gold]Shapeshift[/gold] into a random [gold]Idol Form[/gold].",
   "HOLOGIRL-FAUNA_BLOOM.title": "Bloom",
-  "HOLOGIRL-FAUNA_BLOOM.description": "A placeholder Fauna form card.",
+  "HOLOGIRL-FAUNA_BLOOM.description": "Gain {Block:diff()} [gold]Block[/gold].",
   "HOLOGIRL-AMELIA_CLUE.title": "Clue",
-  "HOLOGIRL-AMELIA_CLUE.description": "A placeholder Amelia form card.",
+  "HOLOGIRL-AMELIA_CLUE.description": "Gain {FansPower:diff()} [gold]Fans[/gold].",
   "HOLOGIRL-GURA_CHOMP.title": "Chomp",
-  "HOLOGIRL-GURA_CHOMP.description": "A placeholder Gura form card.",
+  "HOLOGIRL-GURA_CHOMP.description": "Deal {Damage:diff()} damage.",
   "HOLOGIRL-KRONII_TICK.title": "Tick",
-  "HOLOGIRL-KRONII_TICK.description": "A placeholder Kronii form card."
+  "HOLOGIRL-KRONII_TICK.description": "Gain {SingingPower:diff()} [gold]Singing[/gold]."
 }

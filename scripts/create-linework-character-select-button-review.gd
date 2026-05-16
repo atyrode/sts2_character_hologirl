@@ -1,8 +1,8 @@
 extends SceneTree
 
 const OUTPUT_SIZE: Vector2i = Vector2i(132, 195)
-const BACKGROUND_PATH: String = "res://Hologirl/images/charui/background_variants/bg_10_periwinkle_drift.png"
-const CHARACTER_PATH: String = "res://Hologirl/images/charui/character_variants/character_21_linework_no_ref_02.png"
+const BACKGROUND_PATH: String = "res://Hologirl/images/charui/character_select_bg.png"
+const CHARACTER_PATH: String = "res://Hologirl/images/charui/character_select_hologirl.png"
 const OUTPUT_ROOT: String = "res://docs/design/art_archive/menu/character_select_button/linework-no-ref-02-review"
 const PREVIEW_OUTPUT_PATH: String = OUTPUT_ROOT + "/preview-strip.png"
 const VARIANTS: Array[Dictionary] = [
