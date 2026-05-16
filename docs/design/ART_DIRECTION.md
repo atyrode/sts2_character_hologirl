@@ -41,7 +41,8 @@ Near-term non-portrait assets still need a dedicated pass:
 - Energy symbol direction is still being refined. Stronger candidates should follow the depth of `docs/design/art_archive/ui/energy_symbol/batch-2026-05-15-simple-vanilla/variant-001/` but avoid its extra sparkle and avoid a silhouette too close to Necrobinder's six-sided gem. The symbol should remain one simple resource-gem element with depth, not a logo.
 - Energy symbol selection is paused. Revisit the deep one-element batch under `docs/design/art_archive/ui/energy_symbol/batch-2026-05-15-deep-single-gem/` before replacing the current runtime asset again.
 - Base Hologirl can have visibly colored clothing, especially white and gold outfit accents that echo the golden light-whip, as long as the full character remains blue-tinted enough to read as a holographic projection.
-- Source cutout art should avoid baked scanlines/glitch bars when possible. Prefer clean source art plus procedural in-game hologram effects such as shimmer and horizontal tearing.
+- Source cutout art should avoid baked scanlines/glitch bars when possible. Prefer clean source art plus procedural in-game hologram effects such as shimmer, subtle horizontal tearing, and moving scanlines.
+- Character-select hologram shader values are exposed in the F3 tuner while we refine them. Tearing should stay subtle; scanlines should read as a light hologram pass rather than the dominant effect.
 - Strong black outer and internal outlines are desirable on character cutouts to better match vanilla STS2 character-select models.
 - Remaining placeholder UI assets need review: character icon, map marker, locked portrait, energy text, relic placeholder, power placeholder, and mod image.
 

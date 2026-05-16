@@ -9,6 +9,12 @@ const DEFAULT_HOLOGIRL_SCALE: float = 1.51
 const DEFAULT_WHIP_DENSITY: float = 5.0
 const DEFAULT_DRIFT_DENSITY: float = 1.3
 const DEFAULT_WHIP_JITTER: float = 80.0
+const DEFAULT_HOLOGRAM_TINT: float = 0.0
+const DEFAULT_TEAR_STRENGTH: float = 0.0
+const DEFAULT_SHIMMER_STRENGTH: float = 0.0
+const DEFAULT_SCANLINE_STRENGTH: float = 0.0
+const DEFAULT_SCANLINE_SPEED: float = 0.65
+const DEFAULT_SCANLINE_SPACING: float = 56.0
 const BACKGROUND_VARIANT_NAMES: Array[String] = [
 	"Signal Bloom",
 	"Stage Glow",
@@ -92,12 +98,29 @@ const CHARACTER_SHIMMER_STRENGTHS: Array[float] = [
 	0.50,
 	0.58,
 ]
+const CHARACTER_SCANLINE_STRENGTHS: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.24,
+	0.22,
+	0.24,
+	0.20,
+	0.24,
+]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
 static var _saved_character_scale: float = DEFAULT_HOLOGIRL_SCALE
 static var _saved_whip_density: float = DEFAULT_WHIP_DENSITY
 static var _saved_drift_density: float = DEFAULT_DRIFT_DENSITY
 static var _saved_whip_jitter: float = DEFAULT_WHIP_JITTER
+static var _saved_hologram_tint: float = DEFAULT_HOLOGRAM_TINT
+static var _saved_tear_strength: float = DEFAULT_TEAR_STRENGTH
+static var _saved_shimmer_strength: float = DEFAULT_SHIMMER_STRENGTH
+static var _saved_scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
+static var _saved_scanline_speed: float = DEFAULT_SCANLINE_SPEED
+static var _saved_scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 static var _saved_background_variant: int = 9
 static var _saved_character_variant: int = 2
 
@@ -125,6 +148,12 @@ var _whip_density: float = DEFAULT_WHIP_DENSITY
 var _drift_density: float = DEFAULT_DRIFT_DENSITY
 var _glow_density: float = 0.10
 var _whip_jitter: float = DEFAULT_WHIP_JITTER
+var _hologram_tint: float = DEFAULT_HOLOGRAM_TINT
+var _tear_strength: float = DEFAULT_TEAR_STRENGTH
+var _shimmer_strength: float = DEFAULT_SHIMMER_STRENGTH
+var _scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
+var _scanline_speed: float = DEFAULT_SCANLINE_SPEED
+var _scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 var _background_variant: int = 9
 var _character_variant: int = 2
 
@@ -331,6 +360,9 @@ uniform float softness = 0.08;
 uniform float hologram_tint = 0.0;
 uniform float tear_strength = 0.0;
 uniform float shimmer_strength = 0.0;
+uniform float scanline_strength = 0.0;
+uniform float scanline_speed = 0.65;
+uniform float scanline_spacing = 56.0;
 uniform vec3 hologram_color = vec3(0.18, 0.82, 1.0);
 
 void fragment() {
@@ -344,6 +376,10 @@ void fragment() {
 	float shimmer = 1.0 + shimmer_strength * (0.035 * sin(TIME * 4.3 + UV.y * 70.0) + 0.018 * sin(TIME * 2.1 + UV.x * 38.0));
 	tex.rgb *= shimmer;
 	tex.rgb = mix(tex.rgb, tex.rgb * vec3(0.82, 0.95, 1.10) + hologram_color * 0.035, hologram_tint);
+	float scanline_phase = fract(UV.y * scanline_spacing + TIME * scanline_speed);
+	float scanline_band = smoothstep(0.02, 0.08, scanline_phase) * (1.0 - smoothstep(0.16, 0.30, scanline_phase));
+	tex.rgb += hologram_color * scanline_band * scanline_strength * 0.22;
+	tex.a *= 1.0 - scanline_band * scanline_strength * 0.18;
 	tex.a *= keyed;
 	COLOR = tex;
 }
@@ -480,6 +516,12 @@ func _build_tuning_panel() -> PanelContainer:
 	_tuning_body.add_child(_create_tuning_slider("Whip density", "whip_density", 0.0, 5.0, _whip_density, 0.01))
 	_tuning_body.add_child(_create_tuning_slider("Drift density", "drift_density", 0.0, 5.0, _drift_density, 0.01))
 	_tuning_body.add_child(_create_tuning_slider("Gold jitter", "whip_jitter", 0.0, 80.0, _whip_jitter, 0.5))
+	_tuning_body.add_child(_create_tuning_slider("Holo tint", "hologram_tint", 0.0, 1.0, _hologram_tint, 0.01))
+	_tuning_body.add_child(_create_tuning_slider("Tear", "tear_strength", 0.0, 0.012, _tear_strength, 0.0001))
+	_tuning_body.add_child(_create_tuning_slider("Shimmer", "shimmer_strength", 0.0, 1.0, _shimmer_strength, 0.01))
+	_tuning_body.add_child(_create_tuning_slider("Scanline", "scanline_strength", 0.0, 1.0, _scanline_strength, 0.01))
+	_tuning_body.add_child(_create_tuning_slider("Scan speed", "scanline_speed", -3.0, 3.0, _scanline_speed, 0.01))
+	_tuning_body.add_child(_create_tuning_slider("Scan spacing", "scanline_spacing", 12.0, 120.0, _scanline_spacing, 1.0))
 	_tuning_body.add_child(_create_background_selector())
 	_tuning_body.add_child(_create_character_selector())
 
@@ -571,6 +613,24 @@ func _on_tuning_slider_changed(value: float, key: String, value_label: Label) ->
 			_drift_density = value
 		"whip_jitter":
 			_whip_jitter = value
+		"hologram_tint":
+			_hologram_tint = value
+			_apply_character_effect_profile()
+		"tear_strength":
+			_tear_strength = value
+			_apply_character_effect_profile()
+		"shimmer_strength":
+			_shimmer_strength = value
+			_apply_character_effect_profile()
+		"scanline_strength":
+			_scanline_strength = value
+			_apply_character_effect_profile()
+		"scanline_speed":
+			_scanline_speed = value
+			_apply_character_effect_profile()
+		"scanline_spacing":
+			_scanline_spacing = value
+			_apply_character_effect_profile()
 
 	value_label.text = _format_tuning_number(value)
 	_apply_character_tuning()
@@ -634,6 +694,8 @@ func _apply_background_variant() -> void:
 
 func _on_character_variant_selected(index: int) -> void:
 	_character_variant = clampi(index, 0, CHARACTER_VARIANT_NAMES.size() - 1)
+	_apply_character_profile_defaults(_character_variant)
+	_update_effect_sliders()
 	_apply_character_variant()
 	_update_tuning_values_label()
 	_save_tuning_values()
@@ -661,10 +723,31 @@ func _apply_character_effect_profile() -> void:
 	if material == null:
 		return
 
-	var index: int = clampi(_character_variant, 0, CHARACTER_VARIANT_PATHS.size() - 1)
-	material.set_shader_parameter("hologram_tint", CHARACTER_HOLOGRAM_TINTS[index])
-	material.set_shader_parameter("tear_strength", CHARACTER_TEAR_STRENGTHS[index])
-	material.set_shader_parameter("shimmer_strength", CHARACTER_SHIMMER_STRENGTHS[index])
+	material.set_shader_parameter("hologram_tint", _hologram_tint)
+	material.set_shader_parameter("tear_strength", _tear_strength)
+	material.set_shader_parameter("shimmer_strength", _shimmer_strength)
+	material.set_shader_parameter("scanline_strength", _scanline_strength)
+	material.set_shader_parameter("scanline_speed", _scanline_speed)
+	material.set_shader_parameter("scanline_spacing", _scanline_spacing)
+
+
+func _apply_character_profile_defaults(index: int) -> void:
+	index = clampi(index, 0, CHARACTER_VARIANT_PATHS.size() - 1)
+	_hologram_tint = CHARACTER_HOLOGRAM_TINTS[index]
+	_tear_strength = CHARACTER_TEAR_STRENGTHS[index] * 0.35
+	_shimmer_strength = CHARACTER_SHIMMER_STRENGTHS[index]
+	_scanline_strength = CHARACTER_SCANLINE_STRENGTHS[index]
+	_scanline_speed = DEFAULT_SCANLINE_SPEED
+	_scanline_spacing = DEFAULT_SCANLINE_SPACING
+
+
+func _update_effect_sliders() -> void:
+	_set_slider_value("hologram_tint", _hologram_tint)
+	_set_slider_value("tear_strength", _tear_strength)
+	_set_slider_value("shimmer_strength", _shimmer_strength)
+	_set_slider_value("scanline_strength", _scanline_strength)
+	_set_slider_value("scanline_speed", _scanline_speed)
+	_set_slider_value("scanline_spacing", _scanline_spacing)
 
 
 func _clear_particle_layer(layer: Control) -> void:
@@ -695,7 +778,7 @@ func _toggle_tuning_panel_collapsed() -> void:
 
 
 func _current_tuning_panel_height() -> float:
-	return 650.0 if _tuning_body == null or _tuning_body.visible else 56.0
+	return 870.0 if _tuning_body == null or _tuning_body.visible else 56.0
 
 
 func _reset_tuning_values() -> void:
@@ -704,6 +787,12 @@ func _reset_tuning_values() -> void:
 	_whip_density = DEFAULT_WHIP_DENSITY
 	_drift_density = DEFAULT_DRIFT_DENSITY
 	_whip_jitter = DEFAULT_WHIP_JITTER
+	_hologram_tint = DEFAULT_HOLOGRAM_TINT
+	_tear_strength = DEFAULT_TEAR_STRENGTH
+	_shimmer_strength = DEFAULT_SHIMMER_STRENGTH
+	_scanline_strength = DEFAULT_SCANLINE_STRENGTH
+	_scanline_speed = DEFAULT_SCANLINE_SPEED
+	_scanline_spacing = DEFAULT_SCANLINE_SPACING
 	_background_variant = 9
 	_character_variant = 2
 	_set_slider_value("x", _character_pos.x)
@@ -712,6 +801,12 @@ func _reset_tuning_values() -> void:
 	_set_slider_value("whip_density", _whip_density)
 	_set_slider_value("drift_density", _drift_density)
 	_set_slider_value("whip_jitter", _whip_jitter)
+	_set_slider_value("hologram_tint", _hologram_tint)
+	_set_slider_value("tear_strength", _tear_strength)
+	_set_slider_value("shimmer_strength", _shimmer_strength)
+	_set_slider_value("scanline_strength", _scanline_strength)
+	_set_slider_value("scanline_speed", _scanline_speed)
+	_set_slider_value("scanline_spacing", _scanline_spacing)
 	if _background_selector != null:
 		_background_selector.select(_background_variant)
 	if _character_selector != null:
@@ -730,6 +825,12 @@ func _restore_saved_tuning_values() -> void:
 	_whip_density = _saved_whip_density
 	_drift_density = _saved_drift_density
 	_whip_jitter = _saved_whip_jitter
+	_hologram_tint = _saved_hologram_tint
+	_tear_strength = _saved_tear_strength
+	_shimmer_strength = _saved_shimmer_strength
+	_scanline_strength = _saved_scanline_strength
+	_scanline_speed = _saved_scanline_speed
+	_scanline_spacing = _saved_scanline_spacing
 	_background_variant = clampi(_saved_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
 	_character_variant = clampi(_saved_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)
 
@@ -740,6 +841,12 @@ func _save_tuning_values() -> void:
 	_saved_whip_density = _whip_density
 	_saved_drift_density = _drift_density
 	_saved_whip_jitter = _whip_jitter
+	_saved_hologram_tint = _hologram_tint
+	_saved_tear_strength = _tear_strength
+	_saved_shimmer_strength = _shimmer_strength
+	_saved_scanline_strength = _scanline_strength
+	_saved_scanline_speed = _scanline_speed
+	_saved_scanline_spacing = _scanline_spacing
 	_saved_background_variant = _background_variant
 	_saved_character_variant = _character_variant
 
@@ -760,13 +867,19 @@ func _update_tuning_values_label() -> void:
 
 
 func _tuning_values_text() -> String:
-	return "x=%s y=%s scale=%s whip_density=%s drift_density=%s gold_jitter=%s background=%s character=%s" % [
+	return "x=%s y=%s scale=%s whip_density=%s drift_density=%s gold_jitter=%s holo_tint=%s tear=%s shimmer=%s scanline=%s scan_speed=%s scan_spacing=%s background=%s character=%s" % [
 		_format_tuning_number(_character_pos.x),
 		_format_tuning_number(_character_pos.y),
 		_format_tuning_number(_character_scale),
 		_format_tuning_number(_whip_density),
 		_format_tuning_number(_drift_density),
 		_format_tuning_number(_whip_jitter),
+		_format_tuning_number(_hologram_tint),
+		_format_tuning_number(_tear_strength),
+		_format_tuning_number(_shimmer_strength),
+		_format_tuning_number(_scanline_strength),
+		_format_tuning_number(_scanline_speed),
+		_format_tuning_number(_scanline_spacing),
 		BACKGROUND_VARIANT_NAMES[clampi(_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)],
 		CHARACTER_VARIANT_NAMES[clampi(_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)],
 	]
