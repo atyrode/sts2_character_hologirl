@@ -10,7 +10,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace Hologirl.HologirlCode.Cards.Basic;
@@ -32,26 +31,26 @@ public sealed class Livestream() : HologirlCard(2, CardType.Skill, CardRarity.Ba
         switch (Random.Shared.Next(4))
         {
             case 0:
-                await Transform<FaunaFormPower, FaunaBloom>();
+                await Shapeshift<FaunaFormPower, FaunaBloom>();
                 break;
             case 1:
-                await Transform<AmeliaFormPower, AmeliaClue>();
+                await Shapeshift<AmeliaFormPower, AmeliaClue>();
                 break;
             case 2:
-                await Transform<GuraFormPower, GuraChomp>();
+                await Shapeshift<GuraFormPower, GuraChomp>();
                 break;
             default:
-                await Transform<KroniiFormPower, KroniiTick>();
+                await Shapeshift<KroniiFormPower, KroniiTick>();
                 break;
         }
     }
 
-    private async Task Transform<TPower, TCard>()
+    private async Task Shapeshift<TPower, TCard>()
         where TPower : HologirlFormPower
         where TCard : CardModel
     {
         await PowerCmd.Apply<TPower>(Owner.Creature, 1m, Owner.Creature, this);
-        if (Owner.Relics.OfType<PrismPendant>().Any())
-            await CardPileCmd.Add([ModelDb.Card<TCard>()], PileType.Hand.GetPile(Owner), CardPilePosition.Top, this);
+        foreach (PrismPendant prismPendant in Owner.Relics.OfType<PrismPendant>())
+            await prismPendant.AfterShapeshift<TCard>();
     }
 }

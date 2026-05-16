@@ -6,6 +6,8 @@ Starting relic for Hologirl's Shapeshift system.
 
 Current role: when Hologirl Shapeshifts, add the current form's specific 0-cost card to hand.
 
+Implementation note: `Livestream` only applies the Shapeshift form. `Prism Pendant` owns the bonus-card trigger, flashes when it triggers, and creates the reward card through the active combat state before adding it to hand.
+
 ## Wording Rule
 
 The relic should describe the bonus-card effect. `Livestream` should only describe Shapeshifting unless it directly owns another effect.

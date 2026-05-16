@@ -38,6 +38,8 @@ public class Hologirl : CustomCharacterModel
     public override string CustomArmRockTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_rock.png");
     public override string CustomArmPaperTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_paper.png");
     public override string CustomArmScissorsTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_scissors.png");
+    public override string CustomIconPath => SceneHelper.GetScenePath($"ui/character_icons/{TemporaryBaseCharacterId}_icon");
+    public override string CustomIconOutlineTexturePath => ImageHelper.GetImagePath($"ui/top_panel/character_icon_{TemporaryBaseCharacterId}_outline.png");
     public override string CustomCharacterSelectTransitionPath => $"res://materials/transitions/{TemporaryBaseCharacterId}_transition_mat.tres";
     public override string CharacterTransitionSfx => $"event:/sfx/ui/wipe_{TemporaryBaseCharacterId}";
     public override string CustomAttackSfx => $"event:/sfx/characters/{TemporaryBaseCharacterId}/{TemporaryBaseCharacterId}_attack";

@@ -80,7 +80,7 @@ BaseLib must be installed in the game's `mods/BaseLib/` folder before BaseLib-de
 The current character template provides:
 
 - A `CustomCharacterModel` subclass for the character. Hologirl intentionally does not inherit BaseLib's `PlaceholderCharacterModel`.
-- Hologirl currently routes missing in-run surfaces through explicit Ironclad asset paths for combat visuals, transition material, transition sound, energy counter, rest/merchant animations, hand textures, attack/cast/death sounds, and temporary Architect attack VFX. This is deliberate scaffolding while Hologirl-owned run assets are not designed yet, not passive placeholder inheritance.
+- Hologirl currently routes missing in-run surfaces through explicit Ironclad asset paths for combat visuals, card trail, transition material, transition sound, energy counter, rest/merchant animations, hand textures, fallback icon scene/outline texture, attack/cast/death sounds, and temporary Architect attack VFX. This is deliberate scaffolding while Hologirl-owned run assets are not designed yet, not passive placeholder inheritance.
 - A starting deck.
 - starting relics.
 - card, relic, and potion pools.
