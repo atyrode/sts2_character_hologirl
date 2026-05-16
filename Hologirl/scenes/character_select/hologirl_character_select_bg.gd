@@ -9,13 +9,13 @@ const DEFAULT_HOLOGIRL_SCALE: float = 1.51
 const DEFAULT_WHIP_DENSITY: float = 5.0
 const DEFAULT_DRIFT_DENSITY: float = 1.3
 const DEFAULT_WHIP_JITTER: float = 80.0
-const DEFAULT_HOLOGRAM_TINT: float = 0.18
+const DEFAULT_HOLOGRAM_TINT: float = 0.45
 const DEFAULT_TEAR_STRENGTH: float = 0.0
 const DEFAULT_TEAR_FREQUENCY: float = 24.0
-const DEFAULT_SHIMMER_STRENGTH: float = 0.04
+const DEFAULT_SHIMMER_STRENGTH: float = 0.43
 const DEFAULT_SCANLINE_STRENGTH: float = 0.09
-const DEFAULT_SCANLINE_SPEED: float = -0.22
-const DEFAULT_SCANLINE_SPACING: float = 44.0
+const DEFAULT_SCANLINE_SPEED: float = 0.47
+const DEFAULT_SCANLINE_SPACING: float = 26.0
 const BACKGROUND_VARIANT_NAMES: Array[String] = [
 	"Signal Bloom",
 	"Stage Glow",
@@ -170,7 +170,7 @@ static var _saved_scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
 static var _saved_scanline_speed: float = DEFAULT_SCANLINE_SPEED
 static var _saved_scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 static var _saved_background_variant: int = 9
-static var _saved_character_variant: int = 4
+static var _saved_character_variant: int = 13
 
 var _canvas: Control
 var _background: TextureRect
@@ -204,7 +204,7 @@ var _scanline_strength: float = DEFAULT_SCANLINE_STRENGTH
 var _scanline_speed: float = DEFAULT_SCANLINE_SPEED
 var _scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 var _background_variant: int = 9
-var _character_variant: int = 4
+var _character_variant: int = 13
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -852,7 +852,7 @@ func _reset_tuning_values() -> void:
 	_scanline_speed = DEFAULT_SCANLINE_SPEED
 	_scanline_spacing = DEFAULT_SCANLINE_SPACING
 	_background_variant = 9
-	_character_variant = 4
+	_character_variant = 13
 	_set_slider_value("x", _character_pos.x)
 	_set_slider_value("y", _character_pos.y)
 	_set_slider_value("scale", _character_scale)
