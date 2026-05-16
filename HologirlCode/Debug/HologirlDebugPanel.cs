@@ -28,7 +28,7 @@ public partial class HologirlDebugPanel : Control
 
         _panel = BuildPanel();
         AddChild(_panel);
-        Visible = false;
+        _panel.Visible = false;
         UpdateVisibleControls();
         UpdateCommandPreview();
     }
@@ -38,7 +38,7 @@ public partial class HologirlDebugPanel : Control
         if (@event is not InputEventKey { Pressed: true, Echo: false, Keycode: Key.F3 })
             return;
 
-        Visible = !Visible;
+        _panel.Visible = !_panel.Visible;
         GetViewport().SetInputAsHandled();
     }
 
@@ -88,7 +88,7 @@ public partial class HologirlDebugPanel : Control
         header.AddChild(title);
 
         Button close = new() { Text = "Hide" };
-        close.Pressed += () => Visible = false;
+        close.Pressed += () => _panel.Visible = false;
         header.AddChild(close);
 
         _actionPicker = CreateOptionButton(["Room", "Fight", "Event", "Command"]);
