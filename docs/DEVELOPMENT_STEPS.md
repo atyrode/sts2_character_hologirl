@@ -64,7 +64,7 @@
   - [ ] Revisit energy symbol selection from the archived deep one-element batch before replacing the current runtime energy gem.
 - [ ] Audit remaining placeholder character UI assets: character icon, map marker, locked portrait, energy text, relic placeholder, power placeholder, and mod image.
 - [ ] Decide which character-select background and PNG cutout are the default, then remove or hide comparison-only variants from normal player-facing builds.
-- [ ] Use F3 tuner feedback to lock final character-select hologram shader values for tearing, shimmer, and scanline behavior.
+- [ ] Use F3 tuner feedback to lock final character-select hologram shader values for tearing, tear speed, shimmer, and scanline behavior.
 - [ ] Remove or disable temporary tuner UI once final character-select values are locked.
 
 ### 3. Stabilize The Starter Gameplay Loop
