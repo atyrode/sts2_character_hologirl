@@ -1,22 +1,23 @@
 extends Control
 
 const VIRTUAL_SIZE: Vector2 = Vector2(2564.0, 1204.0)
-const DEFAULT_HOLOGIRL_POS: Vector2 = Vector2(821.0, 94.0)
+const DEFAULT_HOLOGIRL_POS: Vector2 = Vector2(937.0, 139.0)
 const DEFAULT_HOLOGIRL_SIZE: Vector2 = Vector2(1180.0, 787.0)
 const TUNING_PANEL_START_VISIBLE: bool = false
 const TUNING_PANEL_MARGIN: Vector2 = Vector2(24.0, 24.0)
-const DEFAULT_HOLOGIRL_SCALE: float = 1.53
+const DEFAULT_HOLOGIRL_SCALE: float = 1.33
 const DEFAULT_WHIP_DENSITY: float = 5.0
 const DEFAULT_DRIFT_DENSITY: float = 5.0
 const DEFAULT_WHIP_JITTER: float = 80.0
-const DEFAULT_HOLOGRAM_TINT: float = 1.0
+const DEFAULT_HOLOGRAM_TINT: float = 0.62
 const DEFAULT_TEAR_STRENGTH: float = 0.0
-const DEFAULT_TEAR_FREQUENCY: float = 4.0
-const DEFAULT_SHIMMER_STRENGTH: float = 0.04
+const DEFAULT_TEAR_FREQUENCY: float = 0.7
+const DEFAULT_SHIMMER_STRENGTH: float = 0.72
 const DEFAULT_SCANLINE_STRENGTH: float = 0.34
 const DEFAULT_SCANLINE_SPEED: float = 0.43
 const DEFAULT_SCANLINE_SPACING: float = 87.0
-const DEFAULT_BODY_OPACITY: float = 0.86
+const DEFAULT_BODY_OPACITY: float = 0.83
+const SELECT_SOUND_PATH: String = "res://Hologirl/audio/char_select/hologram.mp3"
 const BACKGROUND_VARIANT_NAMES: Array[String] = [
 	"Signal Bloom",
 	"Stage Glow",
@@ -277,7 +278,7 @@ static var _saved_scanline_speed: float = DEFAULT_SCANLINE_SPEED
 static var _saved_scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 static var _saved_body_opacity: float = DEFAULT_BODY_OPACITY
 static var _saved_background_variant: int = 9
-static var _saved_character_variant: int = 10
+static var _saved_character_variant: int = 20
 static var _saved_tuning_panel_visible: bool = TUNING_PANEL_START_VISIBLE
 
 var _canvas: Control
@@ -313,7 +314,7 @@ var _scanline_speed: float = DEFAULT_SCANLINE_SPEED
 var _scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 var _body_opacity: float = DEFAULT_BODY_OPACITY
 var _background_variant: int = 9
-var _character_variant: int = 10
+var _character_variant: int = 20
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -326,6 +327,7 @@ func _ready() -> void:
 	_build_scene()
 	_apply_layout()
 	_spawn_selection_burst()
+	_play_select_sound()
 	_spark_timer = 0.02
 	_drift_timer = 0.05
 	_glow_timer = 0.08
@@ -564,6 +566,19 @@ func _spawn_selection_burst() -> void:
 
 	for i in 2:
 		_spawn_background_glow(true)
+
+
+func _play_select_sound() -> void:
+	var stream := load(SELECT_SOUND_PATH)
+	if not stream is AudioStream:
+		return
+
+	var player := AudioStreamPlayer.new()
+	player.name = "HologirlSelectSound"
+	player.stream = stream
+	player.finished.connect(player.queue_free)
+	add_child(player)
+	player.play()
 
 
 func _spawn_whip_spark(burst: bool) -> void:
@@ -915,6 +930,15 @@ func _apply_character_profile_defaults(index: int) -> void:
 	_scanline_strength = CHARACTER_SCANLINE_STRENGTHS[index]
 	_scanline_speed = DEFAULT_SCANLINE_SPEED if index >= 4 else 0.0
 	_scanline_spacing = DEFAULT_SCANLINE_SPACING
+	if CHARACTER_VARIANT_NAMES[index] == "Linework No Ref 02":
+		_hologram_tint = DEFAULT_HOLOGRAM_TINT
+		_tear_strength = DEFAULT_TEAR_STRENGTH
+		_tear_frequency = DEFAULT_TEAR_FREQUENCY
+		_shimmer_strength = DEFAULT_SHIMMER_STRENGTH
+		_scanline_strength = DEFAULT_SCANLINE_STRENGTH
+		_scanline_speed = DEFAULT_SCANLINE_SPEED
+		_scanline_spacing = DEFAULT_SCANLINE_SPACING
+		_body_opacity = DEFAULT_BODY_OPACITY
 
 
 func _update_effect_sliders() -> void:
@@ -975,7 +999,7 @@ func _reset_tuning_values() -> void:
 	_scanline_spacing = DEFAULT_SCANLINE_SPACING
 	_body_opacity = DEFAULT_BODY_OPACITY
 	_background_variant = 9
-	_character_variant = 10
+	_character_variant = 20
 	_set_slider_value("x", _character_pos.x)
 	_set_slider_value("y", _character_pos.y)
 	_set_slider_value("scale", _character_scale)

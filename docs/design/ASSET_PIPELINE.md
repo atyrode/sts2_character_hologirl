@@ -27,6 +27,13 @@ The current roadmap includes replacing or validating these non-card-portrait ass
 
 Record final dimensions and source paths here as each asset is confirmed in-game.
 
+## Audio Assets
+
+Character-select audio is stored under `Hologirl/audio/char_select/`.
+
+- Current Hologirl select sound: `Hologirl/audio/char_select/hologram.mp3`
+- Runtime hook: `Hologirl/scenes/character_select/hologirl_character_select_bg.gd`
+
 ## Naming
 
 `HologirlCard.CustomPortraitPath` resolves portraits from the lower-case card id after the `Hologirl` prefix.
