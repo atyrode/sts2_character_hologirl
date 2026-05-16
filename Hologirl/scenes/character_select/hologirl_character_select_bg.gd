@@ -65,6 +65,16 @@ const CHARACTER_VARIANT_NAMES: Array[String] = [
 	"Humanoid Hologram C",
 	"Humanoid Hologram D",
 	"Humanoid Hologram E",
+	"Linework No Ref 01",
+	"Linework No Ref 02",
+	"Linework No Ref 03",
+	"Linework No Ref 04",
+	"Linework No Ref 05",
+	"Linework No Ref 06",
+	"Linework No Ref 07",
+	"Linework No Ref 08",
+	"Linework No Ref 09",
+	"Linework No Ref 10",
 ]
 const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_01_current.png",
@@ -86,6 +96,16 @@ const CHARACTER_VARIANT_PATHS: Array[String] = [
 	"res://Hologirl/images/charui/character_variants/character_17_humanoid_hologram_c.png",
 	"res://Hologirl/images/charui/character_variants/character_18_humanoid_hologram_d.png",
 	"res://Hologirl/images/charui/character_variants/character_19_humanoid_hologram_e.png",
+	"res://Hologirl/images/charui/character_variants/character_20_linework_no_ref_01.png",
+	"res://Hologirl/images/charui/character_variants/character_21_linework_no_ref_02.png",
+	"res://Hologirl/images/charui/character_variants/character_22_linework_no_ref_03.png",
+	"res://Hologirl/images/charui/character_variants/character_23_linework_no_ref_04.png",
+	"res://Hologirl/images/charui/character_variants/character_24_linework_no_ref_05.png",
+	"res://Hologirl/images/charui/character_variants/character_25_linework_no_ref_06.png",
+	"res://Hologirl/images/charui/character_variants/character_26_linework_no_ref_07.png",
+	"res://Hologirl/images/charui/character_variants/character_27_linework_no_ref_08.png",
+	"res://Hologirl/images/charui/character_variants/character_28_linework_no_ref_09.png",
+	"res://Hologirl/images/charui/character_variants/character_29_linework_no_ref_10.png",
 ]
 const CHARACTER_HOLOGRAM_TINTS: Array[float] = [
 	0.0,
@@ -107,8 +127,28 @@ const CHARACTER_HOLOGRAM_TINTS: Array[float] = [
 	1.0,
 	1.0,
 	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
+	1.0,
 ]
 const CHARACTER_TEAR_STRENGTHS: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
 	0.0,
 	0.0,
 	0.0,
@@ -149,12 +189,32 @@ const CHARACTER_TEAR_FREQUENCIES: Array[float] = [
 	4.0,
 	4.0,
 	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	4.0,
 ]
 const CHARACTER_SHIMMER_STRENGTHS: Array[float] = [
 	0.0,
 	0.0,
 	0.0,
 	0.0,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
+	0.04,
 	0.04,
 	0.04,
 	0.04,
@@ -191,6 +251,16 @@ const CHARACTER_SCANLINE_STRENGTHS: Array[float] = [
 	0.34,
 	0.34,
 	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
+	0.34,
 ]
 
 static var _saved_character_pos: Vector2 = DEFAULT_HOLOGIRL_POS
@@ -208,6 +278,7 @@ static var _saved_scanline_spacing: float = DEFAULT_SCANLINE_SPACING
 static var _saved_body_opacity: float = DEFAULT_BODY_OPACITY
 static var _saved_background_variant: int = 9
 static var _saved_character_variant: int = 10
+static var _saved_tuning_panel_visible: bool = TUNING_PANEL_START_VISIBLE
 
 var _canvas: Control
 var _background: TextureRect
@@ -872,6 +943,7 @@ func _toggle_tuning_panel_visible() -> void:
 	if _tuning_panel != null:
 		_tuning_panel.visible = _tuning_panel_visible
 	_apply_tuning_panel_layout()
+	_save_tuning_values()
 
 
 func _toggle_tuning_panel_collapsed() -> void:
@@ -946,6 +1018,9 @@ func _restore_saved_tuning_values() -> void:
 	_body_opacity = _saved_body_opacity
 	_background_variant = clampi(_saved_background_variant, 0, BACKGROUND_VARIANT_NAMES.size() - 1)
 	_character_variant = clampi(_saved_character_variant, 0, CHARACTER_VARIANT_NAMES.size() - 1)
+	_tuning_panel_visible = _saved_tuning_panel_visible
+	mouse_filter = Control.MOUSE_FILTER_PASS if _tuning_panel_visible else Control.MOUSE_FILTER_IGNORE
+	clip_contents = not _tuning_panel_visible
 
 
 func _save_tuning_values() -> void:
@@ -964,6 +1039,7 @@ func _save_tuning_values() -> void:
 	_saved_body_opacity = _body_opacity
 	_saved_background_variant = _background_variant
 	_saved_character_variant = _character_variant
+	_saved_tuning_panel_visible = _tuning_panel_visible
 
 
 func _set_slider_value(key: String, value: float) -> void:
