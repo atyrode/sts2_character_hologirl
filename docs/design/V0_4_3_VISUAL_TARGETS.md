@@ -93,7 +93,7 @@ This intentionally puts the temporary PNG model into the same vertical band as t
 v0.4.7 bridge art:
 
 - `Hologirl/images/character/hologirl_runtime.png` now uses the accepted first side-facing Hologirl combat reference.
-- Source copy: `Hologirl/animation/source/attempt-001-side-facing-reference/reference-chroma.png`.
+- Source copy: `docs/design/art_archive/character/spine/attempt-001-side-facing-reference/reference-chroma.png`.
 - The scene contract and calibration values stay unchanged because the new image keeps the same 1024x1536 canvas.
 - This is still a full-image bridge, not a separated-parts rig.
 
