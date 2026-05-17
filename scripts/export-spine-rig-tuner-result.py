@@ -252,17 +252,18 @@ def write_godot_layered_scene(parts: list[dict], image_names: dict[int, str], sc
     scene_offset_y = -max_y
 
     lines: list[str] = [
-        f'[gd_scene load_steps={len(parts) + 1} format=3 uid="uid://hologirltunerrignode"]',
+        f'[gd_scene load_steps={len(parts) + 2} format=3 uid="uid://hologirltunerrignode"]',
         "",
     ]
 
+    lines.append('[ext_resource type="Script" path="res://Hologirl/animation/hologirl_tuner_rig_idle.gd" id="1_idle"]')
     for index, part in enumerate(parts):
         name = image_names[index]
         lines.append(
-            f'[ext_resource type="Texture2D" path="res://Hologirl/animation/binary/images/{name}.png" id="{index + 1}_{name}"]'
+            f'[ext_resource type="Texture2D" path="res://Hologirl/animation/binary/images/{name}.png" id="{index + 2}_{name}"]'
         )
 
-    lines.extend(["", '[node name="HologirlTunerRigNode" type="Node2D"]'])
+    lines.extend(["", '[node name="HologirlTunerRigNode" type="Node2D"]', 'script = ExtResource("1_idle")'])
 
     for index, part in enumerate(parts):
         name = image_names[index]
@@ -276,8 +277,6 @@ def write_godot_layered_scene(parts: list[dict], image_names: dict[int, str], sc
         opacity = float(part.get("opacity", 1.0))
         brightness = float(part.get("brightness", 1.0))
         visible = bool(part.get("visible", True))
-        z = int(round(float(part.get("z", 0.0))))
-
         lines.extend(
             [
                 "",
@@ -291,7 +290,6 @@ def write_godot_layered_scene(parts: list[dict], image_names: dict[int, str], sc
             lines.append(f"scale = Vector2({godot_float(scale)}, {godot_float(scale)})")
         if not visible:
             lines.append("visible = false")
-        lines.append(f"z_index = {z}")
 
         lines.extend(
             [
@@ -299,7 +297,7 @@ def write_godot_layered_scene(parts: list[dict], image_names: dict[int, str], sc
                 f'[node name="Sprite" type="Sprite2D" parent="{name}"]',
                 "centered = false",
                 f"position = Vector2({godot_float(-pivot_x)}, {godot_float(-pivot_y)})",
-                f'texture = ExtResource("{index + 1}_{name}")',
+                f'texture = ExtResource("{index + 2}_{name}")',
             ]
         )
         if opacity < 0.999 or abs(brightness - 1.0) > 0.001:

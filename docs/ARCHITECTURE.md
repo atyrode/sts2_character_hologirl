@@ -144,7 +144,7 @@ The shared toolchain has official Godot `4.5.1.stable.mono` installed at `/mnt/H
 
 Spine experiments may require a local-only `addons/spine/` folder so headless Godot can parse `SpineSprite` scenes and Spine resource classes. That folder is ignored by git and excluded from PCK export; Hologirl must not ship a bundled Spine extension because STS2 already owns the runtime extension in-game. Remove the local addon before ordinary package/release runs unless actively testing Spine imports, because the upstream GDExtension can crash headless Godot on shutdown after export on this machine.
 
-The combat visual can also use a pure Godot layered rig as an iteration bridge. `Hologirl/scenes/creature_visuals/hologirl.tscn` keeps the required `Visuals`, `Bounds`, `CenterPos`, and `IntentPos` contract, but its `Visuals` instance currently points to `Hologirl/animation/hologirl_tuner_rig_node.tscn` so in-game testing does not depend on Spine importer availability.
+The combat visual can also use a pure Godot layered rig as an iteration bridge. `Hologirl/scenes/creature_visuals/hologirl.tscn` keeps the required `Visuals`, `Bounds`, `CenterPos`, and `IntentPos` contract, but its `Visuals` instance currently points to `Hologirl/animation/hologirl_tuner_rig_node.tscn` so in-game testing does not depend on Spine importer availability. `Hologirl/animation/hologirl_tuner_rig_idle.gd` adds part-level idle movement on top of the wrapper scene's whole-body bob.
 
 Vanilla character select loads `CharacterModel.CharacterSelectBg` as a `PackedScene` and adds it to `NCharacterSelectScreen`'s `AnimatedBg` container. BaseLib patches `CustomCharacterModel.CustomCharacterSelectBg` into that getter, which is the preferred path for Hologirl's character-select scene.
 
