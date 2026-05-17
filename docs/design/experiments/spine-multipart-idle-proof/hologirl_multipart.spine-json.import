@@ -1,0 +1,13 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://hologirlmultipartjson"
+path="res://.godot/imported/hologirl_multipart.spine-json-hologirlmultipart.spjson"
+
+[deps]
+
+source_file="res://docs/design/experiments/spine-multipart-idle-proof/hologirl_multipart.spine-json"
+dest_files=["res://.godot/imported/hologirl_multipart.spine-json-hologirlmultipart.spjson"]
+
+[params]

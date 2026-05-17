@@ -1,0 +1,246 @@
+images/shadow.png
+size: 532,57
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+shadow
+  rotate: false
+  xy: 0, 0
+  size: 532, 57
+  orig: 532, 57
+  offset: 0, 0
+  index: -1
+
+images/hair_back_large.png
+size: 251,336
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hair_back_large
+  rotate: false
+  xy: 0, 0
+  size: 251, 336
+  orig: 251, 336
+  offset: 0, 0
+  index: -1
+
+images/upper_leg_right.png
+size: 88,232
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+upper_leg_right
+  rotate: false
+  xy: 0, 0
+  size: 88, 232
+  orig: 88, 232
+  offset: 0, 0
+  index: -1
+
+images/lower_leg_right.png
+size: 98,241
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+lower_leg_right
+  rotate: false
+  xy: 0, 0
+  size: 98, 241
+  orig: 98, 241
+  offset: 0, 0
+  index: -1
+
+images/boot_right.png
+size: 135,157
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+boot_right
+  rotate: false
+  xy: 0, 0
+  size: 135, 157
+  orig: 135, 157
+  offset: 0, 0
+  index: -1
+
+images/upper_leg_left.png
+size: 91,246
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+upper_leg_left
+  rotate: false
+  xy: 0, 0
+  size: 91, 246
+  orig: 91, 246
+  offset: 0, 0
+  index: -1
+
+images/lower_leg_left.png
+size: 103,258
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+lower_leg_left
+  rotate: false
+  xy: 0, 0
+  size: 103, 258
+  orig: 103, 258
+  offset: 0, 0
+  index: -1
+
+images/boot_left.png
+size: 130,161
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+boot_left
+  rotate: false
+  xy: 0, 0
+  size: 130, 161
+  orig: 130, 161
+  offset: 0, 0
+  index: -1
+
+images/pelvis.png
+size: 206,168
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+pelvis
+  rotate: false
+  xy: 0, 0
+  size: 206, 168
+  orig: 206, 168
+  offset: 0, 0
+  index: -1
+
+images/torso.png
+size: 178,318
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+torso
+  rotate: false
+  xy: 0, 0
+  size: 178, 318
+  orig: 178, 318
+  offset: 0, 0
+  index: -1
+
+images/upper_arm_right.png
+size: 144,140
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+upper_arm_right
+  rotate: false
+  xy: 0, 0
+  size: 144, 140
+  orig: 144, 140
+  offset: 0, 0
+  index: -1
+
+images/forearm_right.png
+size: 84,150
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+forearm_right
+  rotate: false
+  xy: 0, 0
+  size: 84, 150
+  orig: 84, 150
+  offset: 0, 0
+  index: -1
+
+images/hand_right.png
+size: 94,150
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hand_right
+  rotate: false
+  xy: 0, 0
+  size: 94, 150
+  orig: 94, 150
+  offset: 0, 0
+  index: -1
+
+images/upper_arm_left.png
+size: 143,140
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+upper_arm_left
+  rotate: false
+  xy: 0, 0
+  size: 143, 140
+  orig: 143, 140
+  offset: 0, 0
+  index: -1
+
+images/forearm_left.png
+size: 84,150
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+forearm_left
+  rotate: false
+  xy: 0, 0
+  size: 84, 150
+  orig: 84, 150
+  offset: 0, 0
+  index: -1
+
+images/hand_left.png
+size: 94,150
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hand_left
+  rotate: false
+  xy: 0, 0
+  size: 94, 150
+  orig: 94, 150
+  offset: 0, 0
+  index: -1
+
+images/whip_handle_curve.png
+size: 401,201
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+whip_handle_curve
+  rotate: false
+  xy: 0, 0
+  size: 401, 201
+  orig: 401, 201
+  offset: 0, 0
+  index: -1
+
+images/head_side.png
+size: 262,262
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+head_side
+  rotate: false
+  xy: 0, 0
+  size: 262, 262
+  orig: 262, 262
+  offset: 0, 0
+  index: -1
+
+images/hair_front.png
+size: 197,281
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hair_front
+  rotate: false
+  xy: 0, 0
+  size: 197, 281
+  orig: 197, 281
+  offset: 0, 0
+  index: -1

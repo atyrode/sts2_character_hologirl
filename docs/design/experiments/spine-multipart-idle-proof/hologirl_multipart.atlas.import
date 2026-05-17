@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://hologirlmultipartatlas"
+path="res://.godot/imported/hologirl_multipart.atlas-hologirlmultipart.spatlas"
+
+[deps]
+
+source_file="res://docs/design/experiments/spine-multipart-idle-proof/hologirl_multipart.atlas"
+dest_files=["res://.godot/imported/hologirl_multipart.atlas-hologirlmultipart.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

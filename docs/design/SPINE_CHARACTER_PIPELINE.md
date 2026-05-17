@@ -172,9 +172,11 @@ Follow-up result:
 
 - Official public `spine-godot` artifacts exist for Spine branch `4.2` and Godot `4.5.1-stable` at `https://spine-godot.s3.amazonaws.com/4.2/4.5.1-stable/spine-godot-extension-4.2-4.5.1-stable.zip`.
 - Installing that package locally under ignored `addons/spine/` makes the headless Godot project recognize `SpineSprite`, `SpineSkeletonDataResource`, `SpineSkeletonFileResource`, and `SpineAtlasResource`.
+- On a clean local addon install, run a headless editor scan once so Godot writes `.godot/extension_list.cfg`; otherwise `--script` runs may not load the GDExtension and will report the Spine classes as missing.
 - The local addon is an export/editor aid only. `export_presets.cfg` excludes `addons/*` so Hologirl does not ship another Spine extension inside its PCK. Remove it before normal package/release runs unless actively testing Spine, because the GDExtension crashed headless Godot on shutdown after export on this machine.
 - Raw `.atlas` and `.spine-json` files are not enough by themselves. They need Godot `.import` remaps to generated `.spatlas` and `.spjson` files, matching the layout used by `STS2-Buu` and official `spine-godot` examples.
 - A temporary proof loaded successfully after manually providing `.atlas.import`, `.spine-json.import`, copied `.spatlas/.spjson` generated targets, `SpineSkeletonDataResource`, and a `SpineSprite` scene.
+- A multipart proof with separate rough body-part attachments now loads through the same path. It proves that a self-authored `.spine-json` skeleton is viable for early iteration, but it is not production-ready animation.
 
 Practical implication:
 
