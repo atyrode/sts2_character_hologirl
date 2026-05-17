@@ -96,7 +96,7 @@ If the runtime character animator only calls a smaller set, unused animations ar
 ## Recommended Groundwork Path
 
 1. Generate or draw a clean side-facing Hologirl reference that matches the current character-select design.
-2. Create separated transparent body-part art from that reference: torso, head, hair/twintail parts, upper/lower arms, hands, legs, whip segments, and shadow.
+2. Create separated transparent body-part art from that reference: torso, head, hair/twintail parts, upper/lower arms, hands, legs, whip segments, and shadow. First source sheet archived at `docs/design/art_archive/character/spine/attempt-002-body-parts-source/`.
 3. Locate or install a Spine editor/CLI capable of exporting `.skel`, `.atlas`, and packed PNG.
 4. Build a minimal Spine skeleton with those parts and only an `idle` animation first.
 5. Export into `Hologirl/animation/binary/`.
