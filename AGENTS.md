@@ -74,6 +74,7 @@ These instructions apply to the whole repository. Follow them before making chan
 
 ## Working Style
 
+- Check open GitHub issues regularly when choosing or starting work, especially after a test-release feedback cycle. Treat issues as the tracker for known follow-up work, and close or update them when the relevant fix ships.
 - Keep edits scoped to the requested change.
 - Prefer existing patterns over new abstractions.
 - Do not revert user changes unless explicitly asked.
