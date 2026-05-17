@@ -12,3 +12,4 @@ packages/
 *.user
 scripts/*.gd.uid
 Directory.Build.props
+/addons/spine/

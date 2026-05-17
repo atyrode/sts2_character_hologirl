@@ -17,6 +17,13 @@ Result on 2026-05-17:
 - `SpineSkeletonDataResource` could not be instantiated in the headless export project.
 - Only the PNG was imported normally.
 
+Second attempt:
+
+- Extracted STS2's `addons/spine/spine_godot_extension.gdextension` from the packed game assets with `scripts/extract-pck-path.gd`.
+- Created a local ignored `addons/spine/` folder for importer experiments.
+- Symlinked the locally installed STS2 runtime library as the expected Linux editor/debug/release Spine extension names.
+- Godot saw the descriptor, but still did not register loaders for `.atlas` or `.json`.
+
 Conclusion:
 
 - Do not route gameplay to this proof.

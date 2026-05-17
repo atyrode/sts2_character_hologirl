@@ -129,6 +129,7 @@ scripts/release.sh
 - `scripts/package.sh` uses Godot's headless `--export-pack` path by default because Hologirl ships `.tscn` scenes and Godot-imported resources. Set `HOLOGIRL_PCK_EXPORTER=quick` only for emergency simple-asset-only packages.
 - `scripts/godot-env.sh` centralizes local Godot, `.NET`, STS2 mods, and fontconfig environment setup. It prefers the shared `/mnt/HC_Volume_105232828/shared` toolchain and still allows `GODOT_BIN`, `DOTNET_ROOT`, `STS2_MODS_DIR`, and `HOLOGIRL_SHARED_ROOT` overrides.
 - `scripts/export-pck-godot.sh` is the direct Godot/MegaDot PCK export helper.
+- `scripts/extract-pck-path.gd` is a Godot helper for extracting a specific file or folder from the local STS2 PCK when verifying vanilla asset structure or extension files.
 - `scripts/godot-smoke-character-select.sh` runs the character-select scene smoke check through the same normalized Godot environment.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.

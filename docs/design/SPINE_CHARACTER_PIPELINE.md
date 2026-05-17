@@ -151,3 +151,19 @@ If used, do it as an explicit prototype branch or archived experiment, not as hi
 - Which animation names are actually invoked by STS2's current player visual controller?
 - Can rest-site and merchant scenes reuse the same `SpineSprite` resource with different animation starts, or do they need separate scenes for reliable playback?
 - Should Hologirl source `.spine` files be committed, archived outside the mod package, or excluded from the shipped release once the licensing/export workflow is confirmed?
+
+## Importer Investigation - 2026-05-17
+
+STS2's packed assets include `res://addons/spine/spine_godot_extension.gdextension`, but the native editor/importer libraries referenced by that descriptor are not present inside the extracted PCK paths checked so far.
+
+The local STS2 install exposes `libspine_godot.linux.template_release.x86_64.so`, which is enough evidence that the game runtime uses the Spine Godot extension. It was not enough to make the mod's headless export project import raw Spine resources:
+
+- Copying the `.gdextension` descriptor into a local ignored `addons/spine/` folder did make Godot see the extension descriptor.
+- Symlinking the available template release library as the expected editor/debug/release library names still did not register the Spine importers.
+- The export still logged `No loader found for resource` for the proof `.atlas` and `.json` resources.
+
+Confirmed next steps:
+
+- Find or build the matching `spine-godot` editor extension/import plugin for the Godot version used by STS2.
+- Once the importer exists locally, test whether committed `.skel`, `.atlas`, `.png`, `.import`, `.tres`, and `.tscn` files export cleanly in this repo.
+- If the editor importer remains unavailable, the operator will need to provide Spine-exported binary assets from an environment where the plugin is installed.
