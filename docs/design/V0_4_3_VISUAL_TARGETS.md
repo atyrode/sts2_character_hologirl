@@ -90,6 +90,13 @@ v0.4.6 combat calibration:
 
 This intentionally puts the temporary PNG model into the same vertical band as the inspected vanilla characters. It does not solve the final front-facing pose problem; that belongs to the side-facing Spine source-art pass.
 
+v0.4.7 bridge art:
+
+- `Hologirl/images/character/hologirl_runtime.png` now uses the accepted first side-facing Hologirl combat reference.
+- Source copy: `Hologirl/animation/source/attempt-001-side-facing-reference/reference-chroma.png`.
+- The scene contract and calibration values stay unchanged because the new image keeps the same 1024x1536 canvas.
+- This is still a full-image bridge, not a separated-parts rig.
+
 Open validation:
 
 - Confirm BaseLib preserves the GDScript idle animation when converting these pure Godot scenes into `NCreatureVisuals`, `NRestSiteCharacter`, and `NMerchantCharacter`.
