@@ -132,6 +132,7 @@ scripts/release.sh
 - `scripts/godot-smoke-character-select.sh` runs the character-select scene smoke check through the same normalized Godot environment.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
+- `scripts/release.sh` must only publish committed source from `main` after it has been pushed to `origin/main`. The script enforces this by fetching `origin/main`, rejecting dirty working trees, and rejecting local `main` when it differs from `origin/main`. Do not release from uncommitted work; package-only local tests should use `scripts/package.sh`.
 - `Hologirl.json` stores the plain semantic version without a leading `v`. GitHub release tags and release-note filenames keep the `v` prefix, and `scripts/release.sh` normalizes either input form to the tagged form.
 
 The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. Do not use the quick path for releases that ship localization/assets alongside vanilla-style character-select scenes, `GpuParticles2D`, or other resources that require Godot import metadata; it can leave the installed PCK stale while the DLL is fresh.

@@ -6,6 +6,9 @@ public static class LivestreamChatCatalog
 
     private static readonly Queue<string> RecentMessages = [];
     private static readonly HashSet<string> RecentMessageLookup = [];
+    private static LivestreamAudienceProfile audienceProfile = LivestreamAudienceProfile.FromFanAmount(0);
+    private static int rosterSize = 2;
+    private static LivestreamChatter[] activeRoster = [];
 
     private static readonly string[] EmoteCodes =
     [
@@ -24,6 +27,20 @@ public static class LivestreamChatCatalog
         "HoloClean",
         "HoloDisaster"
     ];
+
+    public static void SetAudienceProfile(LivestreamAudienceProfile profile)
+    {
+        audienceProfile = profile;
+        var nextRosterSize = Math.Clamp(profile.RosterSize(), 1, Chatters.Length);
+        if (nextRosterSize == rosterSize && activeRoster.Length > 0)
+            return;
+
+        rosterSize = nextRosterSize;
+        activeRoster = Chatters
+            .OrderBy(_ => Random.Shared.Next())
+            .Take(rosterSize)
+            .ToArray();
+    }
 
     private static readonly string[] DirectHologirlMessages =
     [
@@ -1560,6 +1577,39 @@ public static class LivestreamChatCatalog
                 "@Hologirl beautiful disaster, no notes except many notes",
                 "ending the broadcast with the chat still yapping is too real"
             ],
+            [LivestreamChatEvent.CombatVictory] =
+            [
+                "loot screen secured",
+                "WE TAKE THOSE",
+                "clean enough",
+                "chat survives another room",
+                "victory screen believers",
+                "reward screen reached",
+                "combat archived successfully",
+                "HoloPog loot time",
+                "that was totally controlled",
+                "nobody check the middle turns",
+                "room cleared, chat still typing",
+                "gg next floor",
+                "the run continues",
+                "that fight had production value",
+                "reward screen my beloved",
+                "HoloClean clear",
+                "we lived and that is the important part",
+                "victory fanfare but make it chat",
+                "enemy lobby emptied",
+                "now pick the weird card",
+                "HoloSmirk calculated",
+                "that was a win with footnotes",
+                "loot!",
+                "chat claiming we helped",
+                "@Hologirl nice clear",
+                "@Hologirl never doubted except briefly",
+                "good fight honestly",
+                "the VOD will edit out the panic",
+                "combat end screen looking cozy",
+                "HoloSalute room cleared"
+            ],
             [LivestreamChatEvent.TurnStart] =
             [
                 "new turn new problems",
@@ -2145,6 +2195,13 @@ public static class LivestreamChatCatalog
                 ["gg", "gg go next", "GG", "GG?", "game over", "run over", "end screen", "roll credits", "VOD title", "thumbnail secured", "content acquired", "cinema?", "that was content"],
                 ["LMAO", "lmao no", "lol nooo", "I should not laugh", "why is this funny", "chat please", "HoloLUL", "HoloKEK", "HoloLUL o7", "HoloKEK F", "cry laughing", "laughing respectfully"]
             ],
+            [LivestreamChatEvent.CombatVictory] =
+            [
+                ["gg", "GG", "ggs", "gg next", "clean", "clear", "room clear", "victory", "we take those", "loot", "loot time", "reward screen"],
+                ["HoloPog", "HoloPog clear", "HoloClean", "HoloClean win", "HoloHype", "HoloHype loot", "HoloSmirk calculated", "HoloSalute"],
+                ["calculated", "CALCULATED", "never doubted", "never doubted.", "I doubted briefly", "totally planned", "planned", "ez?", "easy?", "clean enough"],
+                ["pick card", "card reward", "what reward", "show rewards", "rare reward?", "skip angle?", "deck gets bigger", "loot screen", "reward room"]
+            ],
             [LivestreamChatEvent.TurnStart] =
             [
                 ["line?", "line??", "what's the line", "the line?", "LINE?", "chat line", "line check", "any line?", "what line", "what do", "what now", "plan?", "plan??"],
@@ -2301,9 +2358,13 @@ public static class LivestreamChatCatalog
 
     private static LivestreamChatLine CreateLine(string message, string? excludedUsername = null)
     {
-        var chatter = Chatters[Random.Shared.Next(Chatters.Length)];
+        if (activeRoster.Length == 0)
+            SetAudienceProfile(audienceProfile);
+
+        var roster = activeRoster.Length > 0 ? activeRoster : Chatters;
+        var chatter = roster[Random.Shared.Next(roster.Length)];
         for (var attempt = 0; attempt < 8 && chatter.Username == excludedUsername; attempt++)
-            chatter = Chatters[Random.Shared.Next(Chatters.Length)];
+            chatter = roster[Random.Shared.Next(roster.Length)];
 
         return new LivestreamChatLine(
             chatter.Username,

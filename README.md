@@ -51,6 +51,19 @@ Package with the default Godot/MegaDot PCK exporter:
 scripts/package.sh
 ```
 
+Release:
+
+```sh
+git fetch
+git status --short --branch
+git add -A
+git commit -m "Prepare Hologirl vX.Y.Z"
+git push origin main
+scripts/release.sh
+```
+
+`scripts/release.sh` intentionally refuses to run unless `main` is clean and exactly matches `origin/main`. A release must always be backed by committed, pushed source so the GitHub release artifact, tag, and repository history stay in sync.
+
 For emergency simple-asset-only packages, the old quick packer can still be selected explicitly:
 
 ```sh

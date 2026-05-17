@@ -19,8 +19,11 @@ position = Vector2(0, -520)
 texture = ExtResource("1_runtime")
 centered = true
 
-[node name="Bounds" type="Marker2D" parent="."]
-position = Vector2(0, -118)
+[node name="Bounds" type="Control" parent="."]
+offset_left = -155.0
+offset_top = -540.0
+offset_right = 155.0
+offset_bottom = 35.0
 
 [node name="CenterPos" type="Marker2D" parent="."]
 position = Vector2(0, -260)

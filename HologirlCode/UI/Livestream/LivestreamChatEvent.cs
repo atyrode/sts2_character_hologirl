@@ -14,6 +14,7 @@ public enum LivestreamChatEvent
     DebuffReceived,
     MonsterDeath,
     HologirlDeath,
+    CombatVictory,
     TurnStart,
     TurnEnd,
     CardPlayed,

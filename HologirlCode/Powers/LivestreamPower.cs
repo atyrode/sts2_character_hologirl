@@ -19,6 +19,7 @@ public sealed class LivestreamPower : HologirlPower
     private int cardsPlayedThisTurn;
     private int cardsDrawnThisTurn;
     private int cardsExhaustedThisTurn;
+    private bool keepOverlayAfterCombat;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
@@ -33,7 +34,7 @@ public sealed class LivestreamPower : HologirlPower
         cardsDrawnThisTurn = 0;
         cardsExhaustedThisTurn = 0;
         UpdateLivestreamChatContext();
-        if (turnsStarted > 1 && GetAudienceProfile().Roll(0.68f))
+        if (turnsStarted > 1 && GetAudienceProfile().Roll(0.42f))
             PushCosmeticChat(LivestreamChatEvent.TurnStart);
 
         ambientTurnsUntilNextMessage--;
@@ -112,7 +113,7 @@ public sealed class LivestreamPower : HologirlPower
 
     public override Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
-        if (side == Owner.Side && Amount > 0 && GetAudienceProfile().Roll(0.68f))
+        if (side == Owner.Side && Amount > 0 && GetAudienceProfile().Roll(0.42f))
             PushCosmeticChat(LivestreamChatEvent.TurnEnd);
 
         return Task.CompletedTask;
@@ -120,12 +121,17 @@ public sealed class LivestreamPower : HologirlPower
 
     public override Task AfterCombatVictory(CombatRoom room)
     {
-        LivestreamChatOverlayManager.Clear();
+        keepOverlayAfterCombat = true;
+        UpdateLivestreamChatContext();
+        LivestreamChatOverlayManager.PushEvent(LivestreamChatEvent.CombatVictory, GetAudienceProfile().VictoryReactionCount());
         return Task.CompletedTask;
     }
 
     public override Task AfterCombatEnd(CombatRoom room)
     {
+        if (keepOverlayAfterCombat)
+            return Task.CompletedTask;
+
         if (ReadCreatureNumber("CurrentHp", "CurrentHealth", "Hp") <= 0m)
             return Task.CompletedTask;
 
@@ -143,15 +149,15 @@ public sealed class LivestreamPower : HologirlPower
             PushCosmeticChat(LivestreamChatEvent.CursePlayed, 1);
         else if (cardPlay.Card.Type == CardType.Status)
             PushCosmeticChat(LivestreamChatEvent.StatusPlayed, 1);
-        else if (cardPlay.Card.Rarity == CardRarity.Rare && GetAudienceProfile().Roll(0.58f))
+        else if (cardPlay.Card.Rarity == CardRarity.Rare && GetAudienceProfile().Roll(0.44f))
             PushCosmeticChat(LivestreamChatEvent.RareCardPlayed, 1);
 
-        if (cardPlay.Card.Type == CardType.Attack && GetAudienceProfile().Roll(0.36f))
+        if (cardPlay.Card.Type == CardType.Attack && GetAudienceProfile().Roll(0.22f))
             PushCosmeticChat(LivestreamChatEvent.AttackPlayed, 1);
-        else if (cardPlay.Card.GainsBlock && GetAudienceProfile().Roll(0.42f))
+        else if (cardPlay.Card.GainsBlock && GetAudienceProfile().Roll(0.26f))
             PushCosmeticChat(LivestreamChatEvent.BlockPlayed, 1);
 
-        if (Random.Shared.NextSingle() < GetAudienceProfile().RepeatedEventChance(0.22f, cardsPlayedThisTurn))
+        if (Random.Shared.NextSingle() < GetAudienceProfile().RepeatedEventChance(0.14f, cardsPlayedThisTurn))
             PushCosmeticChat(LivestreamChatEvent.CardPlayed);
 
         return Task.CompletedTask;
@@ -163,14 +169,14 @@ public sealed class LivestreamPower : HologirlPower
             return Task.CompletedTask;
 
         cardsDrawnThisTurn++;
-        if (card.Type == CardType.Curse && GetAudienceProfile().Roll(0.72f))
+        if (card.Type == CardType.Curse && GetAudienceProfile().Roll(0.58f))
             PushCosmeticChat(LivestreamChatEvent.CursePlayed, 1);
-        else if (card.Type == CardType.Status && GetAudienceProfile().Roll(0.62f))
+        else if (card.Type == CardType.Status && GetAudienceProfile().Roll(0.48f))
             PushCosmeticChat(LivestreamChatEvent.StatusPlayed, 1);
-        else if (card.Rarity == CardRarity.Rare && GetAudienceProfile().Roll(0.34f))
+        else if (card.Rarity == CardRarity.Rare && GetAudienceProfile().Roll(0.24f))
             PushCosmeticChat(LivestreamChatEvent.RareCardPlayed, 1);
 
-        if (!fromHandDraw && Random.Shared.NextSingle() < GetAudienceProfile().RepeatedEventChance(0.22f, cardsDrawnThisTurn))
+        if (!fromHandDraw && Random.Shared.NextSingle() < GetAudienceProfile().RepeatedEventChance(0.14f, cardsDrawnThisTurn))
             PushCosmeticChat(LivestreamChatEvent.CardDrawn);
 
         return Task.CompletedTask;
@@ -182,7 +188,7 @@ public sealed class LivestreamPower : HologirlPower
             return Task.CompletedTask;
 
         cardsExhaustedThisTurn++;
-        if (Random.Shared.NextSingle() < GetAudienceProfile().RepeatedEventChance(0.22f, cardsExhaustedThisTurn))
+        if (Random.Shared.NextSingle() < GetAudienceProfile().RepeatedEventChance(0.16f, cardsExhaustedThisTurn))
             PushCosmeticChat(LivestreamChatEvent.CardExhausted);
 
         return Task.CompletedTask;

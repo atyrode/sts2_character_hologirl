@@ -27,7 +27,7 @@ BaseLib gives a lower-risk path for Hologirl: `CustomVisualPath` can point to a 
 
 Implemented staging:
 
-1. First pass: `Hologirl/scenes/creature_visuals/hologirl.tscn`, a Hologirl-owned Godot `Node2D` creature scene with `Visuals`, `Bounds`, `CenterPos`, and `IntentPos`.
+1. First pass: `Hologirl/scenes/creature_visuals/hologirl.tscn`, a Hologirl-owned Godot `Node2D` creature scene with `Visuals`, a `Control` `Bounds` child, and `Marker2D` `CenterPos` and `IntentPos` children. `Bounds` must stay a `Control`; BaseLib's `NCreatureVisuals` auto-converter fails if it is authored as `Marker2D`.
 2. Shared runtime art: `Hologirl/images/character/hologirl_runtime.png`, generated as a full-body transparent sprite with the white/gold outfit and grounded light-whip.
 3. Simple idle motion: `Hologirl/scenes/character/hologirl_runtime_visual.gd` adds a small breathing/body bob transform.
 4. Rest and merchant scenes route through the same runtime sprite at `Hologirl/scenes/rest_site/characters/hologirl_rest_site.tscn` and `Hologirl/scenes/merchant/characters/hologirl_merchant.tscn`.

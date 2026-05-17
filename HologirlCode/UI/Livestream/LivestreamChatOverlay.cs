@@ -10,7 +10,6 @@ public partial class LivestreamChatOverlay : Control
     private const int MaxBufferedMessages = 7;
     private const float MessageLifetimeSeconds = 10f;
     private const float FadeSeconds = 1.6f;
-    private const float NeutralChance = 0.28f;
     private const float PileOnChance = 0.34f;
     private const float ReplyChance = 0.08f;
     private const float StreamStartWindowSeconds = 12f;
@@ -99,7 +98,7 @@ public partial class LivestreamChatOverlay : Control
         if (eventKind == LivestreamChatEvent.Start)
         {
             streamStartWindowUntilMsec = Time.GetTicksMsec() + (ulong)(StreamStartWindowSeconds * 1000f);
-            reactionCount = Math.Max(reactionCount, GetStreamStartReactionCount());
+            reactionCount = Math.Max(reactionCount, LivestreamAudienceProfile.FromFanAmount(ambientFanAmount).StreamStartReactionCount());
         }
         else if (IsStreamStartWindowActive() && IsGenericCosmeticEvent(eventKind))
         {
@@ -108,12 +107,15 @@ public partial class LivestreamChatOverlay : Control
         }
 
         reactionCount = eventKind == LivestreamChatEvent.Start
-            ? Math.Clamp(reactionCount, 5, 22)
+            ? Math.Clamp(reactionCount, 2, 16)
             : eventKind == LivestreamChatEvent.HologirlDeath
                 ? Math.Clamp(reactionCount, 5, 14)
+            : eventKind == LivestreamChatEvent.CombatVictory
+                ? Math.Clamp(reactionCount, 3, 11)
             : Math.Clamp(reactionCount, 1, 5);
 
         var audience = LivestreamAudienceProfile.FromFanAmount(ambientFanAmount);
+        LivestreamChatCatalog.SetAudienceProfile(audience);
         var reactionDelays = CreateReactionDelays(eventKind, reactionCount);
         var pileOnTheme = reactionCount >= 2 && Random.Shared.NextSingle() < audience.PileOnChance(PileOnChance)
             ? LivestreamChatCatalog.GetPileOnTheme(eventKind)
@@ -139,7 +141,7 @@ public partial class LivestreamChatOverlay : Control
                 MaybeQueueReply(eventKind, line, delay);
         }
 
-        if (eventKind != LivestreamChatEvent.Start && Random.Shared.NextSingle() < NeutralChance)
+        if (eventKind != LivestreamChatEvent.Start && Random.Shared.NextSingle() < audience.NeutralFollowupChance())
         {
             var line = LivestreamChatCatalog.GetNeutral(combatMood);
             var delay = GetLooseDelay(2.6f, 5.4f);
@@ -147,7 +149,7 @@ public partial class LivestreamChatOverlay : Control
             MaybeQueueReply(eventKind, line, delay);
         }
 
-        if (eventKind != LivestreamChatEvent.Start && reactionCount >= 3 && Random.Shared.NextSingle() < 0.42f)
+        if (eventKind != LivestreamChatEvent.Start && reactionCount >= 3 && Random.Shared.NextSingle() < audience.ExtraReactionChance())
         {
             var line = LivestreamChatCatalog.GetReaction(eventKind);
             var delay = GetLooseDelay(5.2f, 8.4f);
@@ -167,6 +169,7 @@ public partial class LivestreamChatOverlay : Control
 
         ResetIdleTimer();
         messageCount = Math.Clamp(messageCount, 1, 3);
+        LivestreamChatCatalog.SetAudienceProfile(LivestreamAudienceProfile.FromFanAmount(ambientFanAmount));
         for (var i = 0; i < messageCount; i++)
             QueueLine(LivestreamChatCatalog.GetNeutral(combatMood), GetLooseDelay(i * 0.25f, i * 0.25f + 0.9f));
     }
@@ -179,6 +182,7 @@ public partial class LivestreamChatOverlay : Control
             return;
 
         ambientFanAmount = nextFanAmount;
+        LivestreamChatCatalog.SetAudienceProfile(LivestreamAudienceProfile.FromFanAmount(ambientFanAmount));
         ResetIdleTimer();
     }
 
@@ -191,6 +195,7 @@ public partial class LivestreamChatOverlay : Control
     private void PushIdle(int messageCount)
     {
         messageCount = Math.Clamp(messageCount, 1, 3);
+        LivestreamChatCatalog.SetAudienceProfile(LivestreamAudienceProfile.FromFanAmount(ambientFanAmount));
         for (var i = 0; i < messageCount; i++)
             QueueLine(LivestreamChatCatalog.GetIdle(combatMood), GetLooseDelay(i * 0.4f, i * 0.4f + 1.4f));
     }
@@ -283,7 +288,7 @@ public partial class LivestreamChatOverlay : Control
         var cursor = eventKind switch
         {
             LivestreamChatEvent.Start => GetLooseDelay(0.25f, 1.15f),
-            LivestreamChatEvent.HologirlDeath => GetLooseDelay(0.45f, 1.35f),
+            LivestreamChatEvent.HologirlDeath or LivestreamChatEvent.CombatVictory => GetLooseDelay(0.45f, 1.35f),
             _ => GetLooseDelay(1.25f, 2.75f)
         };
 
@@ -293,7 +298,7 @@ public partial class LivestreamChatOverlay : Control
                 cursor += eventKind switch
                 {
                     LivestreamChatEvent.Start => GetStreamStartGap(),
-                    LivestreamChatEvent.HologirlDeath => GetDeathReactionGap(),
+                    LivestreamChatEvent.HologirlDeath or LivestreamChatEvent.CombatVictory => GetEndScreenReactionGap(),
                     _ => GetHumanReactionGap()
                 };
 
@@ -303,26 +308,14 @@ public partial class LivestreamChatOverlay : Control
         return delays;
     }
 
-    private static int GetStreamStartReactionCount()
-    {
-        return Random.Shared.NextSingle() switch
-        {
-            < 0.08f => Random.Shared.Next(5, 8),
-            < 0.28f => Random.Shared.Next(8, 11),
-            < 0.72f => Random.Shared.Next(11, 15),
-            < 0.92f => Random.Shared.Next(15, 19),
-            _ => Random.Shared.Next(19, 23)
-        };
-    }
-
     private static float GetStreamStartGap()
     {
         return Random.Shared.NextSingle() switch
         {
-            < 0.16f => GetLooseDelay(0.12f, 0.45f),
-            < 0.62f => GetLooseDelay(0.55f, 1.25f),
-            < 0.88f => GetLooseDelay(1.25f, 2.25f),
-            _ => GetLooseDelay(2.25f, 3.35f)
+            < 0.08f => GetLooseDelay(0.3f, 0.75f),
+            < 0.52f => GetLooseDelay(0.9f, 1.9f),
+            < 0.86f => GetLooseDelay(1.9f, 3.4f),
+            _ => GetLooseDelay(3.4f, 5.2f)
         };
     }
 
@@ -351,7 +344,7 @@ public partial class LivestreamChatOverlay : Control
         };
     }
 
-    private static float GetDeathReactionGap()
+    private static float GetEndScreenReactionGap()
     {
         return Random.Shared.NextSingle() switch
         {
@@ -481,11 +474,11 @@ public partial class LivestreamChatOverlay : Control
     {
         var message = FormatChatText(line.Message);
         var emoteCount = EmoteImageTags.Keys.Count(code => message.Contains(code, StringComparison.Ordinal));
-        var estimatedWidthChars = Math.Max(1, line.Username.Length + 2 + message.Length + emoteCount * 5);
-        var estimatedLines = Math.Max(1, (int)Math.Ceiling(estimatedWidthChars / 52f));
+        var estimatedWidthChars = Math.Max(1, line.Username.Length + 2 + message.Length + emoteCount * 4);
+        var estimatedLines = Math.Max(1, (int)Math.Ceiling(estimatedWidthChars / 78f));
         var height = 6f + estimatedLines * 26f;
         if (emoteCount > 0)
-            height = Math.Max(height, 38f);
+            height = Math.Max(height, 42f);
 
         return Math.Clamp(height, MinRowHeight, MaxRowHeight);
     }
