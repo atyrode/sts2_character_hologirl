@@ -64,6 +64,8 @@ scripts/release.sh
 
 `scripts/release.sh` intentionally refuses to run unless `main` is clean and exactly matches `origin/main`. A release must always be backed by committed, pushed source so the GitHub release artifact, tag, and repository history stay in sync.
 
+Before preparing a release, review open GitHub issues and pull any in-scope fixes into the release. When new feedback is real but not part of the current work, record it as a GitHub issue instead of keeping a local scratch list.
+
 For emergency simple-asset-only packages, the old quick packer can still be selected explicitly:
 
 ```sh
