@@ -109,6 +109,9 @@
 
 - [ ] Replace remaining placeholder relic, power, and UI art.
 - [ ] Replace explicit temporary Ironclad in-run routing with Hologirl-owned combat visual, transition, energy counter, rest/merchant animation, hand textures, and combat sounds.
+- [ ] Replace the temporary PNG combat/rest/merchant visual with a side-facing Spine-backed Hologirl model following `docs/design/SPINE_CHARACTER_PIPELINE.md`.
+- [ ] Generate or draw side-facing separated body-part source art for the Spine rig.
+- [ ] Locate a licensed Spine editor/CLI path or receive exported `hologirl.png`, `hologirl.atlas`, and `hologirl.skel` from the operator.
 - [ ] Review all wording for keywords, tooltips, and line breaks.
 - [ ] Review mod compatibility risks before adding global hooks or patches.
 - [ ] Test install/update through GitHub release and the mod manager.

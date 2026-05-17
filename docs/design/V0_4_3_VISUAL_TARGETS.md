@@ -68,7 +68,7 @@ Pragmatic staged path:
 
 1. Calibrate the current PNG scene to vanilla bounds/markers so health bar, intent, and body placement are correct.
 2. Split Hologirl into layered transparent body-part PNGs if we want a repo-native rig without Spine. Animate those with Godot `Node2D` transforms for head, torso, arms, hair, and whip. This will be less powerful than Spine but much closer to vanilla idle motion than one full-body PNG.
-3. Research a Spine export path only if we are ready to maintain `.skel`/`.atlas` assets and can confirm mod PCK export/import compatibility with the STS2 Spine runtime.
+3. Move to a real Spine export when side-facing body-part art and a Spine editor/export path are available. The confirmed target pipeline is documented in `docs/design/SPINE_CHARACTER_PIPELINE.md`.
 4. Once the combat rig is stable, reuse or adapt it for merchant/rest scenes instead of making unrelated poses first.
 
 Implemented staging:
@@ -77,7 +77,7 @@ Implemented staging:
 2. Shared runtime art: `Hologirl/images/character/hologirl_runtime.png`, generated as a full-body transparent sprite with the white/gold outfit and grounded light-whip.
 3. Simple idle motion: `Hologirl/scenes/character/hologirl_runtime_visual.gd` adds a small breathing/body bob transform.
 4. Rest and merchant scenes route through the same runtime sprite at `Hologirl/scenes/rest_site/characters/hologirl_rest_site.tscn` and `Hologirl/scenes/merchant/characters/hologirl_merchant.tscn`.
-5. Keep the vanilla Spine route as an aspirational later upgrade unless we commit to generating and maintaining `.skel`/`.atlas` assets.
+5. Keep the vanilla Spine route as the preferred final upgrade. The current PNG rig is only a temporary owned-asset bridge until Hologirl has side-facing Spine assets.
 
 Open validation:
 
