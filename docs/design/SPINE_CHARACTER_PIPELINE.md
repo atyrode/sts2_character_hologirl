@@ -147,7 +147,7 @@ If used, do it as an explicit prototype branch or archived experiment, not as hi
 
 ## Open Questions
 
-- Does the installed STS2/Godot export pipeline accept `.spine-json` with the same reliability as `.skel`, or should Hologirl only ship binary `.skel` like vanilla?
+- Does the installed STS2/Godot export pipeline accept `.spine-json` with the same reliability as `.skel`, or should Hologirl only ship binary `.skel` like vanilla? A first raw `.atlas` plus `.json` proof failed in the current headless export environment; see `docs/design/experiments/spine-single-attachment-proof/`.
 - Which animation names are actually invoked by STS2's current player visual controller?
 - Can rest-site and merchant scenes reuse the same `SpineSprite` resource with different animation starts, or do they need separate scenes for reliable playback?
 - Should Hologirl source `.spine` files be committed, archived outside the mod package, or excluded from the shipped release once the licensing/export workflow is confirmed?

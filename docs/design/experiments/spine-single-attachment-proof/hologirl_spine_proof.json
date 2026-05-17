@@ -1,0 +1,53 @@
+{
+  "skeleton": {
+    "hash": "hologirl-spine-proof-001",
+    "spine": "4.2",
+    "x": -512,
+    "y": 0,
+    "width": 1024,
+    "height": 1536,
+    "images": "./"
+  },
+  "bones": [
+    { "name": "root" },
+    { "name": "body", "parent": "root", "y": 0 }
+  ],
+  "slots": [
+    { "name": "hologirl_spine_proof", "bone": "body", "attachment": "hologirl_spine_proof" }
+  ],
+  "skins": [
+    {
+      "name": "default",
+      "attachments": {
+        "hologirl_spine_proof": {
+          "hologirl_spine_proof": {
+            "x": 0,
+            "y": 768,
+            "width": 1024,
+            "height": 1536
+          }
+        }
+      }
+    }
+  ],
+  "animations": {
+    "idle": {
+      "bones": {
+        "body": {
+          "translate": [
+            { "time": 0, "y": 0 },
+            { "time": 1.1, "y": 10 },
+            { "time": 2.2, "y": 0 }
+          ],
+          "scale": [
+            { "time": 0, "x": 1, "y": 1 },
+            { "time": 1.1, "x": 1.01, "y": 0.995 },
+            { "time": 2.2, "x": 1, "y": 1 }
+          ]
+        }
+      }
+    },
+    "hit": {},
+    "dead": {}
+  }
+}
