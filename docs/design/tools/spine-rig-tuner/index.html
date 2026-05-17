@@ -1,0 +1,2302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hologirl Spine Rig Tuner</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #17181d;
+      --panel: #22242b;
+      --panel-2: #2b2e37;
+      --text: #f0f2f8;
+      --muted: #aab0c0;
+      --line: #464b58;
+      --accent: #90a8ff;
+      --danger: #ff7f8f;
+      --ok: #8ee6b2;
+    }
+
+    * { box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #1d1f26;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    header input,
+    header select {
+      width: auto;
+      min-width: 150px;
+    }
+
+    .toolbar-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      padding-right: 10px;
+      border-right: 1px solid var(--line);
+    }
+
+    .toolbar-group:last-of-type {
+      border-right: 0;
+      padding-right: 0;
+    }
+
+    .toolbar-group-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    button, select, input, textarea {
+      color: var(--text);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 7px 9px;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button:hover { border-color: var(--accent); }
+    button.primary { background: #34406f; border-color: #596aa8; }
+    button.danger { background: #56313b; border-color: #8b4a5b; }
+    button.panel-toggle.is-collapsed {
+      color: var(--muted);
+      background: #1f222a;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: var(--source-track, var(--source-width, minmax(440px, 1fr))) var(--source-pose-gutter, 7px) var(--pose-track, var(--pose-width, minmax(440px, 1fr))) var(--pose-side-gutter, 7px) var(--side-track, var(--side-width, 360px));
+      grid-template-rows: minmax(0, 1fr) var(--asset-height, 170px);
+      grid-template-areas:
+        "source sourcePose pose poseSide side"
+        "asset asset asset asset asset";
+      width: 100vw;
+      flex: 1;
+      min-height: 0;
+    }
+
+    section {
+      min-width: 0;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .source-section { grid-area: source; }
+    .pose-section { grid-area: pose; }
+    .resizer[data-resizer="sourcePose"] { grid-area: sourcePose; }
+    .resizer[data-resizer="poseSide"] { grid-area: poseSide; }
+
+    section:last-child { border-right: 0; }
+
+    .resizer {
+      background: #15171d;
+      border-right: 1px solid var(--line);
+      cursor: col-resize;
+      min-width: 7px;
+    }
+
+    .resizer:hover,
+    .resizer.dragging {
+      background: #34406f;
+    }
+
+    main.source-collapsed .source-section,
+    main.pose-collapsed .pose-section,
+    main.assets-collapsed .asset-library,
+    main.side-collapsed .side-panel,
+    main.source-collapsed .resizer[data-resizer="sourcePose"],
+    main.pose-collapsed .resizer[data-resizer="sourcePose"],
+    main.pose-collapsed .resizer[data-resizer="poseSide"],
+    main.side-collapsed .resizer[data-resizer="poseSide"] {
+      display: none;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      flex-wrap: wrap;
+    }
+
+    .toolbar.compact {
+      gap: 10px;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      width: auto;
+      min-width: 160px;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      cursor: default;
+      background:
+        linear-gradient(45deg, #242730 25%, transparent 25%),
+        linear-gradient(-45deg, #242730 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #242730 75%),
+        linear-gradient(-45deg, transparent 75%, #242730 75%);
+      background-color: #1a1c22;
+      background-size: 28px 28px;
+      background-position: 0 0, 0 14px, 14px -14px, -14px 0;
+    }
+
+    canvas {
+      display: block;
+      image-rendering: auto;
+    }
+
+    #sourceCanvas { cursor: crosshair; }
+    #poseCanvas { cursor: grab; }
+    #poseCanvas.dragging { cursor: grabbing; }
+    .canvas-wrap.panning,
+    .canvas-wrap.panning canvas { cursor: grabbing !important; }
+
+    aside {
+      grid-area: side;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--panel);
+      overflow: auto;
+    }
+
+    .collapse-button {
+      padding: 4px 8px;
+    }
+
+    .side-panel.collapsed {
+      overflow: hidden;
+    }
+
+    .side-panel.collapsed .toolbar strong,
+    .asset-library.collapsed .toolbar strong,
+    .asset-library.collapsed .toolbar .hint,
+    .workspace-section.collapsed .toolbar .toolbar-group:first-child > :not(.collapse-button) {
+      display: none;
+    }
+
+    .side-panel.collapsed .panel {
+      display: none;
+    }
+
+    .workspace-section.collapsed .canvas-wrap,
+    .workspace-section.collapsed .toolbar .toolbar-group:not(:first-child) {
+      display: none;
+    }
+
+    .asset-library {
+      grid-area: asset;
+      min-width: 0;
+      min-height: 0;
+      border-top: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .asset-library.collapsed .asset-library-body {
+      display: none;
+    }
+
+    .asset-library-body {
+      flex: 1;
+      min-height: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .asset-card {
+      flex: 0 0 clamp(88px, calc((var(--asset-height, 170px) - 62px) * 1.18), 132px);
+      min-width: 0;
+      height: 100%;
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #1d2028;
+      color: var(--muted);
+      padding: 6px;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .asset-card:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .asset-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(144, 168, 255, .25);
+      color: var(--text);
+    }
+
+    .asset-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .asset-card-header button {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      padding: 3px;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .asset-card-header span {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .asset-card-header svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .asset-card canvas {
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 38px;
+      height: auto;
+      object-fit: contain;
+      background: #151820;
+      border-radius: 4px;
+    }
+
+    .asset-card small {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .panel {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .panel h2::before {
+      content: "⌄";
+      color: var(--accent);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .panel.collapsed h2 {
+      margin-bottom: 0;
+    }
+
+    .panel.collapsed h2::before {
+      content: "›";
+    }
+
+    .panel.collapsed > :not(h2) {
+      display: none !important;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    label {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .parts {
+      flex: 1;
+      overflow: auto;
+      padding: 8px;
+    }
+
+    .part-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .part-row:hover { background: #292c35; }
+    .part-row.selected {
+      color: var(--text);
+      border-color: var(--accent);
+      background: #28304d;
+    }
+
+    .part-row.locked {
+      color: #c9c0a4;
+    }
+
+    .part-row button {
+      padding: 4px;
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--muted);
+    }
+
+    .part-row button:hover { color: var(--text); }
+
+    .icon-button svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      pointer-events: none;
+    }
+
+    textarea {
+      min-height: 160px;
+      width: 100%;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status.saved { color: var(--ok); }
+
+    .hint {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hologirl Spine Rig Tuner</h1>
+    <div class="toolbar-group">
+      <span class="toolbar-group-label">Sheet</span>
+      <select id="sheetSelect" title="Source sheet">
+        <option value="a">Sheet A - broad variants</option>
+        <option value="b">Sheet B - strict parts</option>
+        <option value="c">Sheet C - fewer ball joints</option>
+        <option value="d">Sheet D - scratch restart</option>
+        <option value="e">Sheet E - overlap rig</option>
+        <option value="f">Sheet F - overlap rig 3/4</option>
+        <option value="g">Sheet G - hologram magenta</option>
+        <option value="h">Sheet H - hologram magenta</option>
+        <option value="i">Sheet I - hologram magenta</option>
+        <option value="j">Sheet J - linework grip ponytails</option>
+        <option value="k">Sheet K - linework grip ponytails</option>
+        <option value="l">Sheet L - linework grip ponytails</option>
+        <option value="m">Sheet M - granular body</option>
+        <option value="n">Sheet N - granular body</option>
+        <option value="o">Sheet O - clothing depth</option>
+        <option value="p">Sheet P - hair depth</option>
+        <option value="q">Sheet Q - clean minimal depth</option>
+        <option value="r">Sheet R - separated clothes/body</option>
+        <option value="s">Sheet S - essential separated</option>
+        <option value="t">Sheet T - essential separated</option>
+        <option value="u">Sheet U - essential separated</option>
+        <option value="v">Sheet V - essential separated</option>
+        <option value="w">Sheet W - essential separated</option>
+        <option value="x">Sheet X - essential separated</option>
+        <option value="y">Sheet Y - essential separated</option>
+        <option value="z">Sheet Z - essential separated</option>
+        <option value="aa">Sheet AA - essential separated</option>
+        <option value="ab">Sheet AB - essential separated</option>
+        <option value="ac">Sheet AC - essential separated</option>
+        <option value="ad">Sheet AD - essential separated</option>
+        <option value="fullA">Full Body A - manual cuts</option>
+        <option value="fullB">Full Body B - manual cuts</option>
+      </select>
+    </div>
+    <div class="toolbar-group">
+      <span class="toolbar-group-label">Saves</span>
+      <input id="saveNameInput" type="text" placeholder="save name: auto if empty">
+      <select id="saveSelect" title="Saved project"></select>
+      <button class="primary" id="saveProject">Save</button>
+      <button id="loadProject">Load</button>
+      <button class="danger" id="deleteProject">Delete</button>
+    </div>
+    <div class="toolbar-group">
+      <span class="toolbar-group-label">JSON</span>
+      <button class="primary" id="exportJson">Export</button>
+      <button id="importJson">Import</button>
+      <button class="danger" id="clearSaved">Clear Autosave</button>
+    </div>
+    <div class="toolbar-group">
+      <span class="toolbar-group-label">Panels</span>
+      <button class="panel-toggle" data-panel-toggle="sourceSection">Source</button>
+      <button class="panel-toggle" data-panel-toggle="poseSection">Pose</button>
+      <button class="panel-toggle" data-panel-toggle="assetLibrary">Assets</button>
+      <button class="panel-toggle" data-panel-toggle="sidePanel">Settings</button>
+    </div>
+    <span class="status" id="status">Loading...</span>
+  </header>
+
+  <main>
+    <section class="workspace-section source-section" id="sourceSection">
+      <div class="toolbar compact">
+        <div class="toolbar-group">
+          <button class="collapse-button" data-collapse-target="sourceSection" title="Collapse source panel">▾</button>
+          <span class="toolbar-group-label">Crop</span>
+          <select id="selectionMode" title="Selection mode">
+            <option value="rect">Rectangle</option>
+            <option value="polygon">Polygon mask</option>
+          </select>
+          <button id="finishPolygon" title="Finalize the current polygon shape before creating a part">Close Polygon</button>
+          <button id="clearCrop">Clear Crop</button>
+        </div>
+        <div class="toolbar-group">
+          <span class="toolbar-group-label">Part</span>
+          <select id="slotSelect" title="Part slot"></select>
+          <input id="partName" type="text" placeholder="part name (auto from slot)">
+          <button class="primary" id="createPart">Create Part</button>
+          <button id="createOverlay">Create Overlay</button>
+          <button id="extractSheetAssets" title="Automatically split the transparent sheet into connected cutout assets">Extract Sheet</button>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="sourceCanvas"></canvas>
+      </div>
+    </section>
+
+    <div class="resizer" data-resizer="sourcePose" title="Drag to resize panels"></div>
+
+    <section class="workspace-section pose-section" id="poseSection">
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <button class="collapse-button" data-collapse-target="poseSection" title="Collapse pose panel">▾</button>
+          <strong>Pose Preview</strong>
+          <span class="hint">Drag assembled rig pieces here.</span>
+        </div>
+        <div class="toolbar-group">
+          <span class="toolbar-group-label">View</span>
+          <button id="toggleAlpha">Alpha Preview: On</button>
+          <button id="resetView">Reset Pose</button>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="poseCanvas" width="900" height="900"></canvas>
+      </div>
+    </section>
+
+    <div class="asset-library" id="assetLibrary">
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <button class="collapse-button" data-collapse-target="assetLibrary" title="Collapse asset library">▾</button>
+          <strong>Asset Library</strong>
+          <span class="hint">Crop assets appear here. Drag one onto Pose Preview to place it.</span>
+        </div>
+      </div>
+      <div class="asset-library-body" id="assetList"></div>
+    </div>
+
+    <div class="resizer" data-resizer="poseSide" title="Drag to resize panels"></div>
+
+    <aside class="side-panel" id="sidePanel">
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <button class="collapse-button" data-collapse-target="sidePanel" title="Collapse settings panel">▾</button>
+          <strong>Settings</strong>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Selected Part</h2>
+        <div class="grid">
+          <label>Slot
+            <select id="selectedSlotInput"></select>
+          </label>
+          <label>Name
+            <input id="selectedNameInput" type="text">
+          </label>
+          <label>X <input id="xInput" type="number" step="1"></label>
+          <label>Y <input id="yInput" type="number" step="1"></label>
+          <label>Rotation <input id="rotInput" type="number" step="1"></label>
+          <label>Scale <input id="scaleInput" type="number" step="0.01"></label>
+          <label>Pivot X <input id="pivotXInput" type="number" step="1"></label>
+          <label>Pivot Y <input id="pivotYInput" type="number" step="1"></label>
+          <label>Z <input id="zInput" type="number" step="1"></label>
+          <label>Opacity <input id="opacityInput" type="number" min="0" max="1" step="0.05"></label>
+          <label>Brightness <input id="brightnessInput" type="number" min="0" max="2" step="0.05"></label>
+          <label>Visible
+            <select id="visibleInput">
+              <option value="true">true</option>
+              <option value="false">false</option>
+            </select>
+          </label>
+          <label>Locked
+            <select id="lockedInput">
+              <option value="false">false</option>
+              <option value="true">true</option>
+            </select>
+          </label>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button id="duplicatePart">Duplicate</button>
+          <button class="danger" id="deletePart">Delete</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Project JSON</h2>
+        <textarea id="jsonBox" spellcheck="false"></textarea>
+      </div>
+
+      <div class="parts" id="partsList"></div>
+    </aside>
+  </main>
+
+  <script>
+    const sheets = {
+      a: {
+        name: "sheet-a-broad",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-a-broad.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-a-broad-transparent.png"
+      },
+      b: {
+        name: "sheet-b-strict",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-b-strict.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-b-strict-transparent.png"
+      },
+      c: {
+        name: "sheet-c-no-ball-joints",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-c-no-ball-joints.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-c-no-ball-joints-transparent.png"
+      },
+      d: {
+        name: "sheet-d-scratch",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-d-scratch.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-d-scratch-transparent.png"
+      },
+      e: {
+        name: "sheet-e-overlap-rig",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-e-overlap-rig.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-e-overlap-rig-transparent.png"
+      },
+      f: {
+        name: "sheet-f-overlap-rig-3q",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-f-overlap-rig-3q.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-f-overlap-rig-3q-transparent.png"
+      },
+      g: {
+        name: "sheet-g-hologram-magenta",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-g-hologram-magenta.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-g-hologram-magenta-transparent.png"
+      },
+      h: {
+        name: "sheet-h-hologram-magenta",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-h-hologram-magenta.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-h-hologram-magenta-transparent.png"
+      },
+      i: {
+        name: "sheet-i-hologram-magenta",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-i-hologram-magenta.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-i-hologram-magenta-transparent.png"
+      },
+      j: {
+        name: "sheet-j-linework-grip-ponytails",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-j-linework-grip-ponytails.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-j-linework-grip-ponytails-transparent.png"
+      },
+      k: {
+        name: "sheet-k-linework-grip-ponytails",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-k-linework-grip-ponytails.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-k-linework-grip-ponytails-transparent.png"
+      },
+      l: {
+        name: "sheet-l-linework-grip-ponytails",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-l-linework-grip-ponytails.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-l-linework-grip-ponytails-transparent.png"
+      },
+      m: {
+        name: "sheet-m-granular-body",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-m-granular-body.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-m-granular-body-transparent.png"
+      },
+      n: {
+        name: "sheet-n-granular-body",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-n-granular-body.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-n-granular-body-transparent.png"
+      },
+      o: {
+        name: "sheet-o-clothing-depth",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-o-clothing-depth.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-o-clothing-depth-transparent.png"
+      },
+      p: {
+        name: "sheet-p-hair-depth",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-p-hair-depth.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-p-hair-depth-transparent.png"
+      },
+      q: {
+        name: "sheet-q-clean-minimal-depth",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-q-clean-minimal-depth.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-q-clean-minimal-depth-transparent.png"
+      },
+      r: {
+        name: "sheet-r-separated-clothes",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-r-separated-clothes.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-r-separated-clothes-transparent.png"
+      },
+      s: {
+        name: "sheet-s-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-s-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-s-essential-separated-transparent.png"
+      },
+      t: {
+        name: "sheet-t-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-t-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-t-essential-separated-transparent.png"
+      },
+      u: {
+        name: "sheet-u-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-u-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-u-essential-separated-transparent.png"
+      },
+      v: {
+        name: "sheet-v-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-v-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-v-essential-separated-transparent.png"
+      },
+      w: {
+        name: "sheet-w-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-w-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-w-essential-separated-transparent.png"
+      },
+      x: {
+        name: "sheet-x-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-x-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-x-essential-separated-transparent.png"
+      },
+      y: {
+        name: "sheet-y-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-y-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-y-essential-separated-transparent.png"
+      },
+      z: {
+        name: "sheet-z-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-z-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-z-essential-separated-transparent.png"
+      },
+      aa: {
+        name: "sheet-aa-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-aa-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-aa-essential-separated-transparent.png"
+      },
+      ab: {
+        name: "sheet-ab-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-ab-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-ab-essential-separated-transparent.png"
+      },
+      ac: {
+        name: "sheet-ac-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-ac-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-ac-essential-separated-transparent.png"
+      },
+      ad: {
+        name: "sheet-ad-essential-separated",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-ad-essential-separated.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/sheet-ad-essential-separated-transparent.png"
+      },
+      fullA: {
+        name: "full-body-a",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/full-body-a.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/full-body-a-transparent.png"
+      },
+      fullB: {
+        name: "full-body-b",
+        chroma: "../../art_archive/character/spine/attempt-003-rig-sheets/full-body-b.png",
+        alpha: "../../art_archive/character/spine/attempt-003-rig-sheets/full-body-b-transparent.png"
+      }
+    };
+
+    const slots = [
+      "head", "face_overlay", "neck_under", "hair_bangs", "hair_back",
+      "hair_ponytail_near", "hair_ponytail_far",
+      "torso_core", "torso_upper", "torso_lower", "torso_back", "torso_front_overlay",
+      "shoulder_pad_near", "shoulder_pad_far", "collar_back", "collar_front", "chest_trim_front",
+      "belt_back", "belt_front", "pelvis_core", "skirt_back", "skirt_under_layer",
+      "skirt_front_center", "skirt_front_near", "skirt_front_far", "skirt_side_near", "skirt_side_far",
+      "upper_arm_near", "elbow_under_near", "forearm_near", "hand_near", "sleeve_back_near", "sleeve_cuff_front_near",
+      "upper_arm_far", "elbow_under_far", "forearm_far", "hand_far", "sleeve_back_far", "sleeve_cuff_front_far",
+      "upper_leg_near_under_skirt", "lower_leg_near", "boot_near", "boot_cuff_front_near",
+      "upper_leg_far_under_skirt", "lower_leg_far", "boot_far", "boot_cuff_front_far",
+      "whip_handle", "hand_whip_grip_near", "hand_whip_grip_far", "whip_curve", "shadow", "overlay_extra", "extra"
+    ];
+
+    const sourceCanvas = document.getElementById("sourceCanvas");
+    const sourceCtx = sourceCanvas.getContext("2d");
+    const poseCanvas = document.getElementById("poseCanvas");
+    const poseCtx = poseCanvas.getContext("2d");
+    const sheetSelect = document.getElementById("sheetSelect");
+    const slotSelect = document.getElementById("slotSelect");
+    const statusEl = document.getElementById("status");
+    const partsList = document.getElementById("partsList");
+    const assetList = document.getElementById("assetList");
+    const jsonBox = document.getElementById("jsonBox");
+    const saveNameInput = document.getElementById("saveNameInput");
+    const saveSelect = document.getElementById("saveSelect");
+
+    const inputs = {
+      slot: document.getElementById("selectedSlotInput"),
+      name: document.getElementById("selectedNameInput"),
+      x: document.getElementById("xInput"),
+      y: document.getElementById("yInput"),
+      rotation: document.getElementById("rotInput"),
+      scale: document.getElementById("scaleInput"),
+      pivotX: document.getElementById("pivotXInput"),
+      pivotY: document.getElementById("pivotYInput"),
+      z: document.getElementById("zInput"),
+      opacity: document.getElementById("opacityInput"),
+      brightness: document.getElementById("brightnessInput"),
+      visible: document.getElementById("visibleInput"),
+      locked: document.getElementById("lockedInput")
+    };
+
+    let sourceImage = new Image();
+    let alphaPreview = true;
+    let activeSheet = "a";
+    let crop = null;
+    let cropDrag = null;
+    let selectionMode = "rect";
+    let polygonPoints = [];
+    let polygonClickStart = null;
+    let assets = [];
+    let parts = [];
+    let selectedId = null;
+    let selectedPartIds = new Set();
+    let selectedAssetId = null;
+    let poseDrag = null;
+    let poseSelectionDrag = null;
+    let sourceZoom = 1;
+    let poseZoom = 1;
+    let copiedPart = null;
+    const partImages = new Map();
+    const assetImages = new Map();
+    let idCounter = 0;
+    let autosaveTimer = null;
+    const storageKey = "hologirl-spine-rig-tuner-v1";
+    const savesIndexKey = "hologirl-spine-rig-tuner-saves-v1";
+    const savePrefix = "hologirl-spine-rig-tuner-save-v1:";
+
+    slots.forEach(slot => {
+      const option = document.createElement("option");
+      option.value = slot;
+      option.textContent = slot;
+      slotSelect.append(option);
+      inputs.slot.append(option.cloneNode(true));
+    });
+
+    function setStatus(text) {
+      statusEl.classList.remove("saved");
+      statusEl.textContent = text;
+    }
+
+    function setSavedStatus(text) {
+      statusEl.classList.add("saved");
+      statusEl.textContent = text;
+    }
+
+    function makeId() {
+      if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+        return globalThis.crypto.randomUUID();
+      }
+      idCounter += 1;
+      return `part-${Date.now()}-${idCounter}`;
+    }
+
+    function iconSvg(name) {
+      const icons = {
+        eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
+        eyeOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 2 20 20"/><path d="M6.7 6.7C3.7 8.6 2 12 2 12s3.5 7 10 7c1.8 0 3.3-.5 4.6-1.2"/><path d="M19.4 15.4C21.1 13.8 22 12 22 12s-3.5-7-10-7c-.9 0-1.8.1-2.6.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>',
+        lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        unlock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.5-2.2"/></svg>',
+        trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 16H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'
+      };
+      return icons[name] || "";
+    }
+
+    function loadSheet() {
+      const sheet = sheets[activeSheet];
+      sourceImage = new Image();
+      sourceImage.onload = () => {
+        sourceCanvas.width = sourceImage.naturalWidth;
+        sourceCanvas.height = sourceImage.naturalHeight;
+        applyCanvasZoom(sourceCanvas, sourceZoom);
+        applyCanvasZoom(poseCanvas, poseZoom);
+        crop = null;
+        rebuildAssetImages();
+        rebuildPartImages();
+        drawSource();
+        renderAssetLibrary();
+        drawPose();
+        setStatus(`${sheet.name} loaded (${sourceImage.naturalWidth}x${sourceImage.naturalHeight})`);
+      };
+      sourceImage.src = alphaPreview ? sheet.alpha : sheet.chroma;
+    }
+
+    function applyCanvasZoom(canvas, zoom) {
+      canvas.style.width = `${canvas.width * zoom}px`;
+      canvas.style.height = `${canvas.height * zoom}px`;
+    }
+
+    function setupCanvasZoom(canvas, getZoom, setZoom) {
+      canvas.parentElement.addEventListener("wheel", event => {
+        if (!event.ctrlKey) return;
+        event.preventDefault();
+        const wrap = canvas.parentElement;
+        const before = canvasPoint(event, canvas);
+        const nextZoom = Math.max(0.2, Math.min(5, getZoom() * (event.deltaY < 0 ? 1.12 : 0.88)));
+        setZoom(nextZoom);
+        applyCanvasZoom(canvas, nextZoom);
+        const afterX = before.x * nextZoom;
+        const afterY = before.y * nextZoom;
+        wrap.scrollLeft = afterX - (event.clientX - wrap.getBoundingClientRect().left);
+        wrap.scrollTop = afterY - (event.clientY - wrap.getBoundingClientRect().top);
+      }, { passive: false });
+    }
+
+    function setupMiddleMousePan(canvas) {
+      const wrap = canvas.parentElement;
+      wrap.addEventListener("pointerdown", event => {
+        if (event.button !== 1) return;
+        event.preventDefault();
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const startScrollLeft = wrap.scrollLeft;
+        const startScrollTop = wrap.scrollTop;
+        wrap.classList.add("panning");
+        wrap.setPointerCapture(event.pointerId);
+
+        function move(moveEvent) {
+          wrap.scrollLeft = startScrollLeft - (moveEvent.clientX - startX);
+          wrap.scrollTop = startScrollTop - (moveEvent.clientY - startY);
+        }
+
+        function up() {
+          wrap.classList.remove("panning");
+          wrap.removeEventListener("pointermove", move);
+          wrap.removeEventListener("pointerup", up);
+          wrap.removeEventListener("pointercancel", up);
+        }
+
+        wrap.addEventListener("pointermove", move);
+        wrap.addEventListener("pointerup", up);
+        wrap.addEventListener("pointercancel", up);
+      });
+
+      wrap.addEventListener("auxclick", event => {
+        if (event.button === 1) event.preventDefault();
+      });
+    }
+
+    function drawSource() {
+      sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+      sourceCtx.drawImage(sourceImage, 0, 0);
+      if (crop) {
+        sourceCtx.save();
+        sourceCtx.strokeStyle = "#ffffff";
+        sourceCtx.lineWidth = 3;
+        sourceCtx.setLineDash([10, 6]);
+        sourceCtx.strokeRect(crop.x, crop.y, crop.w, crop.h);
+        sourceCtx.fillStyle = "rgba(144,168,255,.16)";
+        sourceCtx.fillRect(crop.x, crop.y, crop.w, crop.h);
+        sourceCtx.restore();
+      }
+      if (polygonPoints.length > 0) {
+        sourceCtx.save();
+        sourceCtx.strokeStyle = "#ffcf66";
+        sourceCtx.fillStyle = "rgba(255,207,102,.16)";
+        sourceCtx.lineWidth = 3;
+        sourceCtx.beginPath();
+        polygonPoints.forEach((point, index) => {
+          if (index === 0) sourceCtx.moveTo(point.x, point.y);
+          else sourceCtx.lineTo(point.x, point.y);
+        });
+        if (polygonPoints.length >= 3) sourceCtx.closePath();
+        if (polygonPoints.length >= 3) sourceCtx.fill();
+        sourceCtx.stroke();
+        polygonPoints.forEach(point => {
+          sourceCtx.beginPath();
+          sourceCtx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+          sourceCtx.fill();
+        });
+        sourceCtx.restore();
+      }
+    }
+
+    function drawPose() {
+      poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
+      poseCtx.save();
+      poseCtx.fillStyle = "#20232b";
+      poseCtx.fillRect(0, 0, poseCanvas.width, poseCanvas.height);
+      poseCtx.strokeStyle = "#363b47";
+      poseCtx.lineWidth = 1;
+      for (let x = 0; x < poseCanvas.width; x += 50) {
+        poseCtx.beginPath();
+        poseCtx.moveTo(x, 0);
+        poseCtx.lineTo(x, poseCanvas.height);
+        poseCtx.stroke();
+      }
+      for (let y = 0; y < poseCanvas.height; y += 50) {
+        poseCtx.beginPath();
+        poseCtx.moveTo(0, y);
+        poseCtx.lineTo(poseCanvas.width, y);
+        poseCtx.stroke();
+      }
+      poseCtx.strokeStyle = "#5a6172";
+      poseCtx.beginPath();
+      poseCtx.moveTo(poseCanvas.width / 2, 0);
+      poseCtx.lineTo(poseCanvas.width / 2, poseCanvas.height);
+      poseCtx.moveTo(0, poseCanvas.height / 2);
+      poseCtx.lineTo(poseCanvas.width, poseCanvas.height / 2);
+      poseCtx.stroke();
+      poseCtx.restore();
+
+      [...parts]
+        .filter(part => part.visible)
+        .sort((a, b) => a.z - b.z)
+        .forEach(drawPart);
+
+      if (poseSelectionDrag?.rect) {
+        const rect = poseSelectionDrag.rect;
+        poseCtx.save();
+        poseCtx.strokeStyle = "#90a8ff";
+        poseCtx.fillStyle = "rgba(144,168,255,.14)";
+        poseCtx.setLineDash([8, 5]);
+        poseCtx.lineWidth = 2;
+        poseCtx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        poseCtx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+        poseCtx.restore();
+      }
+    }
+
+    function drawPart(part) {
+      poseCtx.save();
+      poseCtx.translate(part.x, part.y);
+      poseCtx.rotate(part.rotation * Math.PI / 180);
+      poseCtx.scale(part.scale, part.scale);
+      poseCtx.globalAlpha = part.opacity ?? 1;
+      poseCtx.filter = `brightness(${part.brightness ?? 1})`;
+      const image = partImages.get(part.id);
+      if (image) {
+        poseCtx.drawImage(image, -part.pivotX, -part.pivotY);
+      } else {
+        poseCtx.drawImage(
+          sourceImage,
+          part.crop.x, part.crop.y, part.crop.w, part.crop.h,
+          -part.pivotX, -part.pivotY, part.crop.w, part.crop.h
+        );
+      }
+      poseCtx.globalAlpha = 1;
+      poseCtx.filter = "none";
+      if (selectedPartIds.has(part.id)) {
+        poseCtx.strokeStyle = part.id === selectedId ? "#90a8ff" : "#8ee6b2";
+        poseCtx.lineWidth = 3 / Math.max(0.01, part.scale);
+        poseCtx.strokeRect(-part.pivotX, -part.pivotY, part.crop.w, part.crop.h);
+        poseCtx.fillStyle = "#ffcf66";
+        poseCtx.beginPath();
+        poseCtx.arc(0, 0, 6 / Math.max(0.01, part.scale), 0, Math.PI * 2);
+        poseCtx.fill();
+      }
+      poseCtx.restore();
+    }
+
+    function rebuildPartImages() {
+      partImages.clear();
+      parts.forEach(rebuildPartImage);
+    }
+
+    function rebuildAssetImages() {
+      assetImages.clear();
+      assets.forEach(rebuildAssetImage);
+    }
+
+    function buildCutoutImage(item) {
+      if (!sourceImage.complete || !item.crop) return null;
+      const canvas = document.createElement("canvas");
+      canvas.width = item.crop.w;
+      canvas.height = item.crop.h;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(
+        sourceImage,
+        item.crop.x, item.crop.y, item.crop.w, item.crop.h,
+        0, 0, item.crop.w, item.crop.h
+      );
+      if (item.mask && item.mask.length >= 3) {
+        ctx.globalCompositeOperation = "destination-in";
+        ctx.beginPath();
+        item.mask.forEach((point, index) => {
+          if (index === 0) ctx.moveTo(point.x, point.y);
+          else ctx.lineTo(point.x, point.y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
+      }
+      if (item.alphaMask?.type === "rowSpans" && item.alphaMask.spans?.length) {
+        ctx.globalCompositeOperation = "destination-in";
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        item.alphaMask.spans.forEach(([y, x1, x2]) => {
+          ctx.rect(x1, y, x2 - x1 + 1, 1);
+        });
+        ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
+      }
+      return canvas;
+    }
+
+    function rebuildAssetImage(asset) {
+      const canvas = buildCutoutImage(asset);
+      if (canvas) assetImages.set(asset.id, canvas);
+    }
+
+    function rebuildPartImage(part) {
+      const canvas = buildCutoutImage(part);
+      if (canvas) partImages.set(part.id, canvas);
+    }
+
+    function selectedPart() {
+      return parts.find(part => part.id === selectedId) || null;
+    }
+
+    function selectedAsset() {
+      return assets.find(asset => asset.id === selectedAssetId) || null;
+    }
+
+    function setSelectedParts(ids, primaryId = ids[0] || null) {
+      selectedPartIds = new Set(ids);
+      selectedId = primaryId && selectedPartIds.has(primaryId) ? primaryId : ids[0] || null;
+      selectedAssetId = null;
+      syncInputs();
+      renderPartsList();
+      drawPose();
+    }
+
+    function clearPoseSelection() {
+      selectedId = null;
+      selectedPartIds = new Set();
+      selectedAssetId = null;
+      syncInputs();
+      renderPartsList();
+      drawPose();
+    }
+
+    function selectAsset(assetId) {
+      selectedAssetId = assetId;
+      selectedId = null;
+      selectedPartIds = new Set();
+      syncInputs();
+      renderAssetLibrary();
+      renderPartsList();
+      drawPose();
+    }
+
+    function markAssetSelected(assetId) {
+      selectedAssetId = assetId;
+      selectedId = null;
+      selectedPartIds = new Set();
+      syncInputs();
+      renderPartsList();
+      drawPose();
+      assetList.querySelectorAll(".asset-card").forEach(card => {
+        card.classList.toggle("selected", card.dataset.assetId === assetId);
+      });
+    }
+
+    function syncInputs() {
+      const part = selectedPart();
+      Object.values(inputs).forEach(input => input.disabled = !part);
+      if (!part) return;
+      inputs.slot.value = part.slot;
+      inputs.name.value = part.name;
+      inputs.x.value = Math.round(part.x);
+      inputs.y.value = Math.round(part.y);
+      inputs.rotation.value = Number(part.rotation.toFixed(2));
+      inputs.scale.value = Number(part.scale.toFixed(3));
+      inputs.pivotX.value = Math.round(part.pivotX);
+      inputs.pivotY.value = Math.round(part.pivotY);
+      inputs.z.value = part.z;
+      inputs.opacity.value = part.opacity ?? 1;
+      inputs.brightness.value = part.brightness ?? 1;
+      inputs.visible.value = String(part.visible);
+      inputs.locked.value = String(Boolean(part.locked));
+      ["x", "y", "rotation", "scale", "pivotX", "pivotY"].forEach(key => {
+        inputs[key].disabled = Boolean(part.locked);
+      });
+    }
+
+    function renderPartsList() {
+      partsList.innerHTML = "";
+      [...parts].sort((a, b) => b.z - a.z).forEach(part => {
+        const row = document.createElement("div");
+        row.className = `part-row${selectedPartIds.has(part.id) ? " selected" : ""}${part.locked ? " locked" : ""}`;
+        row.innerHTML = `<span>${part.locked ? "[locked] " : ""}${part.visible ? "" : "[hidden] "}${part.name}<br><small>${part.slot}</small></span><span>z ${part.z}</span>`;
+        const visibilityButton = document.createElement("button");
+        visibilityButton.type = "button";
+        visibilityButton.className = "icon-button";
+        visibilityButton.title = part.visible ? "Hide part" : "Show part";
+        visibilityButton.setAttribute("aria-label", part.visible ? "Hide part" : "Show part");
+        visibilityButton.innerHTML = iconSvg(part.visible ? "eye" : "eyeOff");
+        visibilityButton.onclick = event => {
+          event.stopPropagation();
+          part.visible = !part.visible;
+          setSelectedParts([part.id], part.id);
+          scheduleAutosave();
+        };
+        const lockButton = document.createElement("button");
+        lockButton.type = "button";
+        lockButton.className = "icon-button";
+        lockButton.title = part.locked ? "Unlock part" : "Lock part";
+        lockButton.setAttribute("aria-label", part.locked ? "Unlock part" : "Lock part");
+        lockButton.innerHTML = iconSvg(part.locked ? "lock" : "unlock");
+        lockButton.onclick = event => {
+          event.stopPropagation();
+          part.locked = !part.locked;
+          setSelectedParts([part.id], part.id);
+          scheduleAutosave();
+        };
+        row.append(visibilityButton);
+        row.append(lockButton);
+        row.onclick = () => setSelectedParts([part.id], part.id);
+        partsList.append(row);
+      });
+    }
+
+    function renderAssetLibrary() {
+      assetList.innerHTML = "";
+      assets.forEach(asset => {
+        const card = document.createElement("div");
+        card.className = `asset-card${asset.id === selectedAssetId ? " selected" : ""}`;
+        card.draggable = true;
+        card.dataset.assetId = asset.id;
+        const header = document.createElement("div");
+        header.className = "asset-card-header";
+        header.innerHTML = `<span><small title="${asset.name}">${asset.name}</small><small>${asset.slot}</small></span>`;
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "icon-button";
+        deleteButton.title = "Delete asset";
+        deleteButton.setAttribute("aria-label", "Delete asset");
+        deleteButton.innerHTML = iconSvg("trash");
+        deleteButton.onclick = event => {
+          event.stopPropagation();
+          deleteAsset(asset.id);
+        };
+        header.append(deleteButton);
+        const thumb = document.createElement("canvas");
+        thumb.width = 110;
+        thumb.height = 72;
+        const thumbCtx = thumb.getContext("2d");
+        const image = assetImages.get(asset.id);
+        if (image) {
+          const scale = Math.min(thumb.width / image.width, thumb.height / image.height, 1);
+          const w = image.width * scale;
+          const h = image.height * scale;
+          thumbCtx.drawImage(image, (thumb.width - w) / 2, (thumb.height - h) / 2, w, h);
+        }
+        card.append(thumb);
+        card.append(header);
+        card.addEventListener("click", () => selectAsset(asset.id));
+        card.addEventListener("dragstart", event => {
+          markAssetSelected(asset.id);
+          event.dataTransfer.setData("text/plain", asset.id);
+          event.dataTransfer.effectAllowed = "copy";
+        });
+        assetList.append(card);
+      });
+    }
+
+    function setupWheelInputs() {
+      Object.entries(inputs).forEach(([key, input]) => {
+        if (input.type !== "number") return;
+        input.addEventListener("wheel", event => {
+          event.preventDefault();
+          const part = selectedPart();
+          if (!part || input.disabled) return;
+          const baseStep = Number(input.step) || 1;
+          const multiplier = event.shiftKey ? 10 : event.ctrlKey || event.metaKey ? 0.1 : 1;
+          const delta = (event.deltaY < 0 ? 1 : -1) * baseStep * multiplier;
+          const min = input.min === "" ? -Infinity : Number(input.min);
+          const max = input.max === "" ? Infinity : Number(input.max);
+          const next = Math.max(min, Math.min(max, Number(input.value || 0) + delta));
+          input.value = Number(next.toFixed(3));
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }, { passive: false });
+      });
+    }
+
+    function setupAssetLibraryWheel() {
+      assetList.addEventListener("wheel", event => {
+        if (event.ctrlKey || event.metaKey) return;
+        const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+        const delta = horizontal ? event.deltaX : event.deltaY;
+        if (delta === 0) return;
+        event.preventDefault();
+        assetList.scrollLeft += delta;
+      }, { passive: false });
+    }
+
+    function projectPayload() {
+      return {
+        tool: "hologirl-spine-rig-tuner",
+        version: 1,
+        sheet: sheets[activeSheet].name,
+        alphaPreview,
+        canvas: { width: poseCanvas.width, height: poseCanvas.height },
+        assets: assets.map(({ id, ...asset }) => asset),
+        parts: parts.map(({ id, ...part }) => part)
+      };
+    }
+
+    function scheduleAutosave() {
+      window.clearTimeout(autosaveTimer);
+      autosaveTimer = window.setTimeout(() => {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(projectPayload()));
+          setSavedStatus("Autosaved locally.");
+        } catch (error) {
+          setStatus(`Autosave failed: ${error.message}`);
+        }
+      }, 250);
+    }
+
+    function loadSavedProject() {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return false;
+      try {
+        const payload = JSON.parse(raw);
+        applyProjectPayload(payload);
+        return true;
+      } catch (error) {
+        setStatus(`Saved project load failed: ${error.message}`);
+        return false;
+      }
+    }
+
+    function applyProjectPayload(payload) {
+      const sheetKey = Object.entries(sheets).find(([, sheet]) => sheet.name === payload.sheet)?.[0];
+      if (sheetKey) {
+        activeSheet = sheetKey;
+        sheetSelect.value = sheetKey;
+      }
+      alphaPreview = payload.alphaPreview !== false;
+      document.getElementById("toggleAlpha").textContent = `Alpha Preview: ${alphaPreview ? "On" : "Off"}`;
+      assets = (payload.assets || []).map(asset => ({ id: makeId(), ...asset }));
+      parts = (payload.parts || []).map(part => ({
+        id: makeId(),
+        visible: true,
+        locked: false,
+        opacity: 1,
+        brightness: 1,
+        ...part
+      }));
+      selectedId = parts[0]?.id || null;
+      selectedPartIds = selectedId ? new Set([selectedId]) : new Set();
+      selectedAssetId = null;
+      rebuildAssetImages();
+      rebuildPartImages();
+    }
+
+    function savedNames() {
+      try {
+        return JSON.parse(localStorage.getItem(savesIndexKey) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function setSavedNames(names) {
+      localStorage.setItem(savesIndexKey, JSON.stringify([...new Set(names)].sort()));
+    }
+
+    function renderSaveList() {
+      const names = savedNames();
+      saveSelect.innerHTML = "";
+      if (names.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No named saves";
+        saveSelect.append(option);
+        if (!saveNameInput.value.trim()) saveNameInput.value = defaultSaveName();
+        return;
+      }
+      names.forEach(name => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        saveSelect.append(option);
+      });
+      if (!saveNameInput.value.trim()) saveNameInput.value = names[0];
+    }
+
+    function defaultSaveName() {
+      const sheetName = sheets[activeSheet]?.name || "sheet";
+      const stamp = new Date().toISOString().slice(0, 16).replace("T", "-").replace(":", "");
+      return `${sheetName}-${stamp}`;
+    }
+
+    function saveProjectToBrowser() {
+      const name = saveNameInput.value.trim() || defaultSaveName();
+      saveNameInput.value = name;
+      localStorage.setItem(`${savePrefix}${name}`, JSON.stringify(projectPayload()));
+      setSavedNames([...savedNames(), name]);
+      renderSaveList();
+      saveSelect.value = name;
+      setSavedStatus(`Saved project "${name}".`);
+    }
+
+    function loadProjectFromBrowser() {
+      const name = saveSelect.value;
+      if (!name) {
+        setStatus("No named save selected.");
+        return;
+      }
+      const raw = localStorage.getItem(`${savePrefix}${name}`);
+      if (!raw) {
+        setStatus(`Save "${name}" was not found.`);
+        renderSaveList();
+        return;
+      }
+      try {
+        applyProjectPayload(JSON.parse(raw));
+        saveNameInput.value = name;
+        syncInputs();
+        renderPartsList();
+        loadSheet();
+        scheduleAutosave();
+        setSavedStatus(`Loaded project "${name}".`);
+      } catch (error) {
+        setStatus(`Load failed: ${error.message}`);
+      }
+    }
+
+    function deleteProjectFromBrowser() {
+      const name = saveSelect.value;
+      if (!name) return;
+      localStorage.removeItem(`${savePrefix}${name}`);
+      setSavedNames(savedNames().filter(savedName => savedName !== name));
+      renderSaveList();
+      setStatus(`Deleted project "${name}".`);
+    }
+
+    function setupPanelResizers() {
+      const main = document.querySelector("main");
+      const gutterWidth = 14;
+      let available = Math.max(900, main.clientWidth - gutterWidth);
+      let sideWidth = Math.min(360, Math.max(280, available * 0.24));
+      let sourceWidth = (available - sideWidth) / 2;
+      let poseWidth = available - sideWidth - sourceWidth;
+
+      function applyColumns() {
+        available = Math.max(900, main.clientWidth - gutterWidth);
+        sourceWidth = Math.max(260, sourceWidth);
+        poseWidth = Math.max(260, poseWidth);
+        sideWidth = Math.max(280, sideWidth);
+        const total = sourceWidth + poseWidth + sideWidth;
+        if (total !== available) {
+          const scale = available / total;
+          sourceWidth = Math.max(260, sourceWidth * scale);
+          poseWidth = Math.max(260, poseWidth * scale);
+          sideWidth = Math.max(280, sideWidth * scale);
+          const overflow = sourceWidth + poseWidth + sideWidth - available;
+          if (overflow > 0) poseWidth = Math.max(260, poseWidth - overflow);
+        }
+        main.style.setProperty("--source-width", `${sourceWidth}px`);
+        main.style.setProperty("--pose-width", `${poseWidth}px`);
+        main.style.setProperty("--side-width", `${sideWidth}px`);
+      }
+
+      document.querySelectorAll("[data-resizer]").forEach(handle => {
+        handle.addEventListener("pointerdown", event => {
+          const mode = handle.dataset.resizer;
+          const startX = event.clientX;
+          const startSource = sourceWidth;
+          const startPose = poseWidth;
+          const startSide = sideWidth;
+          handle.classList.add("dragging");
+          handle.setPointerCapture(event.pointerId);
+
+          function move(moveEvent) {
+            const dx = moveEvent.clientX - startX;
+            if (mode === "sourcePose") {
+              sourceWidth = startSource + dx;
+              poseWidth = startPose - dx;
+            } else {
+              poseWidth = startPose + dx;
+              sideWidth = startSide - dx;
+            }
+            applyColumns();
+          }
+
+          function up() {
+            handle.classList.remove("dragging");
+            handle.removeEventListener("pointermove", move);
+            handle.removeEventListener("pointerup", up);
+          }
+
+          handle.addEventListener("pointermove", move);
+          handle.addEventListener("pointerup", up);
+        });
+      });
+
+      applyColumns();
+    }
+
+    function normalizeRect(a, b) {
+      const x = Math.min(a.x, b.x);
+      const y = Math.min(a.y, b.y);
+      return {
+        x: Math.round(x),
+        y: Math.round(y),
+        w: Math.round(Math.abs(a.x - b.x)),
+        h: Math.round(Math.abs(a.y - b.y))
+      };
+    }
+
+    function canvasPoint(event, canvas) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * canvas.width / rect.width,
+        y: (event.clientY - rect.top) * canvas.height / rect.height
+      };
+    }
+
+    sourceCanvas.addEventListener("pointerdown", event => {
+      if (event.button !== 0) return;
+      if (selectionMode === "polygon") {
+        event.preventDefault();
+        const point = canvasPoint(event, sourceCanvas);
+        polygonPoints.push({ x: Math.round(point.x), y: Math.round(point.y) });
+        crop = polygonBounds(polygonPoints);
+        drawSource();
+        setStatus(polygonPoints.length >= 3
+          ? "Polygon ready. Add more points or click Create Part."
+          : "Polygon point added. Add at least three points.");
+        return;
+      }
+      cropDrag = canvasPoint(event, sourceCanvas);
+      crop = { x: cropDrag.x, y: cropDrag.y, w: 0, h: 0 };
+      sourceCanvas.setPointerCapture(event.pointerId);
+    });
+
+    sourceCanvas.addEventListener("pointermove", event => {
+      if (selectionMode === "polygon") return;
+      if (!cropDrag) return;
+      crop = normalizeRect(cropDrag, canvasPoint(event, sourceCanvas));
+      drawSource();
+    });
+
+    sourceCanvas.addEventListener("pointerup", event => {
+      if (selectionMode === "polygon") {
+        polygonClickStart = null;
+        return;
+      }
+      if (!cropDrag) return;
+      crop = normalizeRect(cropDrag, canvasPoint(event, sourceCanvas));
+      cropDrag = null;
+      drawSource();
+      setStatus("Crop selected. Choose a slot, click Create Part, then drag it on the right canvas.");
+    });
+
+    sourceCanvas.addEventListener("contextmenu", event => {
+      event.preventDefault();
+      crop = null;
+      cropDrag = null;
+      polygonClickStart = null;
+      polygonPoints = [];
+      drawSource();
+      setStatus("Source crop selection cleared.");
+    });
+
+    function polygonBounds(points) {
+      if (points.length === 0) return null;
+      const xs = points.map(point => point.x);
+      const ys = points.map(point => point.y);
+      const x = Math.min(...xs);
+      const y = Math.min(...ys);
+      return {
+        x,
+        y,
+        w: Math.max(1, Math.max(...xs) - x + 1),
+        h: Math.max(1, Math.max(...ys) - y + 1)
+      };
+    }
+
+    function currentMaskForCrop() {
+      if (selectionMode !== "polygon" || polygonPoints.length < 3) return null;
+      crop = crop || polygonBounds(polygonPoints);
+      if (!crop) return null;
+      return polygonPoints.map(point => ({
+        x: Math.round(point.x - crop.x),
+        y: Math.round(point.y - crop.y)
+      }));
+    }
+
+    poseCanvas.addEventListener("pointerdown", event => {
+      if (event.button !== 0) return;
+      const point = canvasPoint(event, poseCanvas);
+      const hit = [...parts]
+        .filter(part => part.visible && !part.locked)
+        .sort((a, b) => b.z - a.z)
+        .find(part => pointHitsPart(point, part));
+      if (!hit) {
+        poseSelectionDrag = { start: point, rect: { x: point.x, y: point.y, w: 0, h: 0 } };
+        poseCanvas.setPointerCapture(event.pointerId);
+        clearPoseSelection();
+        return;
+      }
+      if (!selectedPartIds.has(hit.id)) {
+        setSelectedParts([hit.id], hit.id);
+      } else {
+        selectedId = hit.id;
+        syncInputs();
+        renderPartsList();
+        drawPose();
+      }
+      const movingIds = [...selectedPartIds].filter(id => !parts.find(part => part.id === id)?.locked);
+      poseDrag = {
+        id: hit.id,
+        start: point,
+        original: new Map(movingIds.map(id => {
+          const part = parts.find(candidate => candidate.id === id);
+          return [id, { x: part.x, y: part.y }];
+        }))
+      };
+      poseCanvas.classList.add("dragging");
+      poseCanvas.setPointerCapture(event.pointerId);
+    });
+
+    poseCanvas.addEventListener("pointermove", event => {
+      const point = canvasPoint(event, poseCanvas);
+      if (poseSelectionDrag) {
+        poseSelectionDrag.rect = normalizeRect(poseSelectionDrag.start, point);
+        drawPose();
+        return;
+      }
+      if (!poseDrag) return;
+      const dx = point.x - poseDrag.start.x;
+      const dy = point.y - poseDrag.start.y;
+      poseDrag.original.forEach((original, id) => {
+        const part = parts.find(candidate => candidate.id === id);
+        if (!part) return;
+        part.x = original.x + dx;
+        part.y = original.y + dy;
+      });
+      syncInputs();
+      drawPose();
+    });
+
+    poseCanvas.addEventListener("pointerup", event => {
+      if (poseSelectionDrag) {
+        const rect = poseSelectionDrag.rect;
+        const moved = rect.w > 4 || rect.h > 4;
+        poseSelectionDrag = null;
+        if (moved) {
+          const ids = [...parts]
+            .filter(part => part.visible && !part.locked && rectIntersectsPartBounds(rect, part))
+            .map(part => part.id);
+          if (ids.length) {
+            setSelectedParts(ids, ids[0]);
+            setStatus(`Selected ${ids.length} part${ids.length === 1 ? "" : "s"}.`);
+          } else {
+            clearPoseSelection();
+            setStatus("No pose parts selected.");
+          }
+        } else {
+          clearPoseSelection();
+          setStatus("Pose selection cleared.");
+        }
+      } else if (poseDrag) {
+        scheduleAutosave();
+      }
+      poseDrag = null;
+      poseCanvas.classList.remove("dragging");
+    });
+
+    poseCanvas.addEventListener("dragover", event => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+    });
+
+    poseCanvas.addEventListener("drop", event => {
+      event.preventDefault();
+      const assetId = event.dataTransfer.getData("text/plain");
+      const asset = assets.find(candidate => candidate.id === assetId);
+      if (!asset) return;
+      createPartFromAsset(asset, canvasPoint(event, poseCanvas));
+    });
+
+    function pointHitsPart(point, part) {
+      const dx = point.x - part.x;
+      const dy = point.y - part.y;
+      const radians = -part.rotation * Math.PI / 180;
+      const localX = (dx * Math.cos(radians) - dy * Math.sin(radians)) / part.scale + part.pivotX;
+      const localY = (dx * Math.sin(radians) + dy * Math.cos(radians)) / part.scale + part.pivotY;
+      return localX >= 0 && localY >= 0 && localX <= part.crop.w && localY <= part.crop.h;
+    }
+
+    function partBounds(part) {
+      const radians = part.rotation * Math.PI / 180;
+      const corners = [
+        { x: -part.pivotX, y: -part.pivotY },
+        { x: part.crop.w - part.pivotX, y: -part.pivotY },
+        { x: part.crop.w - part.pivotX, y: part.crop.h - part.pivotY },
+        { x: -part.pivotX, y: part.crop.h - part.pivotY }
+      ].map(point => ({
+        x: part.x + (point.x * Math.cos(radians) - point.y * Math.sin(radians)) * part.scale,
+        y: part.y + (point.x * Math.sin(radians) + point.y * Math.cos(radians)) * part.scale
+      }));
+      const xs = corners.map(point => point.x);
+      const ys = corners.map(point => point.y);
+      return {
+        x: Math.min(...xs),
+        y: Math.min(...ys),
+        w: Math.max(...xs) - Math.min(...xs),
+        h: Math.max(...ys) - Math.min(...ys)
+      };
+    }
+
+    function rectIntersectsPartBounds(rect, part) {
+      const bounds = partBounds(part);
+      return rect.x <= bounds.x + bounds.w
+        && rect.x + rect.w >= bounds.x
+        && rect.y <= bounds.y + bounds.h
+        && rect.y + rect.h >= bounds.y;
+    }
+
+    function clonePart(part) {
+      const copy = JSON.parse(JSON.stringify(part));
+      copy.id = makeId();
+      copy.name = `${copy.name}_copy`;
+      copy.locked = false;
+      copy.visible = true;
+      copy.x += 24;
+      copy.y += 24;
+      copy.z = Math.max(-1, ...parts.map(existing => existing.z)) + 1;
+      return copy;
+    }
+
+    function copySelectedPart() {
+      const part = selectedPart();
+      if (!part) return;
+      copiedPart = JSON.parse(JSON.stringify(part));
+      setStatus(`Copied ${part.name}.`);
+    }
+
+    function pasteCopiedPart() {
+      if (!copiedPart) return;
+      const copy = clonePart(copiedPart);
+      parts.push(copy);
+      rebuildPartImage(copy);
+      selectedId = copy.id;
+      selectedAssetId = null;
+      syncInputs();
+      renderPartsList();
+      drawPose();
+      scheduleAutosave();
+      setStatus(`Pasted ${copy.name}.`);
+    }
+
+    function createPartFromAsset(asset, point) {
+      const part = {
+        id: makeId(),
+        sheet: asset.sheet,
+        slot: asset.slot,
+        name: asset.name,
+        crop: { ...asset.crop },
+        mask: asset.mask ? JSON.parse(JSON.stringify(asset.mask)) : null,
+        alphaMask: asset.alphaMask ? JSON.parse(JSON.stringify(asset.alphaMask)) : null,
+        x: point.x,
+        y: point.y,
+        rotation: 0,
+        scale: 1,
+        pivotX: Math.round(asset.crop.w / 2),
+        pivotY: Math.round(asset.crop.h / 2),
+        z: parts.length,
+        visible: true,
+        locked: false,
+        opacity: 1,
+        brightness: 1
+      };
+      parts.push(part);
+      rebuildPartImage(part);
+      selectedId = part.id;
+      selectedAssetId = null;
+      syncInputs();
+      renderPartsList();
+      drawPose();
+      scheduleAutosave();
+      setStatus(`Placed ${part.name}.`);
+    }
+
+    function createPartFromCrop(forceOverlay) {
+      if (!crop || crop.w < 4 || crop.h < 4) {
+        setStatus(selectionMode === "polygon" ? "Click at least three polygon points first." : "Draw a crop rectangle first.");
+        return;
+      }
+      if (selectionMode === "polygon" && polygonPoints.length < 3) {
+        setStatus("Polygon needs at least three points.");
+        return;
+      }
+      const slot = forceOverlay ? "overlay_extra" : slotSelect.value;
+      const explicitName = document.getElementById("partName").value.trim();
+      const asset = {
+        id: makeId(),
+        sheet: sheets[activeSheet].name,
+        slot,
+        name: explicitName || (forceOverlay ? "overlay_extra" : slot),
+        crop: { ...crop },
+        mask: currentMaskForCrop()
+      };
+      assets.push(asset);
+      rebuildAssetImage(asset);
+      selectedAssetId = asset.id;
+      selectedId = null;
+      document.getElementById("partName").value = "";
+      crop = null;
+      polygonPoints = [];
+      drawSource();
+      renderAssetLibrary();
+      setStatus(`Created asset ${asset.name}. Drag it from the Asset Library onto Pose Preview.`);
+      scheduleAutosave();
+    }
+
+    function extractSheetAssets() {
+      if (!sourceImage.complete || !sourceCanvas.width || !sourceCanvas.height) {
+        setStatus("Wait for the sheet to finish loading before extracting assets.");
+        return;
+      }
+      if (!alphaPreview) {
+        setStatus("Turn Alpha Preview on before extracting. Chroma sheets still have an opaque background.");
+        return;
+      }
+
+      const width = sourceCanvas.width;
+      const height = sourceCanvas.height;
+      const scanCanvas = document.createElement("canvas");
+      scanCanvas.width = width;
+      scanCanvas.height = height;
+      const scanCtx = scanCanvas.getContext("2d", { willReadFrequently: true });
+      scanCtx.drawImage(sourceImage, 0, 0);
+      const pixels = scanCtx.getImageData(0, 0, width, height).data;
+      const visited = new Uint8Array(width * height);
+      const alphaThreshold = 24;
+      const minPixels = 80;
+      const minSize = 8;
+      const created = [];
+
+      function isOpaque(index) {
+        return pixels[index * 4 + 3] > alphaThreshold;
+      }
+
+      for (let start = 0; start < visited.length; start += 1) {
+        if (visited[start] || !isOpaque(start)) {
+          visited[start] = 1;
+          continue;
+        }
+
+        const stack = [start];
+        visited[start] = 1;
+        let count = 0;
+        let minX = width;
+        let minY = height;
+        let maxX = 0;
+        let maxY = 0;
+        const component = [];
+
+        while (stack.length) {
+          const index = stack.pop();
+          const x = index % width;
+          const y = Math.floor(index / width);
+          component.push(index);
+          count += 1;
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+
+          const neighbors = [
+            x > 0 ? index - 1 : -1,
+            x < width - 1 ? index + 1 : -1,
+            y > 0 ? index - width : -1,
+            y < height - 1 ? index + width : -1
+          ];
+          neighbors.forEach(next => {
+            if (next < 0 || visited[next] || !isOpaque(next)) {
+              if (next >= 0) visited[next] = 1;
+              return;
+            }
+            visited[next] = 1;
+            stack.push(next);
+          });
+        }
+
+        const cropWidth = maxX - minX + 1;
+        const cropHeight = maxY - minY + 1;
+        if (count < minPixels || cropWidth < minSize || cropHeight < minSize) continue;
+        const cropX = Math.max(0, minX - 1);
+        const cropY = Math.max(0, minY - 1);
+        const paddedWidth = Math.min(width - cropX, cropWidth + 2);
+        const paddedHeight = Math.min(height - cropY, cropHeight + 2);
+        const rows = new Map();
+        component.forEach(index => {
+          const x = index % width;
+          const y = Math.floor(index / width);
+          const localY = y - cropY;
+          const localX = x - cropX;
+          if (!rows.has(localY)) rows.set(localY, []);
+          rows.get(localY).push(localX);
+        });
+        const spans = [];
+        [...rows.entries()].sort((a, b) => a[0] - b[0]).forEach(([y, xs]) => {
+          xs.sort((a, b) => a - b);
+          let spanStart = xs[0];
+          let previous = xs[0];
+          for (let i = 1; i < xs.length; i += 1) {
+            const x = xs[i];
+            if (x === previous + 1) {
+              previous = x;
+              continue;
+            }
+            spans.push([y, spanStart, previous]);
+            spanStart = x;
+            previous = x;
+          }
+          spans.push([y, spanStart, previous]);
+        });
+
+        created.push({
+          id: makeId(),
+          sheet: sheets[activeSheet].name,
+          slot: "extra",
+          name: `auto_${String(created.length + 1).padStart(3, "0")}`,
+          crop: {
+            x: cropX,
+            y: cropY,
+            w: paddedWidth,
+            h: paddedHeight
+          },
+          mask: null,
+          alphaMask: { type: "rowSpans", spans }
+        });
+      }
+
+      if (!created.length) {
+        setStatus("No opaque sheet islands found. Turn Alpha Preview on and use a transparent sheet.");
+        return;
+      }
+
+      assets.push(...created);
+      created.forEach(rebuildAssetImage);
+      selectedAssetId = created[0].id;
+      selectedId = null;
+      renderAssetLibrary();
+      syncInputs();
+      scheduleAutosave();
+      setStatus(`Extracted ${created.length} assets from ${sheets[activeSheet].name}. Rename and assign slots as needed.`);
+    }
+
+    document.getElementById("createPart").onclick = () => createPartFromCrop(false);
+    document.getElementById("createOverlay").onclick = () => createPartFromCrop(true);
+    document.getElementById("extractSheetAssets").onclick = extractSheetAssets;
+
+    document.getElementById("clearCrop").onclick = () => {
+      crop = null;
+      cropDrag = null;
+      polygonClickStart = null;
+      polygonPoints = [];
+      drawSource();
+    };
+
+    document.getElementById("duplicatePart").onclick = () => {
+      const part = selectedPart();
+      if (!part) return;
+      const copy = clonePart(part);
+      parts.push(copy);
+      rebuildPartImage(copy);
+      selectedId = copy.id;
+      selectedAssetId = null;
+      syncInputs();
+      renderPartsList();
+      drawPose();
+      scheduleAutosave();
+    };
+
+    function deleteSelectedPart() {
+      if (!selectedId) return;
+      parts = parts.filter(part => part.id !== selectedId);
+      selectedId = parts[0]?.id || null;
+      selectedAssetId = null;
+      syncInputs();
+      renderPartsList();
+      drawPose();
+      scheduleAutosave();
+    }
+
+    document.getElementById("deletePart").onclick = deleteSelectedPart;
+
+    function deleteAsset(assetId = selectedAssetId) {
+      if (!assetId) return;
+      const asset = assets.find(candidate => candidate.id === assetId);
+      assets = assets.filter(candidate => candidate.id !== assetId);
+      assetImages.delete(assetId);
+      if (selectedAssetId === assetId) selectedAssetId = assets[0]?.id || null;
+      renderAssetLibrary();
+      scheduleAutosave();
+      setStatus(asset ? `Deleted asset ${asset.name}. Placed pose parts are unchanged.` : "Deleted asset.");
+    }
+
+    Object.entries(inputs).forEach(([key, input]) => {
+      input.addEventListener("input", () => {
+        const part = selectedPart();
+        if (!part) return;
+        if (key === "slot") {
+          part.slot = input.value;
+          if (!part.name || slots.includes(part.name)) part.name = input.value;
+          inputs.name.value = part.name;
+        } else if (key === "name") {
+          part.name = input.value.trim() || part.slot;
+        } else if (key === "visible") {
+          part.visible = input.value === "true";
+      } else if (key === "locked") {
+        part.locked = input.value === "true";
+      } else if (key === "z") {
+        part.z = Number(input.value);
+      } else if (key === "opacity" || key === "brightness") {
+        part[key] = Number(input.value);
+      } else if (key === "pivotX" || key === "pivotY") {
+        const previous = part[key];
+        const next = Number(input.value);
+        const delta = next - previous;
+        const radians = part.rotation * Math.PI / 180;
+        if (key === "pivotX") {
+          part.x += Math.cos(radians) * delta * part.scale;
+          part.y += Math.sin(radians) * delta * part.scale;
+        } else {
+          part.x += -Math.sin(radians) * delta * part.scale;
+          part.y += Math.cos(radians) * delta * part.scale;
+        }
+        part[key] = next;
+      } else {
+        part[key] = Number(input.value);
+      }
+        renderPartsList();
+        drawPose();
+        scheduleAutosave();
+      });
+    });
+
+    sheetSelect.onchange = () => {
+      activeSheet = sheetSelect.value;
+      assets = [];
+      parts = [];
+      selectedId = null;
+      selectedAssetId = null;
+      syncInputs();
+      renderAssetLibrary();
+      renderPartsList();
+      loadSheet();
+      scheduleAutosave();
+    };
+
+    document.getElementById("toggleAlpha").onclick = event => {
+      alphaPreview = !alphaPreview;
+      event.currentTarget.textContent = `Alpha Preview: ${alphaPreview ? "On" : "Off"}`;
+      loadSheet();
+      scheduleAutosave();
+    };
+
+    document.getElementById("resetView").onclick = () => {
+      parts.forEach((part, index) => {
+        if (part.locked) return;
+        part.x = poseCanvas.width / 2;
+        part.y = poseCanvas.height / 2;
+        part.rotation = 0;
+        part.scale = 1;
+        part.z = index;
+      });
+      syncInputs();
+      renderPartsList();
+      drawPose();
+      scheduleAutosave();
+    };
+
+    document.getElementById("exportJson").onclick = () => {
+      const payload = projectPayload();
+      jsonBox.value = JSON.stringify(payload, null, 2);
+      jsonBox.select();
+    };
+
+    document.getElementById("importJson").onclick = () => {
+      try {
+        const payload = JSON.parse(jsonBox.value);
+        applyProjectPayload(payload);
+        loadSheet();
+        syncInputs();
+        renderPartsList();
+        drawPose();
+        scheduleAutosave();
+      } catch (error) {
+        setStatus(`Import failed: ${error.message}`);
+      }
+    };
+
+    document.getElementById("clearSaved").onclick = () => {
+      localStorage.removeItem(storageKey);
+      setStatus("Saved browser project cleared. Current canvas is unchanged.");
+    };
+
+    document.getElementById("saveProject").onclick = saveProjectToBrowser;
+    document.getElementById("loadProject").onclick = loadProjectFromBrowser;
+    document.getElementById("deleteProject").onclick = deleteProjectFromBrowser;
+    saveSelect.onchange = () => {
+      if (saveSelect.value) saveNameInput.value = saveSelect.value;
+    };
+
+    document.getElementById("selectionMode").onchange = event => {
+      selectionMode = event.target.value;
+      crop = null;
+      cropDrag = null;
+      polygonClickStart = null;
+      polygonPoints = [];
+      drawSource();
+      setStatus(selectionMode === "polygon"
+        ? "Polygon mode: click around a precise shape, then Create Part or Create Overlay."
+        : "Rectangle mode: drag a crop rectangle.");
+    };
+
+    document.getElementById("finishPolygon").onclick = () => {
+      if (polygonPoints.length < 3) {
+        setStatus("Polygon needs at least three points.");
+        return;
+      }
+      crop = polygonBounds(polygonPoints);
+      drawSource();
+      setStatus("Polygon ready. Click Create Part or Create Overlay.");
+    };
+
+    document.querySelectorAll(".panel h2").forEach(header => {
+      header.addEventListener("click", () => {
+        header.parentElement.classList.toggle("collapsed");
+      });
+    });
+
+    function applyPanelLayout() {
+      const main = document.querySelector("main");
+      const sourceCollapsed = document.getElementById("sourceSection").classList.contains("collapsed");
+      const poseCollapsed = document.getElementById("poseSection").classList.contains("collapsed");
+      const assetsCollapsed = document.getElementById("assetLibrary").classList.contains("collapsed");
+      const sideCollapsed = document.getElementById("sidePanel").classList.contains("collapsed");
+      const reclaimSpace = sourceCollapsed || poseCollapsed || sideCollapsed;
+      const visibleTopPanels = [
+        !sourceCollapsed && "source",
+        !poseCollapsed && "pose",
+        !sideCollapsed && "side"
+      ].filter(Boolean);
+
+      main.classList.toggle("source-collapsed", sourceCollapsed);
+      main.classList.toggle("pose-collapsed", poseCollapsed);
+      main.classList.toggle("assets-collapsed", assetsCollapsed);
+      main.classList.toggle("side-collapsed", sideCollapsed);
+
+      const columns = [];
+      const areas = [];
+      function addArea(area, track) {
+        areas.push(area);
+        columns.push(track);
+      }
+
+      if (!sourceCollapsed) {
+        addArea("source", reclaimSpace ? "minmax(260px, 1fr)" : "var(--source-width, minmax(440px, 1fr))");
+      }
+      if (!sourceCollapsed && !poseCollapsed) {
+        addArea("sourcePose", "7px");
+      }
+      if (!poseCollapsed) {
+        addArea("pose", reclaimSpace ? "minmax(260px, 1fr)" : "var(--pose-width, minmax(440px, 1fr))");
+      }
+      if (!poseCollapsed && !sideCollapsed) {
+        addArea("poseSide", "7px");
+      }
+      if (!sideCollapsed) {
+        const sideTrack = visibleTopPanels.length === 1
+          ? "minmax(280px, 1fr)"
+          : reclaimSpace ? "minmax(280px, 360px)" : "var(--side-width, 360px)";
+        addArea("side", sideTrack);
+      }
+      if (!areas.length) {
+        addArea(".", "1fr");
+      }
+
+      main.style.gridTemplateColumns = columns.join(" ");
+      main.style.gridTemplateAreas = `"${areas.join(" ")}" "${areas.map(() => assetsCollapsed ? "." : "asset").join(" ")}"`;
+      main.style.setProperty("--asset-height", assetsCollapsed ? "0px" : "170px");
+
+      document.querySelectorAll("[data-collapse-target]").forEach(button => {
+        const target = document.getElementById(button.dataset.collapseTarget);
+        button.textContent = target?.classList.contains("collapsed") ? "▸" : "▾";
+      });
+
+      document.querySelectorAll("[data-panel-toggle]").forEach(button => {
+        const target = document.getElementById(button.dataset.panelToggle);
+        const collapsed = target?.classList.contains("collapsed") ?? false;
+        button.classList.toggle("is-collapsed", collapsed);
+        button.setAttribute("aria-pressed", String(!collapsed));
+      });
+    }
+
+    function setPanelCollapsed(targetId, collapsed) {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      target.classList.toggle("collapsed", collapsed);
+      applyPanelLayout();
+      drawSource();
+      drawPose();
+    }
+
+    document.querySelectorAll("[data-collapse-target]").forEach(button => {
+      button.addEventListener("click", () => {
+        const target = document.getElementById(button.dataset.collapseTarget);
+        if (!target) return;
+        setPanelCollapsed(target.id, !target.classList.contains("collapsed"));
+      });
+    });
+
+    document.querySelectorAll("[data-panel-toggle]").forEach(button => {
+      button.addEventListener("click", () => {
+        const target = document.getElementById(button.dataset.panelToggle);
+        if (!target) return;
+        setPanelCollapsed(target.id, !target.classList.contains("collapsed"));
+      });
+    });
+
+    window.addEventListener("keydown", event => {
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      const key = event.key.toLowerCase();
+      if ((key === "delete" || key === "backspace") && selectedId) {
+        event.preventDefault();
+        deleteSelectedPart();
+        return;
+      }
+      if ((key === "delete" || key === "backspace") && selectedAssetId) {
+        event.preventDefault();
+        deleteAsset();
+        return;
+      }
+      if (!event.ctrlKey && !event.metaKey) return;
+      if (key === "c") {
+        event.preventDefault();
+        copySelectedPart();
+      } else if (key === "v") {
+        event.preventDefault();
+        pasteCopiedPart();
+      }
+    });
+
+    setupCanvasZoom(sourceCanvas, () => sourceZoom, value => { sourceZoom = value; });
+    setupCanvasZoom(poseCanvas, () => poseZoom, value => { poseZoom = value; });
+    setupMiddleMousePan(sourceCanvas);
+    setupMiddleMousePan(poseCanvas);
+    setupPanelResizers();
+    setupWheelInputs();
+    setupAssetLibraryWheel();
+    applyPanelLayout();
+    renderSaveList();
+    loadSavedProject();
+    syncInputs();
+    renderAssetLibrary();
+    renderPartsList();
+    loadSheet();
+  </script>
+</body>
+</html>

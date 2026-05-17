@@ -1,117 +1,418 @@
 {
   "skeleton": {
     "spine": "4.2.00",
-    "x": -280,
-    "y": 0,
-    "width": 620,
-    "height": 760,
+    "x": -403,
+    "y": -427,
+    "width": 687,
+    "height": 854,
     "images": "./images/",
     "audio": "./audio/"
   },
   "bones": [
-    { "name": "root" },
-    { "name": "shadow", "parent": "root", "x": 0, "y": 24 },
-    { "name": "pelvis", "parent": "root", "x": 0, "y": 250 },
-    { "name": "torso", "parent": "pelvis", "x": -8, "y": 92, "rotation": -3 },
-    { "name": "neck", "parent": "torso", "x": 8, "y": 174 },
-    { "name": "head", "parent": "neck", "x": 28, "y": 92, "rotation": 2 },
-    { "name": "hair_back", "parent": "head", "x": -34, "y": -18, "rotation": -3 },
-    { "name": "hair_front", "parent": "head", "x": 14, "y": 12, "rotation": 2 },
-    { "name": "upper_arm_r", "parent": "torso", "x": 50, "y": 120, "rotation": -20 },
-    { "name": "forearm_r", "parent": "upper_arm_r", "x": 84, "y": -28, "rotation": -18 },
-    { "name": "hand_r", "parent": "forearm_r", "x": 36, "y": -62, "rotation": -8 },
-    { "name": "upper_arm_l", "parent": "torso", "x": -48, "y": 118, "rotation": 21 },
-    { "name": "forearm_l", "parent": "upper_arm_l", "x": -78, "y": -26, "rotation": 15 },
-    { "name": "hand_l", "parent": "forearm_l", "x": -38, "y": -58, "rotation": 8 },
-    { "name": "upper_leg_r", "parent": "pelvis", "x": 32, "y": -56, "rotation": -6 },
-    { "name": "lower_leg_r", "parent": "upper_leg_r", "x": 20, "y": -128, "rotation": 6 },
-    { "name": "boot_r", "parent": "lower_leg_r", "x": 10, "y": -132, "rotation": 3 },
-    { "name": "upper_leg_l", "parent": "pelvis", "x": -38, "y": -52, "rotation": 6 },
-    { "name": "lower_leg_l", "parent": "upper_leg_l", "x": -20, "y": -134, "rotation": -5 },
-    { "name": "boot_l", "parent": "lower_leg_l", "x": -14, "y": -140, "rotation": -3 },
-    { "name": "whip", "parent": "hand_r", "x": 120, "y": -28, "rotation": -14 }
+    {
+      "name": "root"
+    },
+    {
+      "name": "rig_01_boot_near",
+      "parent": "root",
+      "x": -36.1,
+      "y": -341.2
+    },
+    {
+      "name": "rig_02_hair_ponytail_far",
+      "parent": "root",
+      "x": -6.3,
+      "y": 72.8
+    },
+    {
+      "name": "rig_03_lower_leg_near",
+      "parent": "root",
+      "x": -30.7,
+      "y": -182.2
+    },
+    {
+      "name": "rig_04_boot_far",
+      "parent": "root",
+      "x": 93.7,
+      "y": -341.2,
+      "scaleX": 0.93,
+      "scaleY": 0.93
+    },
+    {
+      "name": "rig_05_lower_leg_far",
+      "parent": "root",
+      "x": 78.3,
+      "y": -187.4
+    },
+    {
+      "name": "rig_06_upper_arm_far",
+      "parent": "root",
+      "x": 84.5,
+      "y": 130.8,
+      "rotation": -5.0
+    },
+    {
+      "name": "rig_07_forearm_far",
+      "parent": "root",
+      "x": 137.3,
+      "y": 40.8,
+      "rotation": 53.0,
+      "scaleX": 0.91,
+      "scaleY": 0.91
+    },
+    {
+      "name": "rig_08_hair_ponytail_near",
+      "parent": "root",
+      "x": -117.3,
+      "y": 88.8
+    },
+    {
+      "name": "rig_09_skirt_front_center",
+      "parent": "root",
+      "x": -2.5,
+      "y": 7.4
+    },
+    {
+      "name": "rig_10_torso_upper",
+      "parent": "root",
+      "x": 18.9,
+      "y": 125.6
+    },
+    {
+      "name": "rig_11_head",
+      "parent": "root",
+      "x": -5.5,
+      "y": 251.2,
+      "scaleX": 1.09,
+      "scaleY": 1.09
+    },
+    {
+      "name": "rig_12_hand_far",
+      "parent": "root",
+      "x": 187.7,
+      "y": -1.8,
+      "rotation": 67.0,
+      "scaleX": 0.88,
+      "scaleY": 0.88
+    },
+    {
+      "name": "rig_13_upper_arm_near",
+      "parent": "root",
+      "x": -41.7,
+      "y": 82.0,
+      "rotation": -20.0
+    },
+    {
+      "name": "rig_14_hand_near",
+      "parent": "root",
+      "x": -52.5,
+      "y": 1.6,
+      "rotation": -30.0
+    }
   ],
   "slots": [
-    { "name": "shadow", "bone": "shadow", "attachment": "shadow" },
-    { "name": "hair_back_large", "bone": "hair_back", "attachment": "hair_back_large" },
-    { "name": "upper_leg_right", "bone": "upper_leg_r", "attachment": "upper_leg_right" },
-    { "name": "lower_leg_right", "bone": "lower_leg_r", "attachment": "lower_leg_right" },
-    { "name": "boot_right", "bone": "boot_r", "attachment": "boot_right" },
-    { "name": "upper_leg_left", "bone": "upper_leg_l", "attachment": "upper_leg_left" },
-    { "name": "lower_leg_left", "bone": "lower_leg_l", "attachment": "lower_leg_left" },
-    { "name": "boot_left", "bone": "boot_l", "attachment": "boot_left" },
-    { "name": "pelvis", "bone": "pelvis", "attachment": "pelvis" },
-    { "name": "torso", "bone": "torso", "attachment": "torso" },
-    { "name": "upper_arm_right", "bone": "upper_arm_r", "attachment": "upper_arm_right" },
-    { "name": "forearm_right", "bone": "forearm_r", "attachment": "forearm_right" },
-    { "name": "hand_right", "bone": "hand_r", "attachment": "hand_right" },
-    { "name": "whip_handle_curve", "bone": "whip", "attachment": "whip_handle_curve" },
-    { "name": "upper_arm_left", "bone": "upper_arm_l", "attachment": "upper_arm_left" },
-    { "name": "forearm_left", "bone": "forearm_l", "attachment": "forearm_left" },
-    { "name": "hand_left", "bone": "hand_l", "attachment": "hand_left" },
-    { "name": "head_side", "bone": "head", "attachment": "head_side" },
-    { "name": "hair_front", "bone": "hair_front", "attachment": "hair_front" }
+    {
+      "name": "rig_01_boot_near",
+      "bone": "rig_01_boot_near",
+      "attachment": "rig_01_boot_near"
+    },
+    {
+      "name": "rig_02_hair_ponytail_far",
+      "bone": "rig_02_hair_ponytail_far",
+      "attachment": "rig_02_hair_ponytail_far"
+    },
+    {
+      "name": "rig_03_lower_leg_near",
+      "bone": "rig_03_lower_leg_near",
+      "attachment": "rig_03_lower_leg_near"
+    },
+    {
+      "name": "rig_04_boot_far",
+      "bone": "rig_04_boot_far",
+      "attachment": "rig_04_boot_far"
+    },
+    {
+      "name": "rig_05_lower_leg_far",
+      "bone": "rig_05_lower_leg_far",
+      "attachment": "rig_05_lower_leg_far"
+    },
+    {
+      "name": "rig_06_upper_arm_far",
+      "bone": "rig_06_upper_arm_far",
+      "attachment": "rig_06_upper_arm_far"
+    },
+    {
+      "name": "rig_07_forearm_far",
+      "bone": "rig_07_forearm_far",
+      "attachment": "rig_07_forearm_far"
+    },
+    {
+      "name": "rig_08_hair_ponytail_near",
+      "bone": "rig_08_hair_ponytail_near",
+      "attachment": "rig_08_hair_ponytail_near"
+    },
+    {
+      "name": "rig_09_skirt_front_center",
+      "bone": "rig_09_skirt_front_center",
+      "attachment": "rig_09_skirt_front_center"
+    },
+    {
+      "name": "rig_10_torso_upper",
+      "bone": "rig_10_torso_upper",
+      "attachment": "rig_10_torso_upper"
+    },
+    {
+      "name": "rig_11_head",
+      "bone": "rig_11_head",
+      "attachment": "rig_11_head"
+    },
+    {
+      "name": "rig_12_hand_far",
+      "bone": "rig_12_hand_far",
+      "attachment": "rig_12_hand_far"
+    },
+    {
+      "name": "rig_13_upper_arm_near",
+      "bone": "rig_13_upper_arm_near",
+      "attachment": "rig_13_upper_arm_near"
+    },
+    {
+      "name": "rig_14_hand_near",
+      "bone": "rig_14_hand_near",
+      "attachment": "rig_14_hand_near"
+    }
   ],
   "skins": [
     {
       "name": "default",
       "attachments": {
-        "shadow": { "shadow": { "type": "region", "path": "shadow", "width": 532, "height": 57 } },
-        "hair_back_large": { "hair_back_large": { "type": "region", "path": "hair_back_large", "x": -18, "y": -42, "width": 251, "height": 336 } },
-        "upper_leg_right": { "upper_leg_right": { "type": "region", "path": "upper_leg_right", "y": -76, "width": 88, "height": 232 } },
-        "lower_leg_right": { "lower_leg_right": { "type": "region", "path": "lower_leg_right", "y": -82, "width": 98, "height": 241 } },
-        "boot_right": { "boot_right": { "type": "region", "path": "boot_right", "x": 18, "y": -32, "width": 135, "height": 157 } },
-        "upper_leg_left": { "upper_leg_left": { "type": "region", "path": "upper_leg_left", "y": -80, "width": 91, "height": 246 } },
-        "lower_leg_left": { "lower_leg_left": { "type": "region", "path": "lower_leg_left", "y": -90, "width": 103, "height": 258 } },
-        "boot_left": { "boot_left": { "type": "region", "path": "boot_left", "x": -12, "y": -34, "width": 130, "height": 161 } },
-        "pelvis": { "pelvis": { "type": "region", "path": "pelvis", "width": 206, "height": 168 } },
-        "torso": { "torso": { "type": "region", "path": "torso", "y": 48, "width": 178, "height": 318 } },
-        "upper_arm_right": { "upper_arm_right": { "type": "region", "path": "upper_arm_right", "x": 34, "y": -14, "width": 144, "height": 140 } },
-        "forearm_right": { "forearm_right": { "type": "region", "path": "forearm_right", "x": 18, "y": -44, "width": 84, "height": 150 } },
-        "hand_right": { "hand_right": { "type": "region", "path": "hand_right", "x": 16, "y": -36, "width": 94, "height": 150 } },
-        "whip_handle_curve": { "whip_handle_curve": { "type": "region", "path": "whip_handle_curve", "x": 124, "y": -12, "width": 401, "height": 201 } },
-        "upper_arm_left": { "upper_arm_left": { "type": "region", "path": "upper_arm_left", "x": -34, "y": -14, "width": 143, "height": 140 } },
-        "forearm_left": { "forearm_left": { "type": "region", "path": "forearm_left", "x": -18, "y": -44, "width": 84, "height": 150 } },
-        "hand_left": { "hand_left": { "type": "region", "path": "hand_left", "x": -16, "y": -36, "width": 94, "height": 150 } },
-        "head_side": { "head_side": { "type": "region", "path": "head_side", "x": 18, "y": 6, "width": 262, "height": 262 } },
-        "hair_front": { "hair_front": { "type": "region", "path": "hair_front", "x": 18, "y": -10, "width": 197, "height": 281 } }
+        "rig_01_boot_near": {
+          "rig_01_boot_near": {
+            "type": "region",
+            "path": "rig_01_boot_near",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 92,
+            "height": 144
+          }
+        },
+        "rig_02_hair_ponytail_far": {
+          "rig_02_hair_ponytail_far": {
+            "type": "region",
+            "path": "rig_02_hair_ponytail_far",
+            "x": 0.0,
+            "y": 0.5,
+            "width": 208,
+            "height": 533
+          }
+        },
+        "rig_03_lower_leg_near": {
+          "rig_03_lower_leg_near": {
+            "type": "region",
+            "path": "rig_03_lower_leg_near",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 78,
+            "height": 202
+          }
+        },
+        "rig_04_boot_far": {
+          "rig_04_boot_far": {
+            "type": "region",
+            "path": "rig_04_boot_far",
+            "x": 0.0,
+            "y": 0.5,
+            "width": 100,
+            "height": 139
+          }
+        },
+        "rig_05_lower_leg_far": {
+          "rig_05_lower_leg_far": {
+            "type": "region",
+            "path": "rig_05_lower_leg_far",
+            "x": -0.5,
+            "y": 0.0,
+            "width": 65,
+            "height": 212
+          }
+        },
+        "rig_06_upper_arm_far": {
+          "rig_06_upper_arm_far": {
+            "type": "region",
+            "path": "rig_06_upper_arm_far",
+            "x": 0.0,
+            "y": 0.5,
+            "width": 70,
+            "height": 99
+          }
+        },
+        "rig_07_forearm_far": {
+          "rig_07_forearm_far": {
+            "type": "region",
+            "path": "rig_07_forearm_far",
+            "x": -0.5,
+            "y": 0.0,
+            "width": 77,
+            "height": 184
+          }
+        },
+        "rig_08_hair_ponytail_near": {
+          "rig_08_hair_ponytail_near": {
+            "type": "region",
+            "path": "rig_08_hair_ponytail_near",
+            "x": 0.0,
+            "y": 0.5,
+            "width": 208,
+            "height": 533
+          }
+        },
+        "rig_09_skirt_front_center": {
+          "rig_09_skirt_front_center": {
+            "type": "region",
+            "path": "rig_09_skirt_front_center",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 286,
+            "height": 354
+          }
+        },
+        "rig_10_torso_upper": {
+          "rig_10_torso_upper": {
+            "type": "region",
+            "path": "rig_10_torso_upper",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 134,
+            "height": 194
+          }
+        },
+        "rig_11_head": {
+          "rig_11_head": {
+            "type": "region",
+            "path": "rig_11_head",
+            "x": 0.0,
+            "y": 0.5,
+            "width": 242,
+            "height": 215
+          }
+        },
+        "rig_12_hand_far": {
+          "rig_12_hand_far": {
+            "type": "region",
+            "path": "rig_12_hand_far",
+            "x": -0.5,
+            "y": 0.5,
+            "width": 105,
+            "height": 191
+          }
+        },
+        "rig_13_upper_arm_near": {
+          "rig_13_upper_arm_near": {
+            "type": "region",
+            "path": "rig_13_upper_arm_near",
+            "x": -0.5,
+            "y": 0.5,
+            "width": 91,
+            "height": 183
+          }
+        },
+        "rig_14_hand_near": {
+          "rig_14_hand_near": {
+            "type": "region",
+            "path": "rig_14_hand_near",
+            "x": -0.5,
+            "y": 0.5,
+            "width": 115,
+            "height": 195
+          }
+        }
       }
     }
   ],
   "animations": {
     "idle": {
       "bones": {
-        "torso": {
+        "root": {
           "translate": [
-            { "time": 0, "x": 0, "y": 0, "curve": "stepped" },
-            { "time": 0.8, "x": 0, "y": 4 },
-            { "time": 1.6, "x": 0, "y": 0 }
-          ],
-          "rotate": [
-            { "time": 0, "angle": -1 },
-            { "time": 0.8, "angle": 1 },
-            { "time": 1.6, "angle": -1 }
+            {
+              "time": 0.0,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "time": 0.8,
+              "x": 0,
+              "y": 4
+            },
+            {
+              "time": 1.6,
+              "x": 0,
+              "y": 0
+            }
           ]
         },
-        "head": {
+        "rig_02_hair_ponytail_far": {
           "rotate": [
-            { "time": 0, "angle": 0 },
-            { "time": 0.8, "angle": 2 },
-            { "time": 1.6, "angle": 0 }
+            {
+              "time": 0.0,
+              "angle": -1.5
+            },
+            {
+              "time": 0.8,
+              "angle": 1.5
+            },
+            {
+              "time": 1.6,
+              "angle": -1.5
+            }
           ]
         },
-        "hair_back": {
+        "rig_08_hair_ponytail_near": {
           "rotate": [
-            { "time": 0, "angle": 0 },
-            { "time": 0.8, "angle": -2 },
-            { "time": 1.6, "angle": 0 }
+            {
+              "time": 0.0,
+              "angle": -1.5
+            },
+            {
+              "time": 0.8,
+              "angle": 1.5
+            },
+            {
+              "time": 1.6,
+              "angle": -1.5
+            }
           ]
         },
-        "whip": {
+        "rig_10_torso_upper": {
           "rotate": [
-            { "time": 0, "angle": -2 },
-            { "time": 0.8, "angle": 2 },
-            { "time": 1.6, "angle": -2 }
+            {
+              "time": 0.0,
+              "angle": -0.8
+            },
+            {
+              "time": 0.8,
+              "angle": 0.8
+            },
+            {
+              "time": 1.6,
+              "angle": -0.8
+            }
+          ]
+        },
+        "rig_11_head": {
+          "rotate": [
+            {
+              "time": 0.0,
+              "angle": -0.8
+            },
+            {
+              "time": 0.8,
+              "angle": 0.8
+            },
+            {
+              "time": 1.6,
+              "angle": -0.8
+            }
           ]
         }
       }

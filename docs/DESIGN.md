@@ -55,7 +55,9 @@ The same weapon can support future animation: idle state with the light-whip loo
 
 For v0.4.3, Hologirl starts with a Hologirl-owned pure Godot runtime visual instead of routing combat, merchant, and rest-site scenes through Ironclad. The first pass uses a full-body transparent sprite with a grounded golden light-whip and a simple idle bob/breathing script.
 
-This is a pragmatic first rig, not the final animation target. Vanilla-quality STS2 characters use Spine-backed Godot scenes; Hologirl can move to Spine or a better separated-parts rig later after the scene contract and art direction are stable.
+This is a pragmatic first rig, not the final animation target. Vanilla-quality STS2 characters use Spine-backed Godot scenes; Hologirl can move to Spine after the scene contract and art direction are stable.
+
+The current combat test visual is a pure Godot layered rig exported from `docs/design/tools/spine-rig-tuner/result.json` with `scripts/export-spine-rig-tuner-result.py`. It uses sheet F's separated parts, tuner pivots, rotations, scale, and z-order, then instances `Hologirl/animation/hologirl_tuner_rig_node.tscn` from the existing combat wrapper. This keeps the in-game path testable without depending on the local Spine editor importer.
 
 ## AI Card Art Direction
 

@@ -131,6 +131,7 @@ scripts/release.sh
 - `scripts/export-pck-godot.sh` is the direct Godot/MegaDot PCK export helper.
 - `scripts/extract-pck-path.gd` is a Godot helper for extracting a specific file or folder from the local STS2 PCK when verifying vanilla asset structure or extension files.
 - `scripts/check-spine-extension.gd` is a diagnostic helper for confirming whether the local Godot project can see Spine resource classes and load specific Spine resources.
+- `scripts/export-spine-rig-tuner-result.py` promotes `docs/design/tools/spine-rig-tuner/result.json` into runtime rig assets. It cuts masked part PNGs from sheet F, refreshes the experimental Spine JSON/atlas source files, and generates the pure Godot layered rig scene currently used by combat.
 - `scripts/godot-smoke-character-select.sh` runs the character-select scene smoke check through the same normalized Godot environment.
 - `scripts/release.sh` packages and publishes a normal GitHub release, not a prerelease, because the current mod-manager path expects normal releases.
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
@@ -142,6 +143,8 @@ The quick PCK packer supports simple assets such as PNG and JSON, but skips Godo
 The shared toolchain has official Godot `4.5.1.stable.mono` installed at `/mnt/HC_Volume_105232828/shared/tools/godot/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64`. `scripts/godot-env.sh` also wires available Nix fontconfig files so headless Godot runs do not emit the previous missing `libfontconfig.so.1` warnings on this machine.
 
 Spine experiments may require a local-only `addons/spine/` folder so headless Godot can parse `SpineSprite` scenes and Spine resource classes. That folder is ignored by git and excluded from PCK export; Hologirl must not ship a bundled Spine extension because STS2 already owns the runtime extension in-game. Remove the local addon before ordinary package/release runs unless actively testing Spine imports, because the upstream GDExtension can crash headless Godot on shutdown after export on this machine.
+
+The combat visual can also use a pure Godot layered rig as an iteration bridge. `Hologirl/scenes/creature_visuals/hologirl.tscn` keeps the required `Visuals`, `Bounds`, `CenterPos`, and `IntentPos` contract, but its `Visuals` instance currently points to `Hologirl/animation/hologirl_tuner_rig_node.tscn` so in-game testing does not depend on Spine importer availability.
 
 Vanilla character select loads `CharacterModel.CharacterSelectBg` as a `PackedScene` and adds it to `NCharacterSelectScreen`'s `AnimatedBg` container. BaseLib patches `CustomCharacterModel.CustomCharacterSelectBg` into that getter, which is the preferred path for Hologirl's character-select scene.
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://hologirlcreaturevisual"]
 
-[ext_resource type="PackedScene" uid="uid://hologirlruntimespinenode" path="res://Hologirl/animation/hologirl_multipart_node.tscn" id="1_visuals"]
+[ext_resource type="PackedScene" uid="uid://hologirltunerrignode" path="res://Hologirl/animation/hologirl_tuner_rig_node.tscn" id="1_visuals"]
 [ext_resource type="Script" path="res://Hologirl/scenes/character/hologirl_runtime_visual.gd" id="2_idle"]
 
 [node name="HologirlCreatureVisual" type="Node2D"]
@@ -12,7 +12,7 @@ breathe_scale = 0.009
 
 [node name="Visuals" parent="." instance=ExtResource("1_visuals")]
 position = Vector2(0, -4)
-scale = Vector2(0.52, 0.52)
+scale = Vector2(0.36, 0.36)
 
 [node name="Bounds" type="Control" parent="."]
 offset_left = -120.0
