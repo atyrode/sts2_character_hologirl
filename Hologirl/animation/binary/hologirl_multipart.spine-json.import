@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.json"
+type="SpineSkeletonFileResource"
+uid="uid://7hcl6sfab714"
+path="res://.godot/imported/hologirl_multipart.spine-json-8a418c3a6ea3af7ace93d11780c621cc.spjson"
+
+[deps]
+
+source_file="res://Hologirl/animation/binary/hologirl_multipart.spine-json"
+dest_files=["res://.godot/imported/hologirl_multipart.spine-json-8a418c3a6ea3af7ace93d11780c621cc.spjson"]
+
+[params]
+

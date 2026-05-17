@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://hologirlcreaturevisual"]
 
-[ext_resource type="Texture2D" path="res://Hologirl/images/character/hologirl_runtime.png" id="1_runtime"]
+[ext_resource type="PackedScene" uid="uid://hologirlruntimespinenode" path="res://Hologirl/animation/hologirl_multipart_node.tscn" id="1_visuals"]
 [ext_resource type="Script" path="res://Hologirl/scenes/character/hologirl_runtime_visual.gd" id="2_idle"]
 
 [node name="HologirlCreatureVisual" type="Node2D"]
@@ -10,14 +10,9 @@ bob_pixels = 3.0
 bob_seconds = 2.6
 breathe_scale = 0.009
 
-[node name="Visuals" type="Node2D" parent="."]
-position = Vector2(0, -22)
-scale = Vector2(0.2, 0.2)
-
-[node name="Sprite" type="Sprite2D" parent="Visuals"]
-position = Vector2(0, -533)
-texture = ExtResource("1_runtime")
-centered = true
+[node name="Visuals" parent="." instance=ExtResource("1_visuals")]
+position = Vector2(0, -4)
+scale = Vector2(0.52, 0.52)
 
 [node name="Bounds" type="Control" parent="."]
 offset_left = -120.0

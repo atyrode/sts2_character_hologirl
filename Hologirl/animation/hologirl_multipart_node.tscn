@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://hologirlruntimespinenode"]
+
+[ext_resource type="SpineSkeletonDataResource" uid="uid://hologirlruntimeskeldata" path="res://Hologirl/animation/hologirl_multipart_skel_data.tres" id="1_skel"]
+
+[node name="HologirlMultipartNode" type="SpineSprite"]
+skeleton_data_res = ExtResource("1_skel")
+preview_skin = "default"
+preview_animation = "idle"

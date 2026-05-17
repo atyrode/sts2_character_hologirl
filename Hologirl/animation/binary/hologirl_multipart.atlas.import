@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://bj2nhc18jmxoo"
+path="res://.godot/imported/hologirl_multipart.atlas-4ddf5b64fe1f61ec11e2d8c8f3cdf079.spatlas"
+
+[deps]
+
+source_file="res://Hologirl/animation/binary/hologirl_multipart.atlas"
+dest_files=["res://.godot/imported/hologirl_multipart.atlas-4ddf5b64fe1f61ec11e2d8c8f3cdf079.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

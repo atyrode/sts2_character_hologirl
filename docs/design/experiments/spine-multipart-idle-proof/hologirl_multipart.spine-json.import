@@ -1,6 +1,6 @@
 [remap]
 
-importer="spine.skel"
+importer="spine.json"
 type="SpineSkeletonFileResource"
 uid="uid://hologirlmultipartjson"
 path="res://.godot/imported/hologirl_multipart.spine-json-hologirlmultipart.spjson"

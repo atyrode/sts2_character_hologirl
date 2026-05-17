@@ -31,6 +31,7 @@ Third attempt:
 - Confirmed with `scripts/check-spine-extension.gd` that Godot recognized the Spine classes.
 - Renamed the proof skeleton copy to `.spine-json`, because plain `.json` is handled as ordinary Godot JSON and not as a Spine skeleton file.
 - Added temporary `.atlas.import` and `.spine-json.import` remaps and copied the generated targets manually as `.spatlas` and `.spjson`.
+- Follow-up: JSON skeleton imports must use `importer="spine.json"`. `importer="spine.skel"` is for binary `.skel` files and can make export treat JSON bytes as binary skeleton data.
 - The proof then loaded as `SpineAtlasResource`, `SpineSkeletonFileResource`, `SpineSkeletonDataResource`, and `PackedScene`.
 
 Conclusion:
