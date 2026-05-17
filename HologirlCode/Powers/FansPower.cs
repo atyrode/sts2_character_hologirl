@@ -18,7 +18,11 @@ public sealed class FansPower : HologirlPower
         if (Owner.Powers.OfType<SingingPower>().Any(power => power.Amount > 0))
             return;
 
-        await PowerCmd.ModifyAmount(this, -1m, null, null);
+        var amountToLose = Amount - Math.Floor(Amount / 2m);
+        if (amountToLose <= 0)
+            return;
+
+        await PowerCmd.ModifyAmount(this, -amountToLose, null, null);
         Flash();
     }
 }

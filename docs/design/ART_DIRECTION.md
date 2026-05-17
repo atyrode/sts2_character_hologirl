@@ -7,20 +7,24 @@ Use `docs/design/STS_STYLE_RESEARCH.md` as the shared reference for Slay the Spi
 ## High-Level Rules
 
 - Use one dominant object, action, or silhouette per card.
+- Start each card portrait from the card name and effect, not from a requirement to show Hologirl. Vanilla-style card art often shows an object, weapon, impact, hand, arm, head, leg, shadow, or environmental cue instead of the whole character.
+- Full-body Hologirl should be the minority case. Use her full figure only when the card's fantasy is specifically about her stance, performance, or identity; otherwise prefer a partial crop or no character at all.
 - Prefer flat chunky shapes, hard graphic edges, abrupt silhouettes, broad shadow shapes, and smooth matte shading.
 - Use selective hard shadow planes, almost like partial cel shading, where they clarify form. Do not turn the whole image into clean anime cel shading.
 - Keep the palette tight, usually 2-4 major color groups.
 - Use elegant desaturated pink and deep plum backgrounds for the base starter-card family unless a card document says otherwise.
-- Hologirl herself is blue/cyan hologram light.
+- Hologirl should remain recognizable as the current character-select design: blue/cyan face, hair, and light body language, with her white-and-gold outfit, gold accessories, and gold light-whip preserved when the composition shows her body.
 - Yellow/gold is reserved for Hologirl-created or projected elements: light-whip, shields, spotlights, light sticks, monitor glow, projected UI, and holographic effects.
 - Use tiny restrained sparkles only when they clarify magic or holographic technology.
 - Avoid detailed fantasy illustration, photorealism, anime screenshot styling, glossy mobile-game rendering, dense particles, complex backgrounds, text, card frames, UI, and logos.
 
 ## Base Hologirl Visual Identity
 
-Hologirl should read as a blue/cyan hologram girl with two long ponytails/twintails. When her head or hair is visible, the two-ponytail silhouette must remain clear.
+Hologirl should read as a blue/cyan hologram girl with two long ponytails/twintails. When her head or hair is visible, the two-ponytail silhouette must remain clear. Avoid turning full-body card art into a generic all-blue projection or a different teal idol design; the white outfit panels, gold circlets, gold trim, and rectangular glowing eyes are part of her identity.
 
-Starter cards should usually prioritize the tool or action over a full character portrait. Hologirl can appear as a small silhouette, cropped hand, or supporting detail when the card needs her.
+Starter cards should usually prioritize the tool or action over a full character portrait. Hologirl can appear as a small silhouette, cropped hand, arm, face, leg, or supporting detail when the card needs her. The v0.4.1 portrait pass overcorrected by making nearly every card a Hologirl portrait; the next pass should move closer to vanilla composition logic. The v0.4.1 portrait pass uses baked shader-like glow and scanline hints only as light accents; the card image itself should still be flat, readable, and hand-drawn.
+
+Power icons should be simple, readable symbols on transparency. They should not rely on a colored background plate, badge, or broad drop shadow; any dark paint should function as selective linework or local occlusion attached to the symbol itself.
 
 ## Character Select Background Anchor
 

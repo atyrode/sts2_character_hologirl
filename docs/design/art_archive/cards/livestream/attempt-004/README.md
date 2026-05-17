@@ -3,7 +3,7 @@
 - Generated: 2026-05-14 12:05:55 UTC
 - Source: `ig_006aa01e6712584c016a05ba39f1a88191aee8ad18a6b3fdbf.png`
 - Result: `result.png`
-- Prompt status: documented in `docs/design/cards/starter/LIVESTREAM.md`.
+- Prompt status: documented in `docs/design/cards/draftable/LIVESTREAM.md`.
 - Selection status: selected and implemented as `Hologirl/images/card_portraits/*/livestream.png`.
 
 ## Direction

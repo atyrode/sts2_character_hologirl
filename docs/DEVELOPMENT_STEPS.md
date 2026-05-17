@@ -79,18 +79,19 @@
 - [x] Replace the smoke-test starter deck with a first intentional starter kit.
 - [x] Add Strike-style and Defend-style Hologirl starter cards.
 - [x] Add `Concert!`: gain 3 Fans and Singing for 2 turns.
-- [x] Add `Livestream`: transform into a random form.
-- [x] Add a placeholder starting relic that documents transformation reward cards.
-- [x] Add one simple 0-cost transformation reward card per form.
+- [x] Add `Livestream` as a rare power that turns explicit combat triggers into `Fans`.
+- [x] Add a placeholder starting relic for early transformation exploration.
+- [x] Remove the early 0-cost transformation reward cards from the active source set.
 - [x] Add power hover tips and rich text coloring for the first Hologirl resource/form terms.
-- [x] Rename the player-facing transformation term to `Shapeshift` and move the 0-cost card bonus onto the starter relic.
-- [ ] Test the first combat loop locally with `Concert!`, `Livestream`, Fans, Singing, form upkeep, and Prism Pendant reward cards.
-- [ ] Tune starter deck numbers after actual combat testing: `Concert!` fan gain, `Singing` duration, `Livestream` cost, form upkeep, and reward-card usefulness.
-- [ ] Make fan loss and form upkeep predictable in card/power/relic text before expanding the card pool.
+- [x] Rename the player-facing transformation term to `Shapeshift`, then defer the old form/token direction until it can be rebuilt as a complete mechanic.
+- [ ] Test the first combat loop locally with `Concert!`, Fans, and Singing.
+- [ ] Decide whether Shapeshift returns as a complete mechanic or Prism Pendant is replaced.
+- [ ] Tune starter deck numbers after actual combat testing: `Concert!` fan gain, `Singing` duration, Fan decay, and Livestream usefulness.
+- [ ] Make fan loss and Livestream trigger text predictable before expanding the card pool further.
 
 ### 4. Decide The First Real Mechanical Identity
 
-- [ ] Decide whether the first release identity stays focused on `Fans` + `Shapeshift`, or whether it absorbs a simplified axis model.
+- [ ] Decide whether the first release identity stays focused on `Fans` + `Singing`/`Livestream`, or whether `Shapeshift` returns as a complete second mechanic.
 - [ ] If using axes, define only one minimal prototype axis first; do not implement three axes at once.
 - [ ] Decide what each form does passively.
 - [x] Replace placeholder form reward cards with simple, testable effects.

@@ -2,18 +2,18 @@
 
 ## Confirmed Direction
 
-Starting relic for Hologirl's Shapeshift system.
+Starting relic placeholder for Hologirl.
 
-Current role: when Hologirl Shapeshifts, add the current form's specific 0-cost card to hand.
+The old Shapeshift reward-card role is disabled. The 0-cost form reward cards were removed from the active source set because the form system is not part of the current combat identity.
 
-Implementation note: `Livestream` only applies the Shapeshift form. `Prism Pendant` owns the bonus-card trigger, flashes when it triggers, and creates the reward card through the active combat state before adding it to hand.
+Future versions should either rebuild `Prism Pendant` around the confirmed Livestream/Fans loop or restore Shapeshift only as a complete mechanic with owned art, card behavior, and clear relic text.
 
 ## Wording Rule
 
-The relic should describe the bonus-card effect. `Livestream` should only describe Shapeshifting unless it directly owns another effect.
+The relic should not mention Shapeshift reward cards until that mechanic is restored.
 
 ## Open Questions
 
 - Final relic name and icon.
-- Whether the generated card goes to hand, draw pile, or discard pile in future versions.
-- Whether the relic triggers once per turn, every Shapeshift, or under another condition.
+- Whether the relic should support Livestream, Fans, or a future rebuilt Shapeshift system.
+- Whether it should remain the starter relic at all.

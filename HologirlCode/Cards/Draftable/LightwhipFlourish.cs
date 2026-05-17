@@ -2,6 +2,7 @@ using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Hologirl.HologirlCode.Character;
 using Hologirl.HologirlCode.Powers;
+using Hologirl.HologirlCode.UI.Livestream;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -17,8 +18,8 @@ public sealed class LightwhipFlourish() : HologirlCard(2, CardType.Attack, CardR
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(12m, ValueProp.Move),
-        new PowerVar<FansPower>(2)
+        new DamageVar(6m, ValueProp.Move),
+        new PowerVar<FansPower>(4)
     ];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<FansPower>()];
@@ -26,15 +27,18 @@ public sealed class LightwhipFlourish() : HologirlCard(2, CardType.Attack, CardR
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_slash")
-            .Execute(choiceContext);
-        await ApplyOrIncreasePower<FansPower>(DynamicVars["FansPower"].IntValue);
+        var spent = await SpendFans(DynamicVars["FansPower"].IntValue, LivestreamChatEvent.LightwhipFlourish);
+        var hitCount = 2 + spent / 2;
+        for (var i = 0; i < hitCount; i++)
+        {
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+                .WithHitFx("vfx/vfx_attack_slash")
+                .Execute(choiceContext);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
-        DynamicVars["FansPower"].UpgradeValueBy(1);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

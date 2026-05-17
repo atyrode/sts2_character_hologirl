@@ -7,7 +7,7 @@ Slay the Spire 2 playable character mod project.
 - Persistent agent/contributor workflow rules: [AGENTS.md](AGENTS.md).
 - Confirmed project goal and current research live in [docs/](docs/).
 - STS2 character mod scaffold: `Hologirl.csproj`, `HologirlCode/`, and `Hologirl/`.
-- Current prototype: Hologirl starter deck, Prism Pendant starter relic, `Fans`, `Singing`, and `Shapeshift` form powers.
+- Current prototype: Hologirl starter deck, Prism Pendant starter relic, `Fans`, `Singing`, and `Livestream` chat-overlay mechanics. `Shapeshift` remains a deferred design term; the old form reward cards are removed from the active source set.
 
 ## Development
 
@@ -45,16 +45,16 @@ Build:
 scripts/build.sh
 ```
 
-Package with the default quick PCK packer:
+Package with the default Godot/MegaDot PCK exporter:
 
 ```sh
 scripts/package.sh
 ```
 
-Package with Godot/MegaDot export when the mod needs packed Godot resources such as `.tscn` scenes:
+For emergency simple-asset-only packages, the old quick packer can still be selected explicitly:
 
 ```sh
-HOLOGIRL_PCK_EXPORTER=godot \
+HOLOGIRL_PCK_EXPORTER=quick \
 scripts/package.sh
 ```
 
@@ -62,6 +62,14 @@ Run the character-select scene smoke check:
 
 ```sh
 scripts/godot-smoke-character-select.sh
+```
+
+Inspect a packed Godot scene in the exported PCK when debugging placeholder asset routing:
+
+```sh
+godot --headless --script scripts/inspect-packed-scene.gd -- \
+  /path/to/Hologirl.pck \
+  res://Hologirl/scenes/creature_visuals/hologirl.tscn
 ```
 
 Godot and `.NET` paths are resolved by `scripts/godot-env.sh`. Override `GODOT_BIN`, `DOTNET_ROOT`, `STS2_MODS_DIR`, or `HOLOGIRL_SHARED_ROOT` when working from a different install.

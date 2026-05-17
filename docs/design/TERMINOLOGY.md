@@ -4,7 +4,7 @@ These terms should stay consistent across cards, relics, powers, tooltips, and d
 
 ## Fans
 
-Hologirl's audience resource. Current confirmed behavior: Fans decay by 1 at end of turn unless Hologirl is Singing. Idol Forms spend Fans to remain active.
+Hologirl's audience resource. Current confirmed behavior: Fans decay by half at end of turn unless Hologirl is Singing.
 
 ## Singing
 
@@ -12,14 +12,14 @@ A temporary state from `Concert!`. While Singing, Hologirl does not lose Fans fr
 
 ## Shapeshift
 
-Hologirl's core form-changing ability. Shapeshifting enters an Idol Form. Idol Forms spend 1 Fan at end of turn to remain active; if Hologirl cannot pay, she returns to base form.
+Deferred prototype term. Earlier builds used Shapeshift to enter Idol Forms, but Shapeshift is not part of the active card implementation while Hologirl's core Livestream/Fans loop is being redesigned.
 
 `Shapeshift` should be used instead of `Transform`, because `Transform` already has an established card-game meaning.
 
 ## Idol Form
 
-One of Hologirl's sustained forms. The form owns passive identity and upkeep text.
+Deferred prototype term for a sustained form. Idol Forms should not be referenced by active cards or relic text until the form system is rebuilt.
 
 ## Prism Pendant
 
-Starter relic. Its current role is to add a form-specific 0-cost card when Hologirl Shapeshifts. That bonus card is the relic effect, not part of Shapeshift itself.
+Starter relic placeholder. Its old form-specific 0-cost reward cards are removed from the active source set. Either rebuild it with a complete mechanic later or replace it.

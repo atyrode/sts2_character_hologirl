@@ -1,0 +1,37 @@
+namespace Hologirl.HologirlCode.UI.Livestream;
+
+public enum LivestreamChatEvent
+{
+    Start,
+    Potion,
+    FullBlock,
+    BigDamage,
+    Heal,
+    FansGained,
+    Singing,
+    Debuff,
+    DamageTaken,
+    DebuffReceived,
+    MonsterDeath,
+    HologirlDeath,
+    TurnStart,
+    TurnEnd,
+    CardPlayed,
+    AttackPlayed,
+    BlockPlayed,
+    RareCardPlayed,
+    CursePlayed,
+    StatusPlayed,
+    CardDrawn,
+    CardExhausted,
+    FansSpent,
+    SignalJab,
+    FanMeetup,
+    BroadcastLoop,
+    LightwhipFlourish,
+    GlitchWaltz,
+    EncoreEngine,
+    RadiantWhip,
+    ViralMoment,
+    PrimeTime
+}

@@ -84,7 +84,7 @@ BaseLib must be installed in the game's `mods/BaseLib/` folder before BaseLib-de
 The current character template provides:
 
 - A `CustomCharacterModel` subclass for the character. Hologirl intentionally does not inherit BaseLib's `PlaceholderCharacterModel`.
-- Hologirl currently routes missing in-run surfaces through explicit Ironclad asset paths for combat visuals, card trail, transition material, transition sound, energy counter, rest/merchant animations, hand textures, fallback icon scene/outline texture, attack/cast/death sounds, and temporary Architect attack VFX. This is deliberate scaffolding while Hologirl-owned run assets are not designed yet, not passive placeholder inheritance.
+- Hologirl owns first-pass in-run Godot scenes for combat visuals, the combat energy counter, rest-site character visuals, and merchant character visuals. Missing secondary surfaces still route through explicit Ironclad asset paths for card trail, transition material, transition sound, multiplayer hand textures, fallback icon scene/outline texture, attack/cast/death sounds, and temporary Architect attack VFX. This is deliberate scaffolding while Hologirl-owned replacements are not designed yet, not passive placeholder inheritance.
 - A starting deck.
 - starting relics.
 - card, relic, and potion pools.
@@ -125,8 +125,8 @@ scripts/release.sh
 ```
 
 - `scripts/build.sh` runs `dotnet build Hologirl.csproj`. The project's MSBuild targets copy the DLL, PDB, manifest, and generated PCK into the local STS2 mod folder.
-- `scripts/package.sh` builds first, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
-- `scripts/package.sh` uses the quick PCK packer by default. Set `HOLOGIRL_PCK_EXPORTER=godot` to overwrite the PCK through Godot's headless `--export-pack` path before zipping.
+- `scripts/package.sh` builds first, exports a fresh Godot PCK by default, then writes `dist/Hologirl-<version>.zip` from `Hologirl.dll`, `Hologirl.pck`, and `Hologirl.json`.
+- `scripts/package.sh` uses Godot's headless `--export-pack` path by default because Hologirl ships `.tscn` scenes and Godot-imported resources. Set `HOLOGIRL_PCK_EXPORTER=quick` only for emergency simple-asset-only packages.
 - `scripts/godot-env.sh` centralizes local Godot, `.NET`, STS2 mods, and fontconfig environment setup. It prefers the shared `/mnt/HC_Volume_105232828/shared` toolchain and still allows `GODOT_BIN`, `DOTNET_ROOT`, `STS2_MODS_DIR`, and `HOLOGIRL_SHARED_ROOT` overrides.
 - `scripts/export-pck-godot.sh` is the direct Godot/MegaDot PCK export helper.
 - `scripts/godot-smoke-character-select.sh` runs the character-select scene smoke check through the same normalized Godot environment.
@@ -134,7 +134,7 @@ scripts/release.sh
 - `scripts/release.sh` uses `docs/releases/<version>.md` as the GitHub release changelog when that file exists.
 - `Hologirl.json` stores the plain semantic version without a leading `v`. GitHub release tags and release-note filenames keep the `v` prefix, and `scripts/release.sh` normalizes either input form to the tagged form.
 
-The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. Use the Godot/MegaDot export path when shipping vanilla-style character-select scenes, `GpuParticles2D`, or other resources that require Godot import metadata.
+The quick PCK packer supports simple assets such as PNG and JSON, but skips Godot scene files like `.tscn`. Do not use the quick path for releases that ship localization/assets alongside vanilla-style character-select scenes, `GpuParticles2D`, or other resources that require Godot import metadata; it can leave the installed PCK stale while the DLL is fresh.
 
 The shared toolchain has official Godot `4.5.1.stable.mono` installed at `/mnt/HC_Volume_105232828/shared/tools/godot/godot-4.5.1/Godot_v4.5.1-stable_mono_linux_x86_64/Godot_v4.5.1-stable_mono_linux.x86_64`. `scripts/godot-env.sh` also wires available Nix fontconfig files so headless Godot runs do not emit the previous missing `libfontconfig.so.1` warnings on this machine.
 
@@ -150,5 +150,5 @@ Hologirl should be conservative around shared game state and other mods.
 - Use mod-scoped ids and localization keys.
 - Prefer BaseLib's local content model APIs over global patches.
 - Avoid custom enum/keyword registration for glossary terms unless a real keyword behavior is needed. For now, `Shapeshift` is represented through a Hologirl-local tooltip power rather than a global `CardKeyword`.
-- Keep relic-specific behavior attached to the relic conceptually and in code. For example, `Livestream` shapeshifts, while `Prism Pendant` is responsible for adding the form-specific 0-cost card.
+- Keep relic-specific behavior attached to the relic conceptually and in code. The old `Prism Pendant` form-card reward path is disabled while Shapeshift is out of the active card implementation.
 - Before adding patches, global description overrides, custom piles, or other shared systems, document the collision risk and test with BaseLib plus at least one other character mod where possible.

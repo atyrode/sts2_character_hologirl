@@ -28,12 +28,11 @@ Hologirl can shift from her base hologram form into idol-inspired stances/forms:
 The stance loop:
 
 - Gain `Fans`.
-- Shapeshift into a random idol form with `Livestream`.
-- Maintaining a form consumes `Fans`.
-- If Hologirl cannot sustain the fan cost, she returns to base hologram form.
-- `Prism Pendant` creates a form-specific 0-cost card in hand when Hologirl shapeshifts.
+- Use `Livestream` to turn explicit combat triggers into more `Fans`.
+- Spend or preserve audience momentum through cards.
+- Shapeshift and Idol Forms are deferred prototype ideas, not active shipped mechanics.
 
-The exact benefits of having more fans are undecided. Fans may be a currency, scaling stat, maintenance cost, visual crowd meter, or some combination of those.
+The exact benefits of having more fans are still being refined. v0.4.1 spends Fans directly, but v0.4.2 should test more distinctive Livestream decisions rather than only bigger numbers.
 
 ## Starter Kit Direction
 
@@ -41,8 +40,7 @@ Initial starter deck direction:
 
 - 4 `Strike` cards.
 - 4 `Defend` cards.
-- `Concert!`
-- `Livestream`
+- 2 `Concert!`
 
 ## Weapon Direction
 
@@ -51,6 +49,12 @@ Hologirl's baseline weapon should be a light-whip: a flexible lash made from fai
 Starter card art should stay simple and iconic. `Strike` should mostly show the weapon in motion, with Hologirl only as a small or blurred supporting detail if needed. The composition should read as a basic attack at card size: a clean arc of yellow light cutting through the air, minimal background, strong silhouette, and restrained effects.
 
 The same weapon can support future animation: idle state with the light-whip loosely trailing or resting on the ground, attack state with a fast snapping lash.
+
+## Runtime Character Visual
+
+For v0.4.3, Hologirl starts with a Hologirl-owned pure Godot runtime visual instead of routing combat, merchant, and rest-site scenes through Ironclad. The first pass uses a full-body transparent sprite with a grounded golden light-whip and a simple idle bob/breathing script.
+
+This is a pragmatic first rig, not the final animation target. Vanilla-quality STS2 characters use Spine-backed Godot scenes; Hologirl can move to Spine or a better separated-parts rig later after the scene contract and art direction are stable.
 
 ## AI Card Art Direction
 
@@ -139,29 +143,32 @@ Initial concept:
 Initial concept:
 
 - Cost: 2
-- Shapeshift into a random idol form.
+- Rare Power.
+- Gain `Livestream`.
+- While active, using a Potion, fully blocking an attack, healing, applying a debuff, or dealing a large unblocked hit generates `Fans`.
 
-The form card specifics are not designed yet. The bonus form card is a `Prism Pendant` effect, not part of the base `Shapeshift` action.
+Longer-term visual direction: render a transparent live-stream chat overlay in combat, with colored pseudonyms and action-specific chat reactions. See `docs/design/cards/draftable/LIVESTREAM.md` for the confirmed design notes and open UI questions.
 
 ## Starting Relic Direction
 
-The starting relic should explain and support the transformation system.
+The starting relic is currently a placeholder and should be revisited.
 
 Current concept:
 
-- Theme: shapeshifting / idol projection / form switching.
-- When Hologirl shapeshifts, she gets a form-specific 0-cost card in hand.
-- The relic text should document this behavior.
+- Theme: hologram projection, live-audience focus, or a future rebuilt Shapeshift system.
+- The old form-specific 0-cost reward-card behavior is removed from the active source set.
+- The relic text should not advertise disabled Shapeshift behavior.
 
 The exact relic name, stats, icon, and form-card behavior are undecided.
 
 ## Term Dictionary
 
-- `Fans`: Hologirl's audience resource. Fans decay by 1 at end of turn unless Hologirl is Singing. Idol Forms spend Fans to stay active.
+- `Fans`: Hologirl's audience resource. Fans decay by half at end of turn unless Hologirl is Singing.
 - `Singing`: temporary protection from normal Fan decay.
-- `Shapeshift`: Hologirl's core ability. Shapeshifting enters an Idol Form. Idol Forms spend 1 Fan at end of turn to remain active; if Hologirl cannot pay, she returns to base form.
-- `Idol Form`: one of Hologirl's form powers. The form itself owns passive identity and upkeep text.
-- `Prism Pendant`: starter relic. This relic adds the form-specific 0-cost card when Hologirl Shapeshifts; that bonus card is not part of Shapeshift itself.
+- `Livestream`: Hologirl's signature power. It starts the chat overlay and gains Fans from explicitly listed combat events.
+- `Shapeshift`: deferred prototype mechanic, not part of the active card pool.
+- `Idol Form`: deferred prototype form concept.
+- `Prism Pendant`: starter relic placeholder. Its old form reward cards are removed until the relic is redesigned.
 
 ## Mod Compatibility Policy
 
@@ -175,12 +182,12 @@ Hologirl should aim to be highly compatible with other mods.
 
 ## Open Questions
 
-- What should `Fans` do besides paying form upkeep?
-- Should fan decay be linear, tiered, or based on current fan count?
+- What should `Fans` do besides simple number scaling?
+- Should Fan decay stay half-per-turn once more interesting Livestream mechanics exist?
 - How should fan loss be shown clearly enough that the player can predict it?
-- Does `Singing` pause all fan loss, reduce fan loss, or only pause passive decay while still allowing form upkeep?
+- Does `Singing` only preserve Fans, or should it affect Livestream/chat requests?
 - Is Shapeshift random among all forms, random among unlocked/available forms, or influenced by cards?
 - What does each idol form do mechanically?
 - Should forms behave like STS stances, Defect-style orb slots, powers, or a custom player state?
-- What should the first form-specific 0-cost card do?
+- Should `Chat Request` and `Clip` become real mechanics for v0.4.2?
 - How much Hololive-specific naming/art should remain in a public release?

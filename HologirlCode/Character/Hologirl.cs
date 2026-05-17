@@ -1,6 +1,7 @@
 ﻿using BaseLib.Abstracts;
 using BaseLib.Utils.NodeFactories;
 using Hologirl.HologirlCode.Cards.Basic;
+using Hologirl.HologirlCode.Cards.Draftable;
 using Hologirl.HologirlCode.Extensions;
 using Hologirl.HologirlCode.Relics;
 using Godot;
@@ -26,14 +27,14 @@ public class Hologirl : CustomCharacterModel
     public override bool AllowInVanillaRandomCharacterSelect => true;
     public override string CharacterSelectSfx => "";
 
-    // Hologirl has custom select/menu assets, but not a full run/combat rig yet.
-    // Keep this explicit while using CustomCharacterModel so missing run-start
-    // surfaces do not silently fall through template placeholder inheritance.
-    public override string CustomVisualPath => SceneHelper.GetScenePath($"creature_visuals/{TemporaryBaseCharacterId}");
+    // Hologirl owns first-pass Godot run visuals for combat/rest/merchant.
+    // Remaining Ironclad routes are explicit temporary fallbacks until matching
+    // Hologirl assets exist; this avoids passive placeholder inheritance.
+    public override string CustomVisualPath => $"{MainFile.ResPath}/scenes/creature_visuals/hologirl.tscn";
     public override string CustomTrailPath => SceneHelper.GetScenePath($"vfx/card_trail_{TemporaryBaseCharacterId}");
-    public override string CustomEnergyCounterPath => SceneHelper.GetScenePath($"combat/energy_counters/{TemporaryBaseCharacterId}_energy_counter");
-    public override string CustomRestSiteAnimPath => SceneHelper.GetScenePath($"rest_site/characters/{TemporaryBaseCharacterId}_rest_site");
-    public override string CustomMerchantAnimPath => SceneHelper.GetScenePath($"merchant/characters/{TemporaryBaseCharacterId}_merchant");
+    public override string CustomEnergyCounterPath => $"{MainFile.ResPath}/scenes/combat/energy_counters/hologirl_energy_counter.tscn";
+    public override string CustomRestSiteAnimPath => $"{MainFile.ResPath}/scenes/rest_site/characters/hologirl_rest_site.tscn";
+    public override string CustomMerchantAnimPath => $"{MainFile.ResPath}/scenes/merchant/characters/hologirl_merchant.tscn";
     public override string CustomArmPointingTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_point.png");
     public override string CustomArmRockTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_rock.png");
     public override string CustomArmPaperTexturePath => ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{TemporaryBaseCharacterId}_paper.png");
@@ -64,6 +65,7 @@ public class Hologirl : CustomCharacterModel
         ModelDb.Card<HoloDefend>(),
         ModelDb.Card<HoloDefend>(),
         ModelDb.Card<Concert>(),
+        // Temporary testing hook: keep Livestream immediately available while its combat overlay is under active iteration.
         ModelDb.Card<Livestream>()
     ];
 

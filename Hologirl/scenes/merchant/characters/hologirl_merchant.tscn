@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://hologirlmerchantcharacter"]
+
+[ext_resource type="Texture2D" path="res://Hologirl/images/character/hologirl_runtime.png" id="1_runtime"]
+[ext_resource type="Script" path="res://Hologirl/scenes/character/hologirl_runtime_visual.gd" id="2_idle"]
+
+[node name="HologirlMerchantCharacter" type="Node2D"]
+script = ExtResource("2_idle")
+visual_path = NodePath("Visuals")
+bob_pixels = 2.5
+bob_seconds = 2.8
+breathe_scale = 0.007
+
+[node name="Visuals" type="Node2D" parent="."]
+position = Vector2(0, 0)
+scale = Vector2(0.32, 0.32)
+
+[node name="Sprite" type="Sprite2D" parent="Visuals"]
+position = Vector2(0, -700)
+texture = ExtResource("1_runtime")
+centered = true
+
+[node name="CenterPos" type="Marker2D" parent="."]
+position = Vector2(0, -255)

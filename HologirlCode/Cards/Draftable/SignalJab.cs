@@ -2,6 +2,7 @@ using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Hologirl.HologirlCode.Character;
 using Hologirl.HologirlCode.Powers;
+using Hologirl.HologirlCode.UI.Livestream;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -17,7 +18,7 @@ public sealed class SignalJab() : HologirlCard(1, CardType.Attack, CardRarity.Co
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(7m, ValueProp.Move),
+        new DamageVar(6m, ValueProp.Move),
         new PowerVar<FansPower>(1)
     ];
 
@@ -26,10 +27,12 @@ public sealed class SignalJab() : HologirlCard(1, CardType.Attack, CardRarity.Co
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+        var spent = await SpendFans(2, LivestreamChatEvent.SignalJab);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + spent * 3).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
-        await ApplyOrIncreasePower<FansPower>(DynamicVars["FansPower"].IntValue);
+        if (spent == 0)
+            await ApplyOrIncreasePower<FansPower>(DynamicVars["FansPower"].IntValue);
     }
 
     protected override void OnUpgrade()

@@ -12,7 +12,7 @@ mkdir -p "$dist_dir"
 
 "$repo_root/scripts/build.sh"
 
-pck_exporter="${HOLOGIRL_PCK_EXPORTER:-quick}"
+pck_exporter="${HOLOGIRL_PCK_EXPORTER:-godot}"
 
 case "$pck_exporter" in
   quick)
