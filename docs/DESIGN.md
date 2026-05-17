@@ -5,6 +5,7 @@ Detailed design notes now live under `docs/design/`.
 - `docs/design/ART_DIRECTION.md` is the source of truth for AI art style and color rules.
 - `docs/design/ASSET_PIPELINE.md` documents card portrait sizes and naming.
 - `docs/design/GAMEPLAY_IDENTITY.md` documents the current combat fantasy and starter kit.
+- `docs/design/LIVESTREAM_CHAT_BEHAVIOR.md` documents the intended Livestream overlay micro-behaviors, fan scaling, recurring users, timing, message variety, and layout rules.
 - `docs/design/TERMINOLOGY.md` documents `Fans`, `Singing`, `Shapeshift`, `Idol Form`, and `Prism Pendant`.
 - `docs/design/cards/`, `docs/design/forms/`, `docs/design/effects/`, and `docs/design/relics/` hold per-item notes.
 

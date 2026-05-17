@@ -188,17 +188,31 @@ public readonly record struct LivestreamAudienceProfile(int FanAmount, int Tier,
         };
     }
 
-    public int RosterSize()
+    public int RecurringChatterCount()
     {
         return FanAmount switch
         {
-            <= 0 => 2,
+            <= 0 => 0,
             <= 4 => 1,
-            <= 7 => 2,
-            <= 13 => 4,
-            <= 27 => 8,
-            <= 45 => 14,
-            _ => 24
+            <= 8 => 2,
+            <= 14 => 3,
+            <= 24 => 5,
+            <= 40 => 8,
+            _ => Math.Min(18, Math.Max(10, FanAmount / 4))
+        };
+    }
+
+    public float RecurringChatterChance()
+    {
+        return FanAmount switch
+        {
+            <= 0 => 0f,
+            <= 4 => 0.18f,
+            <= 8 => 0.22f,
+            <= 14 => 0.26f,
+            <= 24 => 0.32f,
+            <= 40 => 0.38f,
+            _ => 0.46f
         };
     }
 

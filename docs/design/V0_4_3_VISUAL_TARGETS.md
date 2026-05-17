@@ -25,6 +25,52 @@ Vanilla combat characters are Godot scenes converted to `NCreatureVisuals`. The 
 
 BaseLib gives a lower-risk path for Hologirl: `CustomVisualPath` can point to a pure Godot scene and BaseLib will generate `NCreatureVisuals` from it. The v0.4.3 first pass uses this path instead of waiting for a full Spine pipeline.
 
+### Vanilla Scene Findings
+
+Confirmed locally from the packed `SlayTheSpire2.pck` on 2026-05-17 using `scripts/inspect-packed-scene.gd` and `scripts/inspect-packed-scene-details.gd`.
+
+The three inspected vanilla combat scenes share the same contract:
+
+- Root node: `Node2D`.
+- `Visuals`: `SpineSprite`, not a normal PNG sprite. This is why vanilla characters have separated-body animation and a true idle pose.
+- `Bounds`: `Control`. This is not optional for BaseLib auto-conversion; using `Marker2D` caused `Node factory for NCreatureVisuals does not support conversion of Marker2D 'Bounds' to Control`.
+- `CenterPos`: `Marker2D`.
+- `IntentPos`: `Marker2D`.
+
+Observed layout values:
+
+| Character | Visuals position | Visuals scale | Bounds left/right | Bounds top | CenterPos | IntentPos |
+| --- | --- | --- | --- | --- | --- | --- |
+| Ironclad | `(5, -22)` | `(0.28, 0.28)` | `-121 / 121` | `-280` | `(0, -165)` | `(20, -351)` |
+| Silent | `(16, -21)` | `(0.29, 0.29)` | `-122 / 122` | `-244` | `(0, -146)` | `(0, -302)` |
+| Defect | `(1, -31)` | `(0.125, 0.125)` | `-125 / 125` | `-260` | `(3, -181)` | `(-2, -362)` |
+
+Hologirl v0.4.4 first-pass layout is much taller:
+
+- `Visuals` position: `(0, -120)`.
+- `Visuals` scale: `(0.36, 0.36)`.
+- `Sprite` position: `(0, -520)`.
+- `Bounds`: `-155 / 155`, top `-540`, bottom `35`.
+- `CenterPos`: `(0, -260)`.
+- `IntentPos`: `(0, -520)`.
+
+This explains the current in-combat feedback: Hologirl is too large and offset relative to the health bar and vanilla intent marker band. Before polishing animation, the next visual pass should first bring Hologirl's bounds and marker positions close to the vanilla range, then iterate on the animation technique.
+
+### Animation Path Options
+
+Confirmed:
+
+- Vanilla-quality animation uses Spine assets through Godot `SpineSprite`.
+- A single PNG with a bob script is not equivalent to vanilla. It can move, but it cannot produce the separated-part idle motion seen on vanilla characters.
+- BaseLib can convert a pure Godot scene if the node contract matches what `NCreatureVisuals` expects.
+
+Pragmatic staged path:
+
+1. Calibrate the current PNG scene to vanilla bounds/markers so health bar, intent, and body placement are correct.
+2. Split Hologirl into layered transparent body-part PNGs if we want a repo-native rig without Spine. Animate those with Godot `Node2D` transforms for head, torso, arms, hair, and whip. This will be less powerful than Spine but much closer to vanilla idle motion than one full-body PNG.
+3. Research a Spine export path only if we are ready to maintain `.skel`/`.atlas` assets and can confirm mod PCK export/import compatibility with the STS2 Spine runtime.
+4. Once the combat rig is stable, reuse or adapt it for merchant/rest scenes instead of making unrelated poses first.
+
 Implemented staging:
 
 1. First pass: `Hologirl/scenes/creature_visuals/hologirl.tscn`, a Hologirl-owned Godot `Node2D` creature scene with `Visuals`, a `Control` `Bounds` child, and `Marker2D` `CenterPos` and `IntentPos` children. `Bounds` must stay a `Control`; BaseLib's `NCreatureVisuals` auto-converter fails if it is authored as `Marker2D`.

@@ -7,8 +7,9 @@ public static class LivestreamChatCatalog
     private static readonly Queue<string> RecentMessages = [];
     private static readonly HashSet<string> RecentMessageLookup = [];
     private static LivestreamAudienceProfile audienceProfile = LivestreamAudienceProfile.FromFanAmount(0);
-    private static int rosterSize = 2;
-    private static LivestreamChatter[] activeRoster = [];
+    private static int recurringChatterCount;
+    private static LivestreamChatter[] recurringChatters = [];
+    private static string? lastUsername;
 
     private static readonly string[] EmoteCodes =
     [
@@ -31,14 +32,15 @@ public static class LivestreamChatCatalog
     public static void SetAudienceProfile(LivestreamAudienceProfile profile)
     {
         audienceProfile = profile;
-        var nextRosterSize = Math.Clamp(profile.RosterSize(), 1, Chatters.Length);
-        if (nextRosterSize == rosterSize && activeRoster.Length > 0)
+        var nextRecurringChatterCount = Math.Clamp(profile.RecurringChatterCount(), 0, Chatters.Length);
+        if (nextRecurringChatterCount == recurringChatterCount &&
+            (recurringChatters.Length > 0 || nextRecurringChatterCount == 0))
             return;
 
-        rosterSize = nextRosterSize;
-        activeRoster = Chatters
+        recurringChatterCount = nextRecurringChatterCount;
+        recurringChatters = Chatters
             .OrderBy(_ => Random.Shared.Next())
-            .Take(rosterSize)
+            .Take(recurringChatterCount)
             .ToArray();
     }
 
@@ -2358,18 +2360,29 @@ public static class LivestreamChatCatalog
 
     private static LivestreamChatLine CreateLine(string message, string? excludedUsername = null)
     {
-        if (activeRoster.Length == 0)
+        if (recurringChatters.Length == 0 && audienceProfile.RecurringChatterCount() > 0)
             SetAudienceProfile(audienceProfile);
 
-        var roster = activeRoster.Length > 0 ? activeRoster : Chatters;
+        var useRecurringChatter = recurringChatters.Length > 0 &&
+            Random.Shared.NextSingle() < audienceProfile.RecurringChatterChance();
+        var roster = useRecurringChatter ? recurringChatters : Chatters;
         var chatter = roster[Random.Shared.Next(roster.Length)];
-        for (var attempt = 0; attempt < 8 && chatter.Username == excludedUsername; attempt++)
+        for (var attempt = 0; attempt < 12 && IsBlockedChatter(chatter, useRecurringChatter, excludedUsername); attempt++)
             chatter = roster[Random.Shared.Next(roster.Length)];
 
+        var username = useRecurringChatter ? $"*{chatter.Username}" : chatter.Username;
+        lastUsername = username;
+
         return new LivestreamChatLine(
-            chatter.Username,
+            username,
             chatter.Color,
             MaybeDecorateWithEmote(message));
+    }
+
+    private static bool IsBlockedChatter(LivestreamChatter chatter, bool recurring, string? excludedUsername)
+    {
+        var username = recurring ? $"*{chatter.Username}" : chatter.Username;
+        return username == excludedUsername || chatter.Username == excludedUsername || username == lastUsername;
     }
 
     private static string MaybeDecorateWithEmote(string message)
