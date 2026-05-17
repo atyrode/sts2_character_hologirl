@@ -167,3 +167,15 @@ Confirmed next steps:
 - Find or build the matching `spine-godot` editor extension/import plugin for the Godot version used by STS2.
 - Once the importer exists locally, test whether committed `.skel`, `.atlas`, `.png`, `.import`, `.tres`, and `.tscn` files export cleanly in this repo.
 - If the editor importer remains unavailable, the operator will need to provide Spine-exported binary assets from an environment where the plugin is installed.
+
+Follow-up result:
+
+- Official public `spine-godot` artifacts exist for Spine branch `4.2` and Godot `4.5.1-stable` at `https://spine-godot.s3.amazonaws.com/4.2/4.5.1-stable/spine-godot-extension-4.2-4.5.1-stable.zip`.
+- Installing that package locally under ignored `addons/spine/` makes the headless Godot project recognize `SpineSprite`, `SpineSkeletonDataResource`, `SpineSkeletonFileResource`, and `SpineAtlasResource`.
+- The local addon is an export/editor aid only. `export_presets.cfg` excludes `addons/*` so Hologirl does not ship another Spine extension inside its PCK. Remove it before normal package/release runs unless actively testing Spine, because the GDExtension crashed headless Godot on shutdown after export on this machine.
+- Raw `.atlas` and `.spine-json` files are not enough by themselves. They need Godot `.import` remaps to generated `.spatlas` and `.spjson` files, matching the layout used by `STS2-Buu` and official `spine-godot` examples.
+- A temporary proof loaded successfully after manually providing `.atlas.import`, `.spine-json.import`, copied `.spatlas/.spjson` generated targets, `SpineSkeletonDataResource`, and a `SpineSprite` scene.
+
+Practical implication:
+
+- The final Hologirl model can use the vanilla `SpineSprite` path without waiting for a full local Spine Editor install, but source assets still need to be exported from Spine-compatible data. Binary `.skel` remains preferred over JSON because vanilla and the current working STS2 character reference both use `.skel`.
