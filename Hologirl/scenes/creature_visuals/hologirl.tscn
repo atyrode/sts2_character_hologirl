@@ -11,22 +11,22 @@ bob_seconds = 2.6
 breathe_scale = 0.009
 
 [node name="Visuals" type="Node2D" parent="."]
-position = Vector2(0, -120)
-scale = Vector2(0.36, 0.36)
+position = Vector2(0, -22)
+scale = Vector2(0.2, 0.2)
 
 [node name="Sprite" type="Sprite2D" parent="Visuals"]
-position = Vector2(0, -520)
+position = Vector2(0, -533)
 texture = ExtResource("1_runtime")
 centered = true
 
 [node name="Bounds" type="Control" parent="."]
-offset_left = -155.0
-offset_top = -540.0
-offset_right = 155.0
-offset_bottom = 35.0
+offset_left = -120.0
+offset_top = -285.0
+offset_right = 120.0
+offset_bottom = 25.0
 
 [node name="CenterPos" type="Marker2D" parent="."]
-position = Vector2(0, -260)
+position = Vector2(0, -160)
 
 [node name="IntentPos" type="Marker2D" parent="."]
-position = Vector2(0, -520)
+position = Vector2(10, -340)

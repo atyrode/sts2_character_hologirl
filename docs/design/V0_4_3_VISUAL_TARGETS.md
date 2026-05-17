@@ -79,6 +79,17 @@ Implemented staging:
 4. Rest and merchant scenes route through the same runtime sprite at `Hologirl/scenes/rest_site/characters/hologirl_rest_site.tscn` and `Hologirl/scenes/merchant/characters/hologirl_merchant.tscn`.
 5. Keep the vanilla Spine route as the preferred final upgrade. The current PNG rig is only a temporary owned-asset bridge until Hologirl has side-facing Spine assets.
 
+v0.4.6 combat calibration:
+
+- `Visuals` position: `(0, -22)`.
+- `Visuals` scale: `(0.2, 0.2)`.
+- `Sprite` position: `(0, -533)`.
+- `Bounds`: `-120 / 120`, top `-285`, bottom `25`.
+- `CenterPos`: `(0, -160)`.
+- `IntentPos`: `(10, -340)`.
+
+This intentionally puts the temporary PNG model into the same vertical band as the inspected vanilla characters. It does not solve the final front-facing pose problem; that belongs to the side-facing Spine source-art pass.
+
 Open validation:
 
 - Confirm BaseLib preserves the GDScript idle animation when converting these pure Godot scenes into `NCreatureVisuals`, `NRestSiteCharacter`, and `NMerchantCharacter`.
