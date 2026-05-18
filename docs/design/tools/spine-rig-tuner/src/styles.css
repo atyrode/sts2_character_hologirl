@@ -117,6 +117,12 @@
       background: #1f222a;
     }
 
+    button.panel-toggle:not(.is-collapsed) {
+      background: #34406f;
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
     main {
       display: grid;
       grid-template-columns: var(--source-track, var(--source-width, minmax(440px, 1fr))) var(--source-pose-gutter, 7px) var(--pose-track, var(--pose-width, minmax(440px, 1fr))) var(--pose-side-gutter, 7px) var(--editor-track, var(--editor-width, minmax(320px, 380px))) var(--editor-side-gutter, 7px) var(--side-track, var(--side-width, 360px));
@@ -234,21 +240,6 @@
       grid-area: side;
     }
 
-    .collapse-button {
-      width: 30px;
-      height: 30px;
-      min-width: 30px;
-      padding: 5px;
-    }
-
-    .collapse-button svg {
-      transition: transform .14s ease;
-    }
-
-    .collapse-button.is-collapsed svg {
-      transform: rotate(-90deg);
-    }
-
     .side-panel.collapsed,
     .asset-editor-panel.collapsed {
       overflow: hidden;
@@ -259,7 +250,7 @@
     .asset-editor-panel.collapsed .toolbar .hint,
     .asset-library.collapsed .toolbar strong,
     .asset-library.collapsed .toolbar .hint,
-    .workspace-section.collapsed .toolbar .toolbar-group:first-child > :not(.collapse-button) {
+    .workspace-section.collapsed .toolbar .toolbar-group:first-child > * {
       display: none;
     }
 
@@ -408,6 +399,38 @@
       display: none !important;
     }
 
+    .fixed-panel-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .selected-part-panel {
+      display: grid;
+      gap: 10px;
+      margin: 10px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .placed-parts-panel {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      margin: 0 10px 10px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .018);
+    }
+
+    .parts-title {
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      background: #1f222a;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -449,6 +472,10 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .number-grid.transform-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
     .button-row {
       display: flex;
       gap: 8px;
@@ -464,8 +491,38 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .button-grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
     .button-grid .icon-button {
       width: 100%;
+    }
+
+    .grid-button-cell {
+      display: flex;
+      align-items: end;
+      min-width: 0;
+    }
+
+    .new-grid-row {
+      grid-column-start: 1;
+    }
+
+    .grid-button-cell .icon-button {
+      width: 100%;
+    }
+
+    .asset-details-grid {
+      margin-bottom: 12px;
+    }
+
+    .asset-brush-grid {
+      margin-top: 12px;
+    }
+
+    .grid-spacer {
+      min-width: 0;
     }
 
     .tool-button {
@@ -502,7 +559,7 @@
 
     .part-row {
       display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: minmax(0, 1fr) auto auto auto auto auto;
       gap: 8px;
       align-items: center;
       padding: 8px;
@@ -533,6 +590,8 @@
     }
 
     .part-row button:hover { color: var(--text); }
+
+    .part-row button.danger:hover { color: #ff8585; }
 
     .asset-editor-preview {
       width: 100%;
@@ -576,6 +635,17 @@
       resize: vertical;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 12px;
+    }
+
+    .hidden-json-buffer {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .status {

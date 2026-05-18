@@ -12,7 +12,7 @@ import { SHEET_OPTIONS } from "./sheetOptions.js";
 
 function PanelToggle({ target, children }) {
   return (
-    <button className="panel-toggle" data-panel-toggle={target}>
+    <button className="panel-toggle" data-panel-toggle={target} data-panel-label={children}>
       {children}
     </button>
   );
@@ -53,7 +53,7 @@ export function AppHeader() {
       </div>
 
       <div className="toolbar-group">
-        <span className="toolbar-group-label">Panels</span>
+        <span className="toolbar-group-label">Show / Hide</span>
         <PanelToggle target="sourceSection">Source</PanelToggle>
         <PanelToggle target="poseSection">Pose</PanelToggle>
         <PanelToggle target="assetEditorPanel">Editor</PanelToggle>

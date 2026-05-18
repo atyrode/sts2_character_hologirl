@@ -26,7 +26,7 @@ Workflow:
 3. Click `Create Asset` or `Create Overlay Asset`. This creates a reusable asset in the bottom Asset Library.
 4. Alternatively, use `Extract Sheet` with Alpha Preview on to automatically split the transparent sheet into connected cutout assets. Auto-extracted assets are named `auto_001`, `auto_002`, etc. and should be renamed/assigned semantic slots as needed.
 5. Drag an asset from the Asset Library onto Pose Preview to place it in the assembled pose.
-6. Select a library asset to rename it, assign its semantic slot, adjust its crop, erase or restore stray alpha pixels, or trim it to visible pixels in the `Asset Editor` panel.
+6. Select a placed part or a library asset to rename it, assign its semantic slot, adjust its crop, erase or restore stray alpha pixels, or trim it to visible pixels in the `Asset Editor` panel. Placed-part edits affect only that pose instance.
 7. Select placed parts in the list or on the pose canvas.
 8. Adjust x, y, rotation, scale, horizontal/vertical flip, z-order, opacity, brightness, and pivot.
 9. Export JSON and send it back for conversion into the Spine skeleton.
@@ -42,17 +42,15 @@ Overlap workflow:
 
 Tool controls:
 
-- The top meta bar is grouped by sheet selection, repo/browser saves, JSON import/export, and panel visibility toggles, including a dedicated `Editor` panel for selected library assets.
+- The top meta bar is grouped by sheet selection, repo/browser saves, JSON import/export, and panel visibility toggles, including a dedicated `Editor` panel for selected placed parts or library assets.
 - Source crop tools are grouped by crop mode, part creation, and crop clearing.
 - `Extract Sheet` scans the currently loaded transparent sheet and creates one library asset per connected opaque island. It is a convenience pass, not semantic labeling; small touching pieces may need manual cleanup.
 - The Asset Library is an independent full-width bottom row. It stores cropped assets separately from placed pose parts and remains usable even when Source, Pose, or Settings are hidden.
 - Click an asset to select it. Use its trash button, Delete, or Backspace to remove it from the library. Deleting a library asset does not delete placed pose parts already made from it.
-- The `Asset Editor` panel is the canonical place to edit reusable asset identity. Set asset name and slot there, then use crop fields for small bounds changes, paint the preview in erase/restore mode for stray pixels, Undo/Redo for alpha/crop edits, `Trim Visible` to tighten the crop to the remaining alpha, and `Reset Alpha` to discard brush edits.
+- The `Asset Editor` panel edits the selected placed part first, or the selected library asset when no placed part is selected. Editing a placed part lets you clean up one pose instance without changing every copy made from the same library asset. Use the save-to-library button to turn the selected placed part back into a reusable asset.
 - The Asset Library is a horizontal tray. Mouse wheel scrolling over it moves left/right, and cards scale to the available tray height to avoid vertical scrolling.
-- Source, Pose, Asset Library, and Settings can be collapsed with their chevron buttons or the top `Panels` toggles. Collapsed panels leave the workspace entirely; use the top toggles to bring them back.
+- Source, Pose, Asset Library, Editor, and Settings can be shown or hidden from the top `Show / Hide` controls. Hidden panels leave the workspace entirely.
 - The workspace uses explicit grid areas for Source, Pose, Settings, and Assets so each panel keeps its own layout slot across visibility combinations.
-- Alpha preview and reset pose live in the pose preview toolbar because they affect the assembled pose view.
-- The `Advanced JSON` settings panel is collapsed by default. It is only needed for manual JSON import/export handoff or debugging; normal work should use repo saves or named browser saves.
 - Ctrl + mouse wheel zooms the source and pose canvases independently.
 - Drag the vertical dividers to resize the source, pose, and control panels.
 - Ctrl+C and Ctrl+V copy and paste the selected part when focus is not inside a form field.
@@ -60,10 +58,9 @@ Tool controls:
 - Right-click the source canvas to clear the current rectangle or polygon crop.
 - `Close Polygon` finalizes the current polygon bounds before creating a part. Creating a part also works once the polygon has at least three points, but closing it makes the active crop explicit.
 - Lock prevents a part from moving or being transformed until unlocked.
-- The eye control in the parts list hides or shows a part without deleting it.
+- Placed-part rows include show/hide, lock/unlock, duplicate, and delete controls so list actions stay next to the part they affect.
 - Flip X and Flip Y mirror the selected placed part in the pose preview without modifying the underlying library asset.
 - Opacity and brightness can be adjusted per part to test depth, such as making the far ponytail darker.
 - Hover any numeric selected-part field and use the mouse wheel to nudge it. Shift scrolls faster; Ctrl scrolls more finely.
 - Repo saves live in `docs/design/tools/spine-rig-tuner/saves/`. The tool can read committed saves from `saves/index.json` when served over HTTP. Click `Repo Folder` and choose that `saves/` folder to let Save/Delete write JSON files directly into the repo working tree through the browser file picker.
 - Named browser saves remain available as fallback local browser storage. If the save-name field is empty, the tool generates a sheet/timestamp name. Export JSON remains the portable handoff format.
-- Right-side panels can be collapsed by clicking their header.

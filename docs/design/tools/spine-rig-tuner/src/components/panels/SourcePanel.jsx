@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Scissors, Sparkles, WandSparkles, X } from "lucide-react";
+import { Check, Scissors, Sparkles, WandSparkles, X } from "lucide-react";
 import { IconButton } from "../IconButton.jsx";
 
 export function SourcePanel() {
@@ -6,7 +6,6 @@ export function SourcePanel() {
     <section className="workspace-section source-section" id="sourceSection">
       <div className="toolbar compact">
         <div className="toolbar-group">
-          <IconButton className="collapse-button" data-collapse-target="sourceSection" icon={ChevronDown} label="Collapse source panel" />
           <span className="toolbar-group-label">Crop</span>
           <select id="selectionMode" title="Selection mode">
             <option value="rect">Rectangle</option>

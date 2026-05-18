@@ -221,9 +221,7 @@ const sheets = {
 
     const partButtons = {
       flipX: document.getElementById("flipXButton"),
-      flipY: document.getElementById("flipYButton"),
-      visible: document.getElementById("visibleButton"),
-      locked: document.getElementById("lockedButton")
+      flipY: document.getElementById("flipYButton")
     };
 
     let sourceImage = new Image();
@@ -288,12 +286,18 @@ const sheets = {
       return `part-${Date.now()}-${idCounter}`;
     }
 
+    function finiteNumber(value, fallback = 0) {
+      const numeric = Number(value);
+      return Number.isFinite(numeric) ? numeric : fallback;
+    }
+
     function iconSvg(name) {
       const icons = {
         eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
         eyeOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 2 20 20"/><path d="M6.7 6.7C3.7 8.6 2 12 2 12s3.5 7 10 7c1.8 0 3.3-.5 4.6-1.2"/><path d="M19.4 15.4C21.1 13.8 22 12 22 12s-3.5-7-10-7c-.9 0-1.8.1-2.6.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>',
         lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
         unlock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.5-2.2"/></svg>',
+        copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>',
         trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 16H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'
       };
       return icons[name] || "";
@@ -494,11 +498,13 @@ const sheets = {
     }
 
     function drawPart(part) {
+      const rotation = finiteNumber(part.rotation);
+      const scale = finiteNumber(part.scale, 1);
       poseCtx.save();
       poseCtx.translate(part.x, part.y);
-      poseCtx.rotate(part.rotation * Math.PI / 180);
-      const scaleX = (part.flipX ? -1 : 1) * part.scale;
-      const scaleY = (part.flipY ? -1 : 1) * part.scale;
+      poseCtx.rotate(rotation * Math.PI / 180);
+      const scaleX = (part.flipX ? -1 : 1) * scale;
+      const scaleY = (part.flipY ? -1 : 1) * scale;
       poseCtx.scale(scaleX, scaleY);
       poseCtx.globalAlpha = part.opacity ?? 1;
       poseCtx.filter = `brightness(${part.brightness ?? 1})`;
@@ -516,11 +522,11 @@ const sheets = {
       poseCtx.filter = "none";
       if (selectedPartIds.has(part.id)) {
         poseCtx.strokeStyle = part.id === selectedId ? "#90a8ff" : "#8ee6b2";
-        poseCtx.lineWidth = 3 / Math.max(0.01, Math.abs(part.scale));
+        poseCtx.lineWidth = 3 / Math.max(0.01, Math.abs(scale));
         poseCtx.strokeRect(-part.pivotX, -part.pivotY, part.crop.w, part.crop.h);
         poseCtx.fillStyle = "#ffcf66";
         poseCtx.beginPath();
-        poseCtx.arc(0, 0, 6 / Math.max(0.01, part.scale), 0, Math.PI * 2);
+        poseCtx.arc(0, 0, 6 / Math.max(0.01, scale), 0, Math.PI * 2);
         poseCtx.fill();
       }
       poseCtx.restore();
@@ -592,6 +598,29 @@ const sheets = {
 
     function selectedAsset() {
       return assets.find(asset => asset.id === selectedAssetId) || null;
+    }
+
+    function selectedEditableAsset() {
+      return selectedPart() || selectedAsset();
+    }
+
+    function selectedEditableKind() {
+      if (selectedPart()) return "part";
+      if (selectedAsset()) return "asset";
+      return null;
+    }
+
+    function selectedEditableImage(item = selectedEditableAsset()) {
+      if (!item) return null;
+      return selectedEditableKind() === "part"
+        ? partImages.get(item.id)
+        : assetImages.get(item.id);
+    }
+
+    function rebuildEditableImage(item) {
+      if (!item) return;
+      if (selectedEditableKind() === "part") rebuildPartImage(item);
+      else rebuildAssetImage(item);
     }
 
     function clampAssetCrop(asset) {
@@ -682,13 +711,20 @@ const sheets = {
       asset.crop = { ...state.crop };
       asset.mask = state.mask ? JSON.parse(JSON.stringify(state.mask)) : null;
       asset.alphaMask = state.alphaMask ? JSON.parse(JSON.stringify(state.alphaMask)) : null;
-      rebuildAssetImage(asset);
+      rebuildEditableImage(asset);
       renderAssetLibrary();
+      renderPartsList();
       drawAssetEditor();
+      drawPose();
       scheduleAutosave();
     }
 
-    function resetAssetHistory(assetId = selectedAssetId) {
+    function editableHistoryId(item = selectedEditableAsset()) {
+      const kind = selectedEditableKind();
+      return item && kind ? `${kind}:${item.id}` : null;
+    }
+
+    function resetAssetHistory(assetId = editableHistoryId()) {
       assetHistoryId = assetId || null;
       assetUndoStack = [];
       assetRedoStack = [];
@@ -697,7 +733,8 @@ const sheets = {
 
     function pushAssetUndo(asset) {
       if (!asset) return;
-      if (assetHistoryId !== asset.id) resetAssetHistory(asset.id);
+      const historyId = editableHistoryId(asset);
+      if (assetHistoryId !== historyId) resetAssetHistory(historyId);
       assetUndoStack.push(cloneAssetEditState(asset));
       if (assetUndoStack.length > 60) assetUndoStack.shift();
       assetRedoStack = [];
@@ -705,7 +742,7 @@ const sheets = {
     }
 
     function undoAssetEdit() {
-      const asset = selectedAsset();
+      const asset = selectedEditableAsset();
       if (!asset || !assetUndoStack.length) return;
       assetRedoStack.push(cloneAssetEditState(asset));
       restoreAssetEditState(asset, assetUndoStack.pop());
@@ -714,7 +751,7 @@ const sheets = {
     }
 
     function redoAssetEdit() {
-      const asset = selectedAsset();
+      const asset = selectedEditableAsset();
       if (!asset || !assetRedoStack.length) return;
       assetUndoStack.push(cloneAssetEditState(asset));
       restoreAssetEditState(asset, assetRedoStack.pop());
@@ -725,10 +762,18 @@ const sheets = {
     function updateAssetHistoryButtons() {
       const undoButton = document.getElementById("undoAssetEdit");
       const redoButton = document.getElementById("redoAssetEdit");
+      const promoteButton = document.getElementById("promotePartAsset");
+      const deleteButton = document.getElementById("deleteAssetPanel");
       if (!undoButton || !redoButton) return;
-      const hasAsset = Boolean(selectedAsset());
+      const kind = selectedEditableKind();
+      const hasAsset = Boolean(selectedEditableAsset());
       undoButton.disabled = !hasAsset || assetUndoStack.length === 0;
       redoButton.disabled = !hasAsset || assetRedoStack.length === 0;
+      if (promoteButton) promoteButton.disabled = kind !== "part";
+      if (deleteButton) {
+        deleteButton.title = kind === "part" ? "Delete selected placed part" : "Delete selected library asset";
+        deleteButton.setAttribute("aria-label", deleteButton.title);
+      }
     }
 
     function assetEditorPoint(event) {
@@ -743,7 +788,7 @@ const sheets = {
     }
 
     function paintAssetMask(point) {
-      const asset = selectedAsset();
+      const asset = selectedEditableAsset();
       if (!asset || !point) return;
       clampAssetCrop(asset);
       if (point.x < 0 || point.y < 0 || point.x >= asset.crop.w || point.y >= asset.crop.h) return;
@@ -764,22 +809,24 @@ const sheets = {
       }
 
       asset.alphaMask = visibilityToRowSpans(visible, asset.crop.w, asset.crop.h);
-      rebuildAssetImage(asset);
+      rebuildEditableImage(asset);
       renderAssetLibrary();
+      renderPartsList();
       drawAssetEditor();
+      drawPose();
       scheduleAutosave();
     }
 
     function drawAssetEditor() {
       assetEditorCtx.clearRect(0, 0, assetEditorCanvas.width, assetEditorCanvas.height);
-      const asset = selectedAsset();
+      const asset = selectedEditableAsset();
       Object.values(assetInputs).forEach(input => input.disabled = !asset);
       assetEditorView = null;
       updateAssetHistoryButtons();
       if (!asset) {
         assetEditorCtx.fillStyle = "#aab0c0";
         assetEditorCtx.textAlign = "center";
-        assetEditorCtx.fillText("Select an asset to edit", assetEditorCanvas.width / 2, assetEditorCanvas.height / 2);
+        assetEditorCtx.fillText("Select a placed part or library asset", assetEditorCanvas.width / 2, assetEditorCanvas.height / 2);
         return;
       }
 
@@ -791,7 +838,7 @@ const sheets = {
       assetInputs.cropW.value = asset.crop.w;
       assetInputs.cropH.value = asset.crop.h;
 
-      const image = assetImages.get(asset.id) || buildCutoutImage(asset);
+      const image = selectedEditableImage(asset) || buildCutoutImage(asset);
       if (!image) return;
       const padding = 12;
       const scale = Math.min(
@@ -815,6 +862,7 @@ const sheets = {
       selectedPartIds = new Set(ids);
       selectedId = primaryId && selectedPartIds.has(primaryId) ? primaryId : ids[0] || null;
       selectedAssetId = null;
+      resetAssetHistory(selectedId ? `part:${selectedId}` : null);
       syncInputs();
       renderPartsList();
       drawPose();
@@ -824,6 +872,7 @@ const sheets = {
       selectedId = null;
       selectedPartIds = new Set();
       selectedAssetId = null;
+      resetAssetHistory(null);
       syncInputs();
       renderPartsList();
       drawPose();
@@ -833,7 +882,7 @@ const sheets = {
       selectedAssetId = assetId;
       selectedId = null;
       selectedPartIds = new Set();
-      resetAssetHistory(assetId);
+      resetAssetHistory(`asset:${assetId}`);
       setPanelCollapsed("assetEditorPanel", false);
       syncInputs();
       renderAssetLibrary();
@@ -845,7 +894,7 @@ const sheets = {
       selectedAssetId = assetId;
       selectedId = null;
       selectedPartIds = new Set();
-      resetAssetHistory(assetId);
+      resetAssetHistory(`asset:${assetId}`);
       syncInputs();
       renderPartsList();
       drawPose();
@@ -859,20 +908,6 @@ const sheets = {
       if (!part) return;
       partButtons.flipX.classList.toggle("is-active", Boolean(part.flipX));
       partButtons.flipY.classList.toggle("is-active", Boolean(part.flipY));
-      partButtons.visible.classList.toggle("is-active", part.visible !== false);
-      partButtons.locked.classList.toggle("is-active", Boolean(part.locked));
-      partButtons.visible.title = part.visible === false ? "Show selected part" : "Hide selected part";
-      partButtons.visible.setAttribute("aria-label", partButtons.visible.title);
-      partButtons.locked.title = part.locked ? "Unlock selected part" : "Lock selected part";
-      partButtons.locked.setAttribute("aria-label", partButtons.locked.title);
-    }
-
-    function updateAlphaPreviewButton() {
-      const button = document.getElementById("toggleAlpha");
-      button.classList.toggle("is-active", alphaPreview);
-      button.title = `${alphaPreview ? "Hide" : "Show"} transparent source sheets in pose preview`;
-      button.setAttribute("aria-label", `Alpha preview ${alphaPreview ? "on" : "off"}`);
-      button.setAttribute("aria-pressed", String(alphaPreview));
     }
 
     function syncInputs() {
@@ -881,6 +916,15 @@ const sheets = {
       Object.values(inputs).forEach(input => input.disabled = !part);
       syncPartButtons(part);
       if (!part) return;
+      part.x = finiteNumber(part.x);
+      part.y = finiteNumber(part.y);
+      part.rotation = finiteNumber(part.rotation);
+      part.scale = finiteNumber(part.scale, 1);
+      part.pivotX = finiteNumber(part.pivotX);
+      part.pivotY = finiteNumber(part.pivotY);
+      part.z = finiteNumber(part.z);
+      part.opacity = finiteNumber(part.opacity, 1);
+      part.brightness = finiteNumber(part.brightness, 1);
       inputs.x.value = Math.round(part.x);
       inputs.y.value = Math.round(part.y);
       inputs.rotation.value = Number(part.rotation.toFixed(2));
@@ -888,8 +932,8 @@ const sheets = {
       inputs.pivotX.value = Math.round(part.pivotX);
       inputs.pivotY.value = Math.round(part.pivotY);
       inputs.z.value = part.z;
-      inputs.opacity.value = part.opacity ?? 1;
-      inputs.brightness.value = part.brightness ?? 1;
+      inputs.opacity.value = part.opacity;
+      inputs.brightness.value = part.brightness;
       ["x", "y", "rotation", "scale", "pivotX", "pivotY"].forEach(key => {
         inputs[key].disabled = Boolean(part.locked);
       });
@@ -932,8 +976,30 @@ const sheets = {
           setSelectedParts([part.id], part.id);
           scheduleAutosave();
         };
+        const duplicateButton = document.createElement("button");
+        duplicateButton.type = "button";
+        duplicateButton.className = "icon-button";
+        duplicateButton.title = "Duplicate part";
+        duplicateButton.setAttribute("aria-label", "Duplicate part");
+        duplicateButton.innerHTML = iconSvg("copy");
+        duplicateButton.onclick = event => {
+          event.stopPropagation();
+          duplicatePart(part);
+        };
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "icon-button danger";
+        deleteButton.title = "Delete part";
+        deleteButton.setAttribute("aria-label", "Delete part");
+        deleteButton.innerHTML = iconSvg("trash");
+        deleteButton.onclick = event => {
+          event.stopPropagation();
+          deleteSelectedPart(part.id);
+        };
         row.append(visibilityButton);
         row.append(lockButton);
+        row.append(duplicateButton);
+        row.append(deleteButton);
         row.onclick = () => setSelectedParts([part.id], part.id);
         partsList.append(row);
       });
@@ -1057,8 +1123,7 @@ const sheets = {
         activeSheet = sheetKey;
         sheetSelect.value = sheetKey;
       }
-      alphaPreview = payload.alphaPreview !== false;
-      updateAlphaPreviewButton();
+      alphaPreview = true;
       assets = (payload.assets || []).map(asset => ({ id: makeId(), ...asset }));
       parts = (payload.parts || []).map(part => ({
         id: makeId(),
@@ -1567,6 +1632,7 @@ const sheets = {
         setSelectedParts([hit.id], hit.id);
       } else {
         selectedId = hit.id;
+        resetAssetHistory(`part:${hit.id}`);
         syncInputs();
         renderPartsList();
         drawPose();
@@ -1712,6 +1778,7 @@ const sheets = {
       rebuildPartImage(copy);
       selectedId = copy.id;
       selectedAssetId = null;
+      resetAssetHistory(`part:${copy.id}`);
       syncInputs();
       renderPartsList();
       drawPose();
@@ -1746,6 +1813,7 @@ const sheets = {
       rebuildPartImage(part);
       selectedId = part.id;
       selectedAssetId = null;
+      resetAssetHistory(`part:${part.id}`);
       syncInputs();
       renderPartsList();
       drawPose();
@@ -1775,6 +1843,8 @@ const sheets = {
       rebuildAssetImage(asset);
       selectedAssetId = asset.id;
       selectedId = null;
+      selectedPartIds = new Set();
+      resetAssetHistory(`asset:${asset.id}`);
       crop = null;
       polygonPoints = [];
       drawSource();
@@ -1924,6 +1994,8 @@ const sheets = {
       created.forEach(rebuildAssetImage);
       selectedAssetId = created[0].id;
       selectedId = null;
+      selectedPartIds = new Set();
+      resetAssetHistory(`asset:${created[0].id}`);
       renderAssetLibrary();
       syncInputs();
       scheduleAutosave();
@@ -1942,32 +2014,32 @@ const sheets = {
       drawSource();
     };
 
-    document.getElementById("duplicatePart").onclick = () => {
-      const part = selectedPart();
+    function duplicatePart(part = selectedPart()) {
       if (!part) return;
       const copy = clonePart(part);
       parts.push(copy);
       rebuildPartImage(copy);
       selectedId = copy.id;
       selectedAssetId = null;
-      syncInputs();
-      renderPartsList();
-      drawPose();
-      scheduleAutosave();
-    };
-
-    function deleteSelectedPart() {
-      if (!selectedId) return;
-      parts = parts.filter(part => part.id !== selectedId);
-      selectedId = parts[0]?.id || null;
-      selectedAssetId = null;
+      resetAssetHistory(`part:${copy.id}`);
       syncInputs();
       renderPartsList();
       drawPose();
       scheduleAutosave();
     }
 
-    document.getElementById("deletePart").onclick = deleteSelectedPart;
+    function deleteSelectedPart(partId = selectedId) {
+      if (!partId) return;
+      parts = parts.filter(part => part.id !== partId);
+      selectedId = parts[0]?.id || null;
+      selectedPartIds = selectedId ? new Set([selectedId]) : new Set();
+      selectedAssetId = null;
+      resetAssetHistory(selectedId ? `part:${selectedId}` : null);
+      syncInputs();
+      renderPartsList();
+      drawPose();
+      scheduleAutosave();
+    }
 
     function deleteAsset(assetId = selectedAssetId) {
       if (!assetId) return;
@@ -1975,7 +2047,7 @@ const sheets = {
       assets = assets.filter(candidate => candidate.id !== assetId);
       assetImages.delete(assetId);
       if (selectedAssetId === assetId) selectedAssetId = assets[0]?.id || null;
-      resetAssetHistory(selectedAssetId);
+      resetAssetHistory(selectedAssetId ? `asset:${selectedAssetId}` : null);
       renderAssetLibrary();
       syncInputs();
       scheduleAutosave();
@@ -1984,9 +2056,11 @@ const sheets = {
 
     function updateSelectedAssetImage(asset, message) {
       clampAssetCrop(asset);
-      rebuildAssetImage(asset);
+      rebuildEditableImage(asset);
       renderAssetLibrary();
+      renderPartsList();
       drawAssetEditor();
+      drawPose();
       scheduleAutosave();
       if (message) setStatus(message);
     }
@@ -1994,7 +2068,7 @@ const sheets = {
     Object.entries(assetInputs).forEach(([key, input]) => {
       if (key === "brush" || key === "brushMode") return;
       input.addEventListener("input", () => {
-        const asset = selectedAsset();
+        const asset = selectedEditableAsset();
         if (!asset) return;
         if (key === "slot") {
           asset.slot = input.value;
@@ -2005,7 +2079,7 @@ const sheets = {
         } else {
           pushAssetUndo(asset);
           const cropKey = { cropX: "x", cropY: "y", cropW: "w", cropH: "h" }[key];
-          asset.crop[cropKey] = Number(input.value);
+          asset.crop[cropKey] = finiteNumber(input.value, asset.crop[cropKey]);
           asset.mask = null;
           asset.alphaMask = null;
         }
@@ -2014,7 +2088,7 @@ const sheets = {
     });
 
     assetEditorCanvas.addEventListener("pointerdown", event => {
-      const asset = selectedAsset();
+      const asset = selectedEditableAsset();
       if (event.button !== 0 || !asset) return;
       event.preventDefault();
       pushAssetUndo(asset);
@@ -2037,7 +2111,7 @@ const sheets = {
     });
 
     document.getElementById("trimAsset").onclick = () => {
-      const asset = selectedAsset();
+      const asset = selectedEditableAsset();
       if (!asset) return;
       clampAssetCrop(asset);
       const visible = currentVisibilityMap(asset);
@@ -2072,13 +2146,18 @@ const sheets = {
       asset.crop.y += minY;
       asset.crop.w = nextW;
       asset.crop.h = nextH;
+      if (selectedEditableKind() === "part") {
+        asset.pivotX -= minX;
+        asset.pivotY -= minY;
+      }
       asset.mask = null;
       asset.alphaMask = visibilityToRowSpans(trimmed, nextW, nextH);
-      updateSelectedAssetImage(asset, `Trimmed asset ${asset.name}.`);
+      syncInputs();
+      updateSelectedAssetImage(asset, `Trimmed ${asset.name}.`);
     };
 
     document.getElementById("resetAssetMask").onclick = () => {
-      const asset = selectedAsset();
+      const asset = selectedEditableAsset();
       if (!asset) return;
       pushAssetUndo(asset);
       asset.mask = null;
@@ -2086,7 +2165,38 @@ const sheets = {
       updateSelectedAssetImage(asset, `Reset alpha edits for ${asset.name}.`);
     };
 
-    document.getElementById("deleteAssetPanel").onclick = () => deleteAsset();
+    function saveSelectedPartAsAsset() {
+      const part = selectedPart();
+      if (!part) return;
+      const asset = {
+        id: makeId(),
+        sheet: part.sheet || sheets[activeSheet].name,
+        slot: part.slot,
+        name: `${part.name}_asset`,
+        crop: { ...part.crop },
+        mask: part.mask ? JSON.parse(JSON.stringify(part.mask)) : null,
+        alphaMask: part.alphaMask ? JSON.parse(JSON.stringify(part.alphaMask)) : null
+      };
+      assets.push(asset);
+      rebuildAssetImage(asset);
+      selectedAssetId = asset.id;
+      selectedId = null;
+      selectedPartIds = new Set();
+      resetAssetHistory(`asset:${asset.id}`);
+      renderAssetLibrary();
+      renderPartsList();
+      syncInputs();
+      drawPose();
+      drawAssetEditor();
+      scheduleAutosave();
+      setStatus(`Saved ${part.name} as library asset ${asset.name}.`);
+    }
+
+    document.getElementById("deleteAssetPanel").onclick = () => {
+      if (selectedPart()) deleteSelectedPart();
+      else deleteAsset();
+    };
+    document.getElementById("promotePartAsset").onclick = saveSelectedPartAsAsset;
     document.getElementById("undoAssetEdit").onclick = undoAssetEdit;
     document.getElementById("redoAssetEdit").onclick = redoAssetEdit;
 
@@ -2095,16 +2205,17 @@ const sheets = {
         const part = selectedPart();
         if (!part) return;
         if (key === "z") {
-          part.z = Number(input.value);
+          part.z = finiteNumber(input.value, part.z);
         } else if (key === "opacity" || key === "brightness") {
-          part[key] = Number(input.value);
+          part[key] = finiteNumber(input.value, part[key]);
         } else if (key === "pivotX" || key === "pivotY") {
           const previous = part[key];
-          const next = Number(input.value);
+          const next = finiteNumber(input.value, previous);
           const delta = next - previous;
-          const radians = part.rotation * Math.PI / 180;
-          const scaleX = (part.flipX ? -1 : 1) * part.scale;
-          const scaleY = (part.flipY ? -1 : 1) * part.scale;
+          const radians = finiteNumber(part.rotation) * Math.PI / 180;
+          const scale = finiteNumber(part.scale, 1);
+          const scaleX = (part.flipX ? -1 : 1) * scale;
+          const scaleY = (part.flipY ? -1 : 1) * scale;
           if (key === "pivotX") {
             part.x += Math.cos(radians) * delta * scaleX;
             part.y += Math.sin(radians) * delta * scaleX;
@@ -2114,7 +2225,7 @@ const sheets = {
           }
           part[key] = next;
         } else {
-          part[key] = Number(input.value);
+          part[key] = finiteNumber(input.value, part[key]);
         }
         renderPartsList();
         syncPartButtons(part);
@@ -2143,49 +2254,18 @@ const sheets = {
       if (!part) return;
       updateSelectedPartButtonState("flipY", !part.flipY);
     };
-    partButtons.visible.onclick = () => {
-      const part = selectedPart();
-      if (!part) return;
-      updateSelectedPartButtonState("visible", part.visible === false);
-    };
-    partButtons.locked.onclick = () => {
-      const part = selectedPart();
-      if (!part) return;
-      updateSelectedPartButtonState("locked", !part.locked);
-    };
-
     sheetSelect.onchange = () => {
       activeSheet = sheetSelect.value;
       assets = [];
       parts = [];
       selectedId = null;
       selectedAssetId = null;
+      selectedPartIds = new Set();
+      resetAssetHistory(null);
       syncInputs();
       renderAssetLibrary();
       renderPartsList();
       loadSheet();
-      scheduleAutosave();
-    };
-
-    document.getElementById("toggleAlpha").onclick = event => {
-      alphaPreview = !alphaPreview;
-      updateAlphaPreviewButton();
-      loadSheet();
-      scheduleAutosave();
-    };
-
-    document.getElementById("resetView").onclick = () => {
-      parts.forEach((part, index) => {
-        if (part.locked) return;
-        part.x = poseCanvas.width / 2;
-        part.y = poseCanvas.height / 2;
-        part.rotation = 0;
-        part.scale = 1;
-        part.z = index;
-      });
-      syncInputs();
-      renderPartsList();
-      drawPose();
       scheduleAutosave();
     };
 
@@ -2314,19 +2394,13 @@ const sheets = {
       main.style.gridTemplateAreas = `"${areas.join(" ")}" "${areas.map(() => assetsCollapsed ? "." : "asset").join(" ")}"`;
       main.style.setProperty("--asset-height", assetsCollapsed ? "0px" : "170px");
 
-      document.querySelectorAll("[data-collapse-target]").forEach(button => {
-        const target = document.getElementById(button.dataset.collapseTarget);
-        const collapsed = target?.classList.contains("collapsed") ?? false;
-        button.classList.toggle("is-collapsed", collapsed);
-        button.setAttribute("aria-expanded", String(!collapsed));
-        button.title = collapsed ? "Expand panel" : "Collapse panel";
-      });
-
       document.querySelectorAll("[data-panel-toggle]").forEach(button => {
         const target = document.getElementById(button.dataset.panelToggle);
         const collapsed = target?.classList.contains("collapsed") ?? false;
+        const label = button.dataset.panelLabel || button.textContent.trim();
         button.classList.toggle("is-collapsed", collapsed);
         button.setAttribute("aria-pressed", String(!collapsed));
+        button.textContent = `${collapsed ? "Show" : "Hide"} ${label}`;
       });
     }
 
@@ -2340,14 +2414,6 @@ const sheets = {
       drawAssetEditor();
       drawPose();
     }
-
-    document.querySelectorAll("[data-collapse-target]").forEach(button => {
-      button.addEventListener("click", () => {
-        const target = document.getElementById(button.dataset.collapseTarget);
-        if (!target) return;
-        setPanelCollapsed(target.id, !target.classList.contains("collapsed"));
-      });
-    });
 
     document.querySelectorAll("[data-panel-toggle]").forEach(button => {
       button.addEventListener("click", () => {
@@ -2372,11 +2438,11 @@ const sheets = {
         return;
       }
       if (!event.ctrlKey && !event.metaKey) return;
-      if (selectedAssetId && key === "z") {
+      if (selectedEditableAsset() && key === "z") {
         event.preventDefault();
         if (event.shiftKey) redoAssetEdit();
         else undoAssetEdit();
-      } else if (selectedAssetId && key === "y") {
+      } else if (selectedEditableAsset() && key === "y") {
         event.preventDefault();
         redoAssetEdit();
       } else if (key === "c") {
@@ -2401,7 +2467,6 @@ const sheets = {
     setupWheelInputs();
     setupAssetLibraryWheel();
     applyPanelLayout();
-    updateAlphaPreviewButton();
     renderSaveList();
     loadRepoSavesFromServer();
     loadSavedProject();
