@@ -238,6 +238,7 @@ const sheets = {
     let selectedPartIds = new Set();
     let selectedAssetId = null;
     let poseDrag = null;
+    let pivotDrag = null;
     let poseSelectionDrag = null;
     let sourceZoom = 1;
     let poseZoom = 1;
@@ -570,6 +571,9 @@ const sheets = {
         poseCtx.beginPath();
         poseCtx.arc(0, 0, 6 / Math.max(0.01, scale), 0, Math.PI * 2);
         poseCtx.fill();
+        poseCtx.strokeStyle = "#20232b";
+        poseCtx.lineWidth = 2 / Math.max(0.01, Math.abs(scale));
+        poseCtx.stroke();
       }
       poseCtx.restore();
     }
@@ -984,6 +988,15 @@ const sheets = {
     function syncPositionInputs() {
       const part = selectedPart();
       if (!part) return;
+      inputs.x.value = Math.round(part.x);
+      inputs.y.value = Math.round(part.y);
+    }
+
+    function syncPivotInputs() {
+      const part = selectedPart();
+      if (!part) return;
+      inputs.pivotX.value = Math.round(part.pivotX);
+      inputs.pivotY.value = Math.round(part.pivotY);
       inputs.x.value = Math.round(part.x);
       inputs.y.value = Math.round(part.y);
     }
@@ -1652,8 +1665,24 @@ const sheets = {
     poseCanvas.addEventListener("pointerdown", event => {
       if (event.button !== 0) return;
       const point = canvasPoint(event, poseCanvas);
+      const pivotHit = selectedPivotHit(point);
+      if (pivotHit) {
+        pivotDrag = {
+          id: pivotHit.id,
+          start: point,
+          original: {
+            x: pivotHit.x,
+            y: pivotHit.y,
+            pivotX: pivotHit.pivotX,
+            pivotY: pivotHit.pivotY
+          }
+        };
+        poseCanvas.classList.add("dragging");
+        poseCanvas.setPointerCapture(event.pointerId);
+        return;
+      }
       const hit = [...parts]
-        .filter(part => part.visible && !part.locked)
+        .filter(part => part.visible !== false && !part.locked)
         .sort((a, b) => b.z - a.z)
         .find(part => pointHitsPart(point, part));
       if (!hit) {
@@ -1691,6 +1720,27 @@ const sheets = {
         requestPoseDraw();
         return;
       }
+      if (pivotDrag) {
+        const part = parts.find(candidate => candidate.id === pivotDrag.id);
+        if (!part) return;
+        const nextPivot = worldPointToPartLocal(point, {
+          ...part,
+          x: pivotDrag.original.x,
+          y: pivotDrag.original.y,
+          pivotX: pivotDrag.original.pivotX,
+          pivotY: pivotDrag.original.pivotY
+        });
+        const deltaX = nextPivot.x - pivotDrag.original.pivotX;
+        const deltaY = nextPivot.y - pivotDrag.original.pivotY;
+        const worldDelta = localVectorToWorld(part, deltaX, deltaY);
+        part.pivotX = nextPivot.x;
+        part.pivotY = nextPivot.y;
+        part.x = pivotDrag.original.x + worldDelta.x;
+        part.y = pivotDrag.original.y + worldDelta.y;
+        syncPivotInputs();
+        requestPoseDraw();
+        return;
+      }
       if (!poseDrag) return;
       const dx = point.x - poseDrag.start.x;
       const dy = point.y - poseDrag.start.y;
@@ -1711,7 +1761,7 @@ const sheets = {
         poseSelectionDrag = null;
         if (moved) {
           const ids = [...parts]
-            .filter(part => part.visible && !part.locked && rectIntersectsPartBounds(rect, part))
+            .filter(part => part.visible !== false && !part.locked && rectIntersectsPartBounds(rect, part))
             .map(part => part.id);
           if (ids.length) {
             setSelectedParts(ids, ids[0]);
@@ -1724,10 +1774,11 @@ const sheets = {
           clearPoseSelection();
           setStatus("Pose selection cleared.");
         }
-      } else if (poseDrag) {
+      } else if (poseDrag || pivotDrag) {
         scheduleAutosave();
       }
       poseDrag = null;
+      pivotDrag = null;
       poseCanvas.classList.remove("dragging");
     });
 
@@ -1745,14 +1796,39 @@ const sheets = {
     });
 
     function pointHitsPart(point, part) {
+      const { x: localX, y: localY } = worldPointToPartLocal(point, part);
+      return localX >= 0 && localY >= 0 && localX <= part.crop.w && localY <= part.crop.h;
+    }
+
+    function selectedPivotHit(point) {
+      const part = selectedPart();
+      if (!part || part.locked || part.visible === false) return null;
+      const radius = 10;
+      return Math.hypot(point.x - part.x, point.y - part.y) <= radius ? part : null;
+    }
+
+    function worldPointToPartLocal(point, part) {
       const dx = point.x - part.x;
       const dy = point.y - part.y;
-      const radians = -part.rotation * Math.PI / 180;
-      const scaleX = (part.flipX ? -1 : 1) * part.scale;
-      const scaleY = (part.flipY ? -1 : 1) * part.scale;
-      const localX = (dx * Math.cos(radians) - dy * Math.sin(radians)) / scaleX + part.pivotX;
-      const localY = (dx * Math.sin(radians) + dy * Math.cos(radians)) / scaleY + part.pivotY;
-      return localX >= 0 && localY >= 0 && localX <= part.crop.w && localY <= part.crop.h;
+      const radians = -finiteNumber(part.rotation) * Math.PI / 180;
+      const scale = finiteNumber(part.scale, 1);
+      const scaleX = (part.flipX ? -1 : 1) * scale;
+      const scaleY = (part.flipY ? -1 : 1) * scale;
+      return {
+        x: (dx * Math.cos(radians) - dy * Math.sin(radians)) / scaleX + part.pivotX,
+        y: (dx * Math.sin(radians) + dy * Math.cos(radians)) / scaleY + part.pivotY
+      };
+    }
+
+    function localVectorToWorld(part, x, y) {
+      const radians = finiteNumber(part.rotation) * Math.PI / 180;
+      const scale = finiteNumber(part.scale, 1);
+      const scaleX = (part.flipX ? -1 : 1) * scale;
+      const scaleY = (part.flipY ? -1 : 1) * scale;
+      return {
+        x: Math.cos(radians) * x * scaleX - Math.sin(radians) * y * scaleY,
+        y: Math.sin(radians) * x * scaleX + Math.cos(radians) * y * scaleY
+      };
     }
 
     function partBounds(part) {

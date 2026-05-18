@@ -60,6 +60,7 @@ Tool controls:
 - `Close Polygon` finalizes the current polygon bounds before creating a part. Creating a part also works once the polygon has at least three points, but closing it makes the active crop explicit.
 - Lock prevents a part from moving or being transformed until unlocked.
 - Placed-part rows include show/hide, lock/unlock, duplicate, and delete controls so list actions stay next to the part they affect.
+- Drag the yellow pivot handle in Pose Preview to move a selected part's pivot directly while keeping the artwork visually anchored.
 - Flip X and Flip Y mirror the selected placed part in the pose preview without modifying the underlying library asset.
 - Opacity and brightness can be adjusted per part to test depth, such as making the far ponytail darker.
 - Hover any numeric selected-part field and use the mouse wheel to nudge it. Shift scrolls faster; Ctrl scrolls more finely.
