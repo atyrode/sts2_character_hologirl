@@ -25,9 +25,9 @@ def apply_row_span_alpha(image: Image.Image, spans: list[list[int]]) -> Image.Im
     mask = Image.new("L", image.size, 0)
     draw = ImageDraw.Draw(mask)
     for row, start, end in spans:
-        y = row - 1
-        x0 = start - 1
-        x1 = end - 1
+        y = row
+        x0 = start
+        x1 = end
         if 0 <= y < image.height and x1 >= 0 and x0 < image.width:
             draw.line((max(0, x0), y, min(image.width - 1, x1), y), fill=255)
 
@@ -96,6 +96,8 @@ def build_spine_json(parts: list[dict], image_names: dict[int, str]) -> dict:
         crop = part["crop"]
         x, y = bone_position(part)
         scale = float(part.get("scale", 1.0))
+        scale_x = scale * (-1.0 if part.get("flipX") else 1.0)
+        scale_y = scale * (-1.0 if part.get("flipY") else 1.0)
         rotation = -float(part.get("rotation", 0.0))
         visible = bool(part.get("visible", True))
         opacity = float(part.get("opacity", 1.0))
@@ -109,9 +111,10 @@ def build_spine_json(parts: list[dict], image_names: dict[int, str]) -> dict:
         }
         if abs(rotation) > 0.0001:
             bone["rotation"] = round(rotation, 3)
-        if abs(scale - 1.0) > 0.0001:
-            bone["scaleX"] = round(scale, 4)
-            bone["scaleY"] = round(scale, 4)
+        if abs(scale_x - 1.0) > 0.0001:
+            bone["scaleX"] = round(scale_x, 4)
+        if abs(scale_y - 1.0) > 0.0001:
+            bone["scaleY"] = round(scale_y, 4)
         bones.append(bone)
 
         slot: dict = {"name": name, "bone": name, "attachment": name if visible else None}
@@ -133,7 +136,7 @@ def build_spine_json(parts: list[dict], image_names: dict[int, str]) -> dict:
             }
         }
 
-        radius = math.hypot(crop["w"], crop["h"]) * scale / 2.0
+        radius = math.hypot(crop["w"] * scale_x, crop["h"] * scale_y) / 2.0
         xs.extend([x - radius, x + radius])
         ys.extend([y - radius, y + radius])
 
@@ -231,13 +234,15 @@ def write_godot_layered_scene(parts: list[dict], image_names: dict[int, str], sc
         y = float(part["y"]) - CANVAS_CENTER[1]
         rotation = math.radians(float(part.get("rotation", 0.0)))
         scale = float(part.get("scale", 1.0))
+        scale_x = scale * (-1.0 if part.get("flipX") else 1.0)
+        scale_y = scale * (-1.0 if part.get("flipY") else 1.0)
         pivot_x = float(part.get("pivotX", crop["w"] / 2.0))
         pivot_y = float(part.get("pivotY", crop["h"] / 2.0))
         cos_r = math.cos(rotation)
         sin_r = math.sin(rotation)
         for corner_x, corner_y in ((0, 0), (crop["w"], 0), (crop["w"], crop["h"]), (0, crop["h"])):
-            local_x = (corner_x - pivot_x) * scale
-            local_y = (corner_y - pivot_y) * scale
+            local_x = (corner_x - pivot_x) * scale_x
+            local_y = (corner_y - pivot_y) * scale_y
             transformed_bounds.append(
                 (
                     x + local_x * cos_r - local_y * sin_r,
@@ -272,6 +277,8 @@ def write_godot_layered_scene(parts: list[dict], image_names: dict[int, str], sc
         y = float(part["y"]) - CANVAS_CENTER[1] + scene_offset_y
         rotation = math.radians(float(part.get("rotation", 0.0)))
         scale = float(part.get("scale", 1.0))
+        scale_x = scale * (-1.0 if part.get("flipX") else 1.0)
+        scale_y = scale * (-1.0 if part.get("flipY") else 1.0)
         pivot_x = float(part.get("pivotX", crop["w"] / 2.0))
         pivot_y = float(part.get("pivotY", crop["h"] / 2.0))
         opacity = float(part.get("opacity", 1.0))
@@ -286,8 +293,8 @@ def write_godot_layered_scene(parts: list[dict], image_names: dict[int, str], sc
         )
         if abs(rotation) > 0.000001:
             lines.append(f"rotation = {godot_float(rotation)}")
-        if abs(scale - 1.0) > 0.000001:
-            lines.append(f"scale = Vector2({godot_float(scale)}, {godot_float(scale)})")
+        if abs(scale_x - 1.0) > 0.000001 or abs(scale_y - 1.0) > 0.000001:
+            lines.append(f"scale = Vector2({godot_float(scale_x)}, {godot_float(scale_y)})")
         if not visible:
             lines.append("visible = false")
 

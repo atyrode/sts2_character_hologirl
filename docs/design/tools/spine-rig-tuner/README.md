@@ -9,9 +9,10 @@ Workflow:
 3. Choose the semantic part slot and click `Create Part` or `Create Overlay`. This creates a reusable asset in the bottom Asset Library.
 4. Alternatively, use `Extract Sheet` with Alpha Preview on to automatically split the transparent sheet into connected cutout assets. Auto-extracted assets are named `auto_001`, `auto_002`, etc. and should be renamed/assigned semantic slots as needed.
 5. Drag an asset from the Asset Library onto Pose Preview to place it in the assembled pose.
-6. Select placed parts in the list or on the pose canvas.
-7. Adjust x, y, rotation, scale, z-order, opacity, brightness, and pivot.
-8. Export JSON and send it back for conversion into the Spine skeleton.
+6. Select a library asset to rename it, adjust its crop, erase or restore stray alpha pixels, or trim it to visible pixels in the `Selected Asset` panel.
+7. Select placed parts in the list or on the pose canvas.
+8. Adjust x, y, rotation, scale, horizontal/vertical flip, z-order, opacity, brightness, and pivot.
+9. Export JSON and send it back for conversion into the Spine skeleton.
 
 The tool intentionally keeps the semantic mapping operator-driven because generated rig sheets can include ambiguous or duplicate pieces.
 
@@ -29,6 +30,7 @@ Tool controls:
 - `Extract Sheet` scans the currently loaded transparent sheet and creates one library asset per connected opaque island. It is a convenience pass, not semantic labeling; small touching pieces may need manual cleanup.
 - The Asset Library is an independent full-width bottom row. It stores cropped assets separately from placed pose parts and remains usable even when Source, Pose, or Settings are hidden.
 - Click an asset to select it. Use its trash button, Delete, or Backspace to remove it from the library. Deleting a library asset does not delete placed pose parts already made from it.
+- The `Selected Asset` panel edits reusable library assets before placement. Use crop fields for small bounds changes, paint the preview in erase/restore mode for stray pixels, `Trim Visible` to tighten the crop to the remaining alpha, and `Reset Alpha` to discard brush edits.
 - The Asset Library is a horizontal tray. Mouse wheel scrolling over it moves left/right, and cards scale to the available tray height to avoid vertical scrolling.
 - Source, Pose, Asset Library, and Settings can be collapsed with their chevron buttons or the top `Panels` toggles. Collapsed panels leave the workspace entirely; use the top toggles to bring them back.
 - The workspace uses explicit grid areas for Source, Pose, Settings, and Assets so each panel keeps its own layout slot across visibility combinations.
@@ -41,6 +43,7 @@ Tool controls:
 - `Close Polygon` finalizes the current polygon bounds before creating a part. Creating a part also works once the polygon has at least three points, but closing it makes the active crop explicit.
 - Lock prevents a part from moving or being transformed until unlocked.
 - The eye control in the parts list hides or shows a part without deleting it.
+- Flip X and Flip Y mirror the selected placed part in the pose preview without modifying the underlying library asset.
 - Opacity and brightness can be adjusted per part to test depth, such as making the far ponytail darker.
 - Hover any numeric selected-part field and use the mouse wheel to nudge it. Shift scrolls faster; Ctrl scrolls more finely.
 - Named browser saves are stored in local browser storage. If the save-name field is empty, the tool generates a sheet/timestamp name. Export JSON remains the portable handoff format.
