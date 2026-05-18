@@ -9,7 +9,7 @@ export function PartInspector() {
         <TransformSection />
         <PivotSection />
         <RenderSection />
-        <div className="button-row">
+        <div className="button-grid two">
           <IconButton id="duplicatePart" icon={Copy} label="Duplicate selected part" />
           <IconButton className="danger" id="deletePart" icon={Trash2} label="Delete selected part" />
         </div>
@@ -29,7 +29,7 @@ function TransformSection() {
         <label>Scale <input id="scaleInput" type="number" step="0.01" /></label>
         <label>Z <input id="zInput" type="number" step="1" /></label>
       </div>
-      <div className="button-row">
+      <div className="button-grid two">
         <IconButton className="tool-button" id="flipXButton" icon={FlipHorizontal} label="Flip selected part horizontally" />
         <IconButton className="tool-button" id="flipYButton" icon={FlipVertical} label="Flip selected part vertically" />
       </div>
@@ -57,7 +57,7 @@ function RenderSection() {
         <label>Opacity <input id="opacityInput" type="number" min="0" max="1" step="0.05" /></label>
         <label>Bright <input id="brightnessInput" type="number" min="0" max="2" step="0.05" /></label>
       </div>
-      <div className="button-row">
+      <div className="button-grid two">
         <IconButton className="tool-button" id="visibleButton" icon={Eye} label="Toggle selected part visibility" />
         <IconButton className="tool-button" id="lockedButton" icon={Lock} label="Toggle selected part lock" />
       </div>

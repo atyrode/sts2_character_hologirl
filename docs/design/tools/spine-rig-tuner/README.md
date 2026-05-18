@@ -52,6 +52,7 @@ Tool controls:
 - Source, Pose, Asset Library, and Settings can be collapsed with their chevron buttons or the top `Panels` toggles. Collapsed panels leave the workspace entirely; use the top toggles to bring them back.
 - The workspace uses explicit grid areas for Source, Pose, Settings, and Assets so each panel keeps its own layout slot across visibility combinations.
 - Alpha preview and reset pose live in the pose preview toolbar because they affect the assembled pose view.
+- The `Advanced JSON` settings panel is collapsed by default. It is only needed for manual JSON import/export handoff or debugging; normal work should use repo saves or named browser saves.
 - Ctrl + mouse wheel zooms the source and pose canvases independently.
 - Drag the vertical dividers to resize the source, pose, and control panels.
 - Ctrl+C and Ctrl+V copy and paste the selected part when focus is not inside a form field.

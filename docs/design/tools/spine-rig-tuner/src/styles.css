@@ -455,6 +455,19 @@
       flex-wrap: wrap;
     }
 
+    .button-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .button-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .button-grid .icon-button {
+      width: 100%;
+    }
+
     .tool-button {
       display: inline-flex;
       align-items: center;

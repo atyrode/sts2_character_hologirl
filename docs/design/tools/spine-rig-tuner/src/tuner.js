@@ -1345,29 +1345,67 @@ const sheets = {
 
     function setupPanelResizers() {
       const main = document.querySelector("main");
-      const gutterWidth = 21;
-      let available = Math.max(900, main.clientWidth - gutterWidth);
+      let available = Math.max(900, main.clientWidth - 21);
       let sideWidth = Math.min(360, Math.max(280, available * 0.24));
       let editorWidth = Math.min(380, Math.max(320, available * 0.22));
       let sourceWidth = (available - sideWidth - editorWidth) / 2;
       let poseWidth = available - sideWidth - editorWidth - sourceWidth;
 
       function applyColumns() {
-        available = Math.max(900, main.clientWidth - gutterWidth);
+        const sourceVisible = !document.getElementById("sourceSection").classList.contains("collapsed");
+        const poseVisible = !document.getElementById("poseSection").classList.contains("collapsed");
+        const editorVisible = !document.getElementById("assetEditorPanel").classList.contains("collapsed");
+        const sideVisible = !document.getElementById("sidePanel").classList.contains("collapsed");
+        const visiblePanels = [
+          sourceVisible && "source",
+          poseVisible && "pose",
+          editorVisible && "editor",
+          sideVisible && "side"
+        ].filter(Boolean);
+        const gutterCount = [
+          sourceVisible && poseVisible,
+          poseVisible && (editorVisible || sideVisible),
+          editorVisible && sideVisible
+        ].filter(Boolean).length;
+
+        available = Math.max(0, main.clientWidth - gutterCount * 7);
         sourceWidth = Math.max(260, sourceWidth);
         poseWidth = Math.max(260, poseWidth);
         editorWidth = Math.max(300, editorWidth);
         sideWidth = Math.max(280, sideWidth);
-        const total = sourceWidth + poseWidth + editorWidth + sideWidth;
-        if (total !== available) {
-          const scale = available / total;
-          sourceWidth = Math.max(260, sourceWidth * scale);
-          poseWidth = Math.max(260, poseWidth * scale);
-          editorWidth = Math.max(300, editorWidth * scale);
-          sideWidth = Math.max(280, sideWidth * scale);
-          const overflow = sourceWidth + poseWidth + editorWidth + sideWidth - available;
-          if (overflow > 0) poseWidth = Math.max(260, poseWidth - overflow);
+
+        const widths = {
+          source: sourceWidth,
+          pose: poseWidth,
+          editor: editorWidth,
+          side: sideWidth
+        };
+        const minimums = {
+          source: 260,
+          pose: 260,
+          editor: 300,
+          side: 280
+        };
+        const visibleTotal = visiblePanels.reduce((sum, key) => sum + widths[key], 0);
+        if (visiblePanels.length && visibleTotal !== available) {
+          const scale = available / visibleTotal;
+          visiblePanels.forEach(key => {
+            widths[key] = Math.max(minimums[key], widths[key] * scale);
+          });
+
+          let overflow = visiblePanels.reduce((sum, key) => sum + widths[key], 0) - available;
+          for (let index = visiblePanels.length - 1; overflow > 0 && index >= 0; index -= 1) {
+            const key = visiblePanels[index];
+            const reduction = Math.min(overflow, widths[key] - minimums[key]);
+            widths[key] -= reduction;
+            overflow -= reduction;
+          }
         }
+
+        sourceWidth = widths.source;
+        poseWidth = widths.pose;
+        editorWidth = widths.editor;
+        sideWidth = widths.side;
         main.style.setProperty("--source-width", `${sourceWidth}px`);
         main.style.setProperty("--pose-width", `${poseWidth}px`);
         main.style.setProperty("--editor-width", `${editorWidth}px`);

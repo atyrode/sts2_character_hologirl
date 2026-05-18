@@ -14,8 +14,8 @@ export function SettingsPanel() {
 
       <PartInspector />
 
-      <div className="panel">
-        <h2>Project JSON</h2>
+      <div className="panel collapsed">
+        <h2>Advanced JSON</h2>
         <textarea id="jsonBox" spellCheck={false} />
       </div>
 
