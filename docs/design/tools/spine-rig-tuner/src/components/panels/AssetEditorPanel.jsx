@@ -1,9 +1,12 @@
+import { ChevronDown, Crop, Redo2, RotateCcw, Trash2, Undo2 } from "lucide-react";
+import { IconButton } from "../IconButton.jsx";
+
 export function AssetEditorPanel() {
   return (
     <aside className="asset-editor-panel collapsed" id="assetEditorPanel">
       <div className="toolbar">
         <div className="toolbar-group">
-          <button className="collapse-button" data-collapse-target="assetEditorPanel" title="Collapse asset editor panel">▾</button>
+          <IconButton className="collapse-button" data-collapse-target="assetEditorPanel" icon={ChevronDown} label="Collapse asset editor panel" />
           <strong>Asset Editor</strong>
           <span className="hint">Select a library asset to edit its crop and alpha.</span>
         </div>
@@ -31,11 +34,11 @@ export function AssetEditorPanel() {
         <canvas className="asset-editor-preview" id="assetEditorCanvas" width="320" height="220" />
 
         <div className="panel-actions">
-          <button id="undoAssetEdit">Undo</button>
-          <button id="redoAssetEdit">Redo</button>
-          <button id="trimAsset">Trim Visible</button>
-          <button id="resetAssetMask">Reset Alpha</button>
-          <button className="danger" id="deleteAssetPanel">Delete Asset</button>
+          <IconButton id="undoAssetEdit" icon={Undo2} label="Undo asset edit" />
+          <IconButton id="redoAssetEdit" icon={Redo2} label="Redo asset edit" />
+          <IconButton id="trimAsset" icon={Crop} label="Trim visible pixels" />
+          <IconButton id="resetAssetMask" icon={RotateCcw} label="Reset alpha edits" />
+          <IconButton className="danger" id="deleteAssetPanel" icon={Trash2} label="Delete asset" />
         </div>
 
         <p className="hint">Select an asset in the Asset Library. Paint on the preview to erase stray pixels or restore pixels from the source crop.</p>

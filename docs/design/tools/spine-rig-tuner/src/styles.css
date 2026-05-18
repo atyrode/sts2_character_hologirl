@@ -88,6 +88,30 @@
     button:hover { border-color: var(--accent); }
     button.primary { background: #34406f; border-color: #596aa8; }
     button.danger { background: #56313b; border-color: #8b4a5b; }
+    button.icon-button {
+      min-width: 34px;
+      height: 34px;
+      padding: 7px;
+      display: inline-grid;
+      place-items: center;
+      line-height: 1;
+    }
+
+    button.icon-button span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    button.icon-button.is-active {
+      color: var(--text);
+      background: #34406f;
+      border-color: var(--accent);
+    }
+
     button.panel-toggle.is-collapsed {
       color: var(--muted);
       background: #1f222a;
@@ -211,7 +235,18 @@
     }
 
     .collapse-button {
-      padding: 4px 8px;
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      padding: 5px;
+    }
+
+    .collapse-button svg {
+      transition: transform .14s ease;
+    }
+
+    .collapse-button.is-collapsed svg {
+      transform: rotate(-90deg);
     }
 
     .side-panel.collapsed,
@@ -404,12 +439,6 @@
       text-transform: uppercase;
     }
 
-    .identity-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 8px;
-    }
-
     .number-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -494,8 +523,8 @@
 
     .asset-editor-preview {
       width: 100%;
-      height: min(42vh, 360px);
-      min-height: 240px;
+      height: auto;
+      aspect-ratio: 16 / 11;
       border: 1px solid var(--line);
       border-radius: 6px;
       background:
@@ -518,8 +547,8 @@
     }
 
     .icon-button svg {
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
       stroke: currentColor;
       stroke-width: 2;
       stroke-linecap: round;

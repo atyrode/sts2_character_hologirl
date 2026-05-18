@@ -1,28 +1,18 @@
+import { Copy, Eye, FlipHorizontal, FlipVertical, Lock, Trash2 } from "lucide-react";
+import { IconButton } from "../../IconButton.jsx";
+
 export function PartInspector() {
   return (
     <div className="panel">
       <h2>Selected Part</h2>
       <div className="part-editor">
-        <IdentitySection />
         <TransformSection />
         <PivotSection />
         <RenderSection />
         <div className="button-row">
-          <button id="duplicatePart" type="button">Duplicate</button>
-          <button className="danger" id="deletePart" type="button">Delete</button>
+          <IconButton id="duplicatePart" icon={Copy} label="Duplicate selected part" />
+          <IconButton className="danger" id="deletePart" icon={Trash2} label="Delete selected part" />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function IdentitySection() {
-  return (
-    <div className="control-section">
-      <div className="control-section-title">Identity</div>
-      <div className="identity-grid">
-        <label>Name<input id="selectedNameInput" type="text" /></label>
-        <label>Slot<select id="selectedSlotInput" /></label>
       </div>
     </div>
   );
@@ -40,8 +30,8 @@ function TransformSection() {
         <label>Z <input id="zInput" type="number" step="1" /></label>
       </div>
       <div className="button-row">
-        <button className="tool-button" id="flipXButton" type="button" title="Mirror selected part horizontally">Flip X</button>
-        <button className="tool-button" id="flipYButton" type="button" title="Mirror selected part vertically">Flip Y</button>
+        <IconButton className="tool-button" id="flipXButton" icon={FlipHorizontal} label="Flip selected part horizontally" />
+        <IconButton className="tool-button" id="flipYButton" icon={FlipVertical} label="Flip selected part vertically" />
       </div>
     </div>
   );
@@ -68,8 +58,8 @@ function RenderSection() {
         <label>Bright <input id="brightnessInput" type="number" min="0" max="2" step="0.05" /></label>
       </div>
       <div className="button-row">
-        <button className="tool-button" id="visibleButton" type="button">Visible</button>
-        <button className="tool-button" id="lockedButton" type="button">Unlocked</button>
+        <IconButton className="tool-button" id="visibleButton" icon={Eye} label="Toggle selected part visibility" />
+        <IconButton className="tool-button" id="lockedButton" icon={Lock} label="Toggle selected part lock" />
       </div>
     </div>
   );

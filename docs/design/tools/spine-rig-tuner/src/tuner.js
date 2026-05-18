@@ -188,7 +188,6 @@ const sheets = {
     const poseCanvas = document.getElementById("poseCanvas");
     const poseCtx = poseCanvas.getContext("2d");
     const sheetSelect = document.getElementById("sheetSelect");
-    const slotSelect = document.getElementById("slotSelect");
     const statusEl = document.getElementById("status");
     const partsList = document.getElementById("partsList");
     const assetList = document.getElementById("assetList");
@@ -209,8 +208,6 @@ const sheets = {
     };
 
     const inputs = {
-      slot: document.getElementById("selectedSlotInput"),
-      name: document.getElementById("selectedNameInput"),
       x: document.getElementById("xInput"),
       y: document.getElementById("yInput"),
       rotation: document.getElementById("rotInput"),
@@ -264,13 +261,12 @@ const sheets = {
     let saveDirectoryHandle = null;
     let renderedSaveEntries = [];
     let poseFramePending = false;
+    let normalizePanelLayout = null;
 
     slots.forEach(slot => {
       const option = document.createElement("option");
       option.value = slot;
       option.textContent = slot;
-      slotSelect.append(option);
-      inputs.slot.append(option.cloneNode(true));
       assetInputs.slot.append(option.cloneNode(true));
     });
 
@@ -865,8 +861,18 @@ const sheets = {
       partButtons.flipY.classList.toggle("is-active", Boolean(part.flipY));
       partButtons.visible.classList.toggle("is-active", part.visible !== false);
       partButtons.locked.classList.toggle("is-active", Boolean(part.locked));
-      partButtons.visible.textContent = part.visible === false ? "Hidden" : "Visible";
-      partButtons.locked.textContent = part.locked ? "Locked" : "Unlocked";
+      partButtons.visible.title = part.visible === false ? "Show selected part" : "Hide selected part";
+      partButtons.visible.setAttribute("aria-label", partButtons.visible.title);
+      partButtons.locked.title = part.locked ? "Unlock selected part" : "Lock selected part";
+      partButtons.locked.setAttribute("aria-label", partButtons.locked.title);
+    }
+
+    function updateAlphaPreviewButton() {
+      const button = document.getElementById("toggleAlpha");
+      button.classList.toggle("is-active", alphaPreview);
+      button.title = `${alphaPreview ? "Hide" : "Show"} transparent source sheets in pose preview`;
+      button.setAttribute("aria-label", `Alpha preview ${alphaPreview ? "on" : "off"}`);
+      button.setAttribute("aria-pressed", String(alphaPreview));
     }
 
     function syncInputs() {
@@ -875,8 +881,6 @@ const sheets = {
       Object.values(inputs).forEach(input => input.disabled = !part);
       syncPartButtons(part);
       if (!part) return;
-      inputs.slot.value = part.slot;
-      inputs.name.value = part.name;
       inputs.x.value = Math.round(part.x);
       inputs.y.value = Math.round(part.y);
       inputs.rotation.value = Number(part.rotation.toFixed(2));
@@ -1054,7 +1058,7 @@ const sheets = {
         sheetSelect.value = sheetKey;
       }
       alphaPreview = payload.alphaPreview !== false;
-      document.getElementById("toggleAlpha").textContent = `Alpha Preview: ${alphaPreview ? "On" : "Off"}`;
+      updateAlphaPreviewButton();
       assets = (payload.assets || []).map(asset => ({ id: makeId(), ...asset }));
       parts = (payload.parts || []).map(part => ({
         id: makeId(),
@@ -1414,6 +1418,7 @@ const sheets = {
         });
       });
 
+      normalizePanelLayout = applyColumns;
       applyColumns();
     }
 
@@ -1445,7 +1450,7 @@ const sheets = {
         crop = polygonBounds(polygonPoints);
         drawSource();
         setStatus(polygonPoints.length >= 3
-          ? "Polygon ready. Add more points or click Create Part."
+          ? "Polygon ready. Add more points or create an asset."
           : "Polygon point added. Add at least three points.");
         return;
       }
@@ -1470,7 +1475,7 @@ const sheets = {
       crop = normalizeRect(cropDrag, canvasPoint(event, sourceCanvas));
       cropDrag = null;
       drawSource();
-      setStatus("Crop selected. Choose a slot, click Create Part, then drag it on the right canvas.");
+      setStatus("Crop selected. Create an asset, then set its name and slot in the Asset Editor.");
     });
 
     sourceCanvas.addEventListener("contextmenu", event => {
@@ -1719,13 +1724,12 @@ const sheets = {
         setStatus("Polygon needs at least three points.");
         return;
       }
-      const slot = forceOverlay ? "overlay_extra" : slotSelect.value;
-      const explicitName = document.getElementById("partName").value.trim();
+      const slot = forceOverlay ? "overlay_extra" : "extra";
       const asset = {
         id: makeId(),
         sheet: sheets[activeSheet].name,
         slot,
-        name: explicitName || (forceOverlay ? "overlay_extra" : slot),
+        name: `${slot}_${String(assets.length + 1).padStart(3, "0")}`,
         crop: { ...crop },
         mask: currentMaskForCrop()
       };
@@ -1733,12 +1737,13 @@ const sheets = {
       rebuildAssetImage(asset);
       selectedAssetId = asset.id;
       selectedId = null;
-      document.getElementById("partName").value = "";
       crop = null;
       polygonPoints = [];
       drawSource();
+      setPanelCollapsed("assetEditorPanel", false);
       renderAssetLibrary();
-      setStatus(`Created asset ${asset.name}. Drag it from the Asset Library onto Pose Preview.`);
+      drawAssetEditor();
+      setStatus(`Created asset ${asset.name}. Set its name/slot in Asset Editor, then drag it onto Pose Preview.`);
       scheduleAutosave();
     }
 
@@ -2051,34 +2056,28 @@ const sheets = {
       input.addEventListener("input", () => {
         const part = selectedPart();
         if (!part) return;
-        if (key === "slot") {
-          part.slot = input.value;
-          if (!part.name || slots.includes(part.name)) part.name = input.value;
-          inputs.name.value = part.name;
-        } else if (key === "name") {
-          part.name = input.value.trim() || part.slot;
-      } else if (key === "z") {
-        part.z = Number(input.value);
-      } else if (key === "opacity" || key === "brightness") {
-        part[key] = Number(input.value);
-      } else if (key === "pivotX" || key === "pivotY") {
-        const previous = part[key];
-        const next = Number(input.value);
-        const delta = next - previous;
-        const radians = part.rotation * Math.PI / 180;
-        const scaleX = (part.flipX ? -1 : 1) * part.scale;
-        const scaleY = (part.flipY ? -1 : 1) * part.scale;
-        if (key === "pivotX") {
-          part.x += Math.cos(radians) * delta * scaleX;
-          part.y += Math.sin(radians) * delta * scaleX;
+        if (key === "z") {
+          part.z = Number(input.value);
+        } else if (key === "opacity" || key === "brightness") {
+          part[key] = Number(input.value);
+        } else if (key === "pivotX" || key === "pivotY") {
+          const previous = part[key];
+          const next = Number(input.value);
+          const delta = next - previous;
+          const radians = part.rotation * Math.PI / 180;
+          const scaleX = (part.flipX ? -1 : 1) * part.scale;
+          const scaleY = (part.flipY ? -1 : 1) * part.scale;
+          if (key === "pivotX") {
+            part.x += Math.cos(radians) * delta * scaleX;
+            part.y += Math.sin(radians) * delta * scaleX;
+          } else {
+            part.x += -Math.sin(radians) * delta * scaleY;
+            part.y += Math.cos(radians) * delta * scaleY;
+          }
+          part[key] = next;
         } else {
-          part.x += -Math.sin(radians) * delta * scaleY;
-          part.y += Math.cos(radians) * delta * scaleY;
+          part[key] = Number(input.value);
         }
-        part[key] = next;
-      } else {
-        part[key] = Number(input.value);
-      }
         renderPartsList();
         syncPartButtons(part);
         drawPose();
@@ -2132,7 +2131,7 @@ const sheets = {
 
     document.getElementById("toggleAlpha").onclick = event => {
       alphaPreview = !alphaPreview;
-      event.currentTarget.textContent = `Alpha Preview: ${alphaPreview ? "On" : "Off"}`;
+      updateAlphaPreviewButton();
       loadSheet();
       scheduleAutosave();
     };
@@ -2279,7 +2278,10 @@ const sheets = {
 
       document.querySelectorAll("[data-collapse-target]").forEach(button => {
         const target = document.getElementById(button.dataset.collapseTarget);
-        button.textContent = target?.classList.contains("collapsed") ? "▸" : "▾";
+        const collapsed = target?.classList.contains("collapsed") ?? false;
+        button.classList.toggle("is-collapsed", collapsed);
+        button.setAttribute("aria-expanded", String(!collapsed));
+        button.title = collapsed ? "Expand panel" : "Collapse panel";
       });
 
       document.querySelectorAll("[data-panel-toggle]").forEach(button => {
@@ -2294,7 +2296,8 @@ const sheets = {
       const target = document.getElementById(targetId);
       if (!target) return;
       target.classList.toggle("collapsed", collapsed);
-      applyPanelLayout();
+      if (normalizePanelLayout) normalizePanelLayout();
+      else applyPanelLayout();
       drawSource();
       drawAssetEditor();
       drawPose();
@@ -2352,9 +2355,15 @@ const sheets = {
     setupMiddleMousePan(sourceCanvas);
     setupMiddleMousePan(poseCanvas);
     setupPanelResizers();
+    window.addEventListener("resize", () => {
+      if (normalizePanelLayout) normalizePanelLayout();
+      drawAssetEditor();
+      drawPose();
+    });
     setupWheelInputs();
     setupAssetLibraryWheel();
     applyPanelLayout();
+    updateAlphaPreviewButton();
     renderSaveList();
     loadRepoSavesFromServer();
     loadSavedProject();

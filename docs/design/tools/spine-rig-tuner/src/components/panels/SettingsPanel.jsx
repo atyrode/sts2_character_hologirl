@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+import { IconButton } from "../IconButton.jsx";
 import { PartInspector } from "./part-inspector/PartInspector.jsx";
 
 export function SettingsPanel() {
@@ -5,7 +7,7 @@ export function SettingsPanel() {
     <aside className="side-panel" id="sidePanel">
       <div className="toolbar">
         <div className="toolbar-group">
-          <button className="collapse-button" data-collapse-target="sidePanel" title="Collapse settings panel">▾</button>
+          <IconButton className="collapse-button" data-collapse-target="sidePanel" icon={ChevronDown} label="Collapse settings panel" />
           <strong>Settings</strong>
         </div>
       </div>
