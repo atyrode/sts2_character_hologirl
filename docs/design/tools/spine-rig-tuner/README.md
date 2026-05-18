@@ -25,7 +25,7 @@ Overlap workflow:
 
 Tool controls:
 
-- The top meta bar is grouped by sheet selection, browser saves, JSON import/export, and panel visibility toggles.
+- The top meta bar is grouped by sheet selection, repo/browser saves, JSON import/export, and panel visibility toggles.
 - Source crop tools are grouped by crop mode, part creation, and crop clearing.
 - `Extract Sheet` scans the currently loaded transparent sheet and creates one library asset per connected opaque island. It is a convenience pass, not semantic labeling; small touching pieces may need manual cleanup.
 - The Asset Library is an independent full-width bottom row. It stores cropped assets separately from placed pose parts and remains usable even when Source, Pose, or Settings are hidden.
@@ -46,5 +46,6 @@ Tool controls:
 - Flip X and Flip Y mirror the selected placed part in the pose preview without modifying the underlying library asset.
 - Opacity and brightness can be adjusted per part to test depth, such as making the far ponytail darker.
 - Hover any numeric selected-part field and use the mouse wheel to nudge it. Shift scrolls faster; Ctrl scrolls more finely.
-- Named browser saves are stored in local browser storage. If the save-name field is empty, the tool generates a sheet/timestamp name. Export JSON remains the portable handoff format.
+- Repo saves live in `docs/design/tools/spine-rig-tuner/saves/`. The tool can read committed saves from `saves/index.json` when served over HTTP. Click `Repo Folder` and choose that `saves/` folder to let Save/Delete write JSON files directly into the repo working tree through the browser file picker.
+- Named browser saves remain available as fallback local browser storage. If the save-name field is empty, the tool generates a sheet/timestamp name. Export JSON remains the portable handoff format.
 - Right-side panels can be collapsed by clicking their header.
