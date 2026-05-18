@@ -25,12 +25,12 @@ Overlap workflow:
 
 Tool controls:
 
-- The top meta bar is grouped by sheet selection, repo/browser saves, JSON import/export, and panel visibility toggles.
+- The top meta bar is grouped by sheet selection, repo/browser saves, JSON import/export, and panel visibility toggles, including a dedicated `Editor` panel for selected library assets.
 - Source crop tools are grouped by crop mode, part creation, and crop clearing.
 - `Extract Sheet` scans the currently loaded transparent sheet and creates one library asset per connected opaque island. It is a convenience pass, not semantic labeling; small touching pieces may need manual cleanup.
 - The Asset Library is an independent full-width bottom row. It stores cropped assets separately from placed pose parts and remains usable even when Source, Pose, or Settings are hidden.
 - Click an asset to select it. Use its trash button, Delete, or Backspace to remove it from the library. Deleting a library asset does not delete placed pose parts already made from it.
-- The `Selected Asset` panel edits reusable library assets before placement. Use crop fields for small bounds changes, paint the preview in erase/restore mode for stray pixels, `Trim Visible` to tighten the crop to the remaining alpha, and `Reset Alpha` to discard brush edits.
+- The `Asset Editor` panel edits reusable library assets before placement. Use crop fields for small bounds changes, paint the preview in erase/restore mode for stray pixels, Undo/Redo for alpha/crop edits, `Trim Visible` to tighten the crop to the remaining alpha, and `Reset Alpha` to discard brush edits.
 - The Asset Library is a horizontal tray. Mouse wheel scrolling over it moves left/right, and cards scale to the available tray height to avoid vertical scrolling.
 - Source, Pose, Asset Library, and Settings can be collapsed with their chevron buttons or the top `Panels` toggles. Collapsed panels leave the workspace entirely; use the top toggles to bring them back.
 - The workspace uses explicit grid areas for Source, Pose, Settings, and Assets so each panel keeps its own layout slot across visibility combinations.
