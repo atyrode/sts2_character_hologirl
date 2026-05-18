@@ -17,6 +17,8 @@ npm run build
 
 `index.html` is now the Vite entry point. The first migration keeps the existing canvas-heavy behavior in `src/tuner.js` and page shell in `src/App.jsx`; future UI work should continue breaking that logic into focused React components.
 
+The dev server maps the repository art archive into the app at `/art_archive/` through `vite.config.js`, so source sheets load from the repo while the tuner code remains nested in this folder.
+
 Workflow:
 
 1. Pick a source sheet. `Sheet M` through `Sheet R` are the depth-focused variants: M/N for granular body pieces, O for clothing layers, P for hair layers, Q for a cleaner minimal set, and R for stricter clothing/body separation. `Sheet S` through `Sheet AD` are essential separated variants based on the current reduced part list. `Sheet J` through `Sheet L` focus on linework, ponytails, and hand+whip grips. `Sheet G` through `Sheet I` are magenta-key hologram-style variants made to reduce green-key artifacts and gemstone texture.

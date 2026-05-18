@@ -1,4 +1,11 @@
 export function initSpineRigTuner() {
+    const artArchivePrefix = "../../art_archive/";
+    const artArchiveBase = import.meta.env.DEV ? "/art_archive/" : artArchivePrefix;
+
+    function resolveToolAsset(path) {
+      return path.replace(artArchivePrefix, artArchiveBase);
+    }
+
 const sheets = {
       a: {
         name: "sheet-a-broad",
@@ -312,7 +319,17 @@ const sheets = {
         drawPose();
         setStatus(`${sheet.name} loaded (${sourceImage.naturalWidth}x${sourceImage.naturalHeight})`);
       };
-      sourceImage.src = alphaPreview ? sheet.alpha : sheet.chroma;
+      sourceImage.onerror = () => {
+        sourceCanvas.width = 900;
+        sourceCanvas.height = 900;
+        applyCanvasZoom(sourceCanvas, sourceZoom);
+        applyCanvasZoom(poseCanvas, poseZoom);
+        crop = null;
+        drawSource();
+        drawPose();
+        setStatus(`Could not load ${sheet.name}. Check tuner asset path.`);
+      };
+      sourceImage.src = resolveToolAsset(alphaPreview ? sheet.alpha : sheet.chroma);
     }
 
     function applyCanvasZoom(canvas, zoom) {
@@ -372,7 +389,28 @@ const sheets = {
 
     function drawSource() {
       sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-      sourceCtx.drawImage(sourceImage, 0, 0);
+      if (sourceImage.complete && sourceImage.naturalWidth > 0) {
+        sourceCtx.drawImage(sourceImage, 0, 0);
+      } else {
+        sourceCtx.save();
+        sourceCtx.fillStyle = "#20232b";
+        sourceCtx.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+        sourceCtx.strokeStyle = "#363b47";
+        sourceCtx.lineWidth = 1;
+        for (let x = 0; x < sourceCanvas.width; x += 50) {
+          sourceCtx.beginPath();
+          sourceCtx.moveTo(x, 0);
+          sourceCtx.lineTo(x, sourceCanvas.height);
+          sourceCtx.stroke();
+        }
+        for (let y = 0; y < sourceCanvas.height; y += 50) {
+          sourceCtx.beginPath();
+          sourceCtx.moveTo(0, y);
+          sourceCtx.lineTo(sourceCanvas.width, y);
+          sourceCtx.stroke();
+        }
+        sourceCtx.restore();
+      }
       if (crop) {
         sourceCtx.save();
         sourceCtx.strokeStyle = "#ffffff";
@@ -1289,7 +1327,7 @@ const sheets = {
 
     function setupPanelResizers() {
       const main = document.querySelector("main");
-      const gutterWidth = 14;
+      const gutterWidth = 21;
       let available = Math.max(900, main.clientWidth - gutterWidth);
       let sideWidth = Math.min(360, Math.max(280, available * 0.24));
       let editorWidth = Math.min(380, Math.max(320, available * 0.22));
@@ -1316,6 +1354,7 @@ const sheets = {
         main.style.setProperty("--pose-width", `${poseWidth}px`);
         main.style.setProperty("--editor-width", `${editorWidth}px`);
         main.style.setProperty("--side-width", `${sideWidth}px`);
+        applyPanelLayout();
       }
 
       document.querySelectorAll("[data-resizer]").forEach(handle => {
@@ -1334,10 +1373,18 @@ const sheets = {
             if (mode === "sourcePose") {
               sourceWidth = startSource + dx;
               poseWidth = startPose - dx;
-            } else {
+            } else if (mode === "poseSide") {
               poseWidth = startPose + dx;
-              editorWidth = startEditor - dx;
-              sideWidth = startSide;
+              if (document.getElementById("assetEditorPanel").classList.contains("collapsed")) {
+                sideWidth = startSide - dx;
+                editorWidth = startEditor;
+              } else {
+                editorWidth = startEditor - dx;
+                sideWidth = startSide;
+              }
+            } else if (mode === "editorSide") {
+              editorWidth = startEditor + dx;
+              sideWidth = startSide - dx;
             }
             applyColumns();
           }
@@ -1704,6 +1751,16 @@ const sheets = {
       const minPixels = 80;
       const minSize = 8;
       const created = [];
+      let transparentPixels = 0;
+
+      for (let i = 3; i < pixels.length; i += 4) {
+        if (pixels[i] <= alphaThreshold) transparentPixels += 1;
+      }
+
+      if (transparentPixels < width * height * 0.01) {
+        setStatus("Extract Sheet needs a transparent sheet. The current image looks opaque; check Alpha Preview and sheet loading.");
+        return;
+      }
 
       function isOpaque(index) {
         return pixels[index * 4 + 3] > alphaThreshold;
@@ -2151,7 +2208,6 @@ const sheets = {
       const editorCollapsed = document.getElementById("assetEditorPanel").classList.contains("collapsed");
       const assetsCollapsed = document.getElementById("assetLibrary").classList.contains("collapsed");
       const sideCollapsed = document.getElementById("sidePanel").classList.contains("collapsed");
-      const reclaimSpace = sourceCollapsed || poseCollapsed || editorCollapsed || sideCollapsed;
       const visibleTopPanels = [
         !sourceCollapsed && "source",
         !poseCollapsed && "pose",
@@ -2173,13 +2229,13 @@ const sheets = {
       }
 
       if (!sourceCollapsed) {
-        addArea("source", reclaimSpace ? "minmax(260px, 1fr)" : "var(--source-width, minmax(440px, 1fr))");
+        addArea("source", visibleTopPanels.length === 1 ? "minmax(260px, 1fr)" : "var(--source-width, minmax(260px, 1fr))");
       }
       if (!sourceCollapsed && !poseCollapsed) {
         addArea("sourcePose", "7px");
       }
       if (!poseCollapsed) {
-        addArea("pose", reclaimSpace ? "minmax(260px, 1fr)" : "var(--pose-width, minmax(440px, 1fr))");
+        addArea("pose", visibleTopPanels.length === 1 ? "minmax(260px, 1fr)" : "var(--pose-width, minmax(260px, 1fr))");
       }
       if (!poseCollapsed && (!editorCollapsed || !sideCollapsed)) {
         addArea("poseSide", "7px");
@@ -2187,13 +2243,16 @@ const sheets = {
       if (!editorCollapsed) {
         const editorTrack = visibleTopPanels.length === 1
           ? "minmax(280px, 1fr)"
-          : reclaimSpace ? "minmax(300px, 420px)" : "var(--editor-width, minmax(320px, 380px))";
+          : "var(--editor-width, minmax(300px, 420px))";
         addArea("editor", editorTrack);
+      }
+      if (!editorCollapsed && !sideCollapsed) {
+        addArea("editorSide", "7px");
       }
       if (!sideCollapsed) {
         const sideTrack = visibleTopPanels.length === 1
           ? "minmax(280px, 1fr)"
-          : reclaimSpace ? "minmax(280px, 360px)" : "var(--side-width, 360px)";
+          : "var(--side-width, minmax(280px, 360px))";
         addArea("side", sideTrack);
       }
       if (!areas.length) {

@@ -13,6 +13,7 @@ export function Workspace() {
       <AssetLibrary />
       <div className="resizer" data-resizer="poseSide" title="Drag to resize panels" />
       <AssetEditorPanel />
+      <div className="resizer" data-resizer="editorSide" title="Drag to resize panels" />
       <SettingsPanel />
     </main>
   );
