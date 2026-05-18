@@ -45,12 +45,13 @@ Tool controls:
 - The top meta bar is grouped by sheet selection, repo/browser saves, JSON import/export, and panel visibility toggles, including a dedicated `Editor` panel for selected placed parts or library assets.
 - Source crop tools are grouped by crop mode, part creation, and crop clearing.
 - `Extract Sheet` scans the currently loaded transparent sheet and creates one library asset per connected opaque island. It is a convenience pass, not semantic labeling; small touching pieces may need manual cleanup.
-- The Asset Library is an independent full-width bottom row. It stores cropped assets separately from placed pose parts and remains usable even when Source, Pose, or Settings are hidden.
+- The Asset Library is an independent full-width bottom row. It stores cropped assets separately from placed pose parts and remains usable even when Source, Pose, or Editor are hidden.
 - Click an asset to select it. Use its trash button, Delete, or Backspace to remove it from the library. Deleting a library asset does not delete placed pose parts already made from it.
 - The `Asset Editor` panel edits the selected placed part first, or the selected library asset when no placed part is selected. Editing a placed part lets you clean up one pose instance without changing every copy made from the same library asset. Use the save-to-library button to turn the selected placed part back into a reusable asset.
 - The Asset Library is a horizontal tray. Mouse wheel scrolling over it moves left/right, and cards scale to the available tray height to avoid vertical scrolling.
-- Source, Pose, Asset Library, Editor, and Settings can be shown or hidden from the top `Show / Hide` controls. Hidden panels leave the workspace entirely.
-- The workspace uses explicit grid areas for Source, Pose, Settings, and Assets so each panel keeps its own layout slot across visibility combinations.
+- Source, Pose, Asset Library, and Editor can be shown or hidden from the top `Show / Hide` controls. Settings live inside Pose Preview and hide with it.
+- The browser remembers panel visibility, panel widths, and source/pose zoom in local workspace preferences. This is editor UI state and is intentionally separate from exported rig JSON or named saves.
+- The workspace uses explicit grid areas for Source, Pose, Editor, and Assets so each panel keeps its own layout slot across visibility combinations.
 - Ctrl + mouse wheel zooms the source and pose canvases independently.
 - Drag the vertical dividers to resize the source, pose, and control panels.
 - Ctrl+C and Ctrl+V copy and paste the selected part when focus is not inside a form field.

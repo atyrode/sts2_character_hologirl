@@ -1,3 +1,5 @@
+import { SettingsPanel } from "./SettingsPanel.jsx";
+
 export function PosePanel() {
   return (
     <section className="workspace-section pose-section" id="poseSection">
@@ -8,8 +10,11 @@ export function PosePanel() {
         </div>
       </div>
 
-      <div className="canvas-wrap">
-        <canvas id="poseCanvas" width="900" height="900" />
+      <div className="pose-body">
+        <div className="canvas-wrap">
+          <canvas id="poseCanvas" width="900" height="900" />
+        </div>
+        <SettingsPanel />
       </div>
     </section>
   );

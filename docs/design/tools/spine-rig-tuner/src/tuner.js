@@ -252,6 +252,7 @@ const sheets = {
     let idCounter = 0;
     let autosaveTimer = null;
     const storageKey = "hologirl-spine-rig-tuner-v1";
+    const workspaceLayoutKey = "hologirl-spine-rig-tuner-workspace-layout-v1";
     const savesIndexKey = "hologirl-spine-rig-tuner-saves-v1";
     const savePrefix = "hologirl-spine-rig-tuner-save-v1:";
     const repoSavesIndexPath = "saves/index.json";
@@ -260,6 +261,8 @@ const sheets = {
     let renderedSaveEntries = [];
     let poseFramePending = false;
     let normalizePanelLayout = null;
+    let workspaceLayout = null;
+    let workspaceWidths = null;
 
     slots.forEach(slot => {
       const option = document.createElement("option");
@@ -276,6 +279,45 @@ const sheets = {
     function setSavedStatus(text) {
       statusEl.classList.add("saved");
       statusEl.textContent = text;
+    }
+
+    function loadWorkspaceLayout() {
+      try {
+        workspaceLayout = JSON.parse(localStorage.getItem(workspaceLayoutKey) || "null");
+      } catch {
+        workspaceLayout = null;
+      }
+    }
+
+    function workspacePanelState() {
+      const ids = ["sourceSection", "poseSection", "assetLibrary", "assetEditorPanel"];
+      return Object.fromEntries(ids.map(id => [id, Boolean(document.getElementById(id)?.classList.contains("collapsed"))]));
+    }
+
+    function saveWorkspaceLayout() {
+      try {
+        localStorage.setItem(workspaceLayoutKey, JSON.stringify({
+          version: 1,
+          panels: workspacePanelState(),
+          widths: workspaceWidths,
+          zoom: { source: sourceZoom, pose: poseZoom }
+        }));
+      } catch {
+        // Workspace preferences are convenience-only. Ignore storage quota or privacy-mode failures.
+      }
+    }
+
+    function applyWorkspaceLayout() {
+      if (!workspaceLayout || workspaceLayout.version !== 1) return;
+      Object.entries(workspaceLayout.panels || {}).forEach(([id, collapsed]) => {
+        const target = document.getElementById(id);
+        if (target) target.classList.toggle("collapsed", Boolean(collapsed));
+      });
+      if (workspaceLayout.zoom) {
+        sourceZoom = finiteNumber(workspaceLayout.zoom.source, sourceZoom);
+        poseZoom = finiteNumber(workspaceLayout.zoom.pose, poseZoom);
+      }
+      workspaceWidths = workspaceLayout.widths || null;
     }
 
     function makeId() {
@@ -474,7 +516,7 @@ const sheets = {
       poseCtx.restore();
 
       [...parts]
-        .filter(part => part.visible)
+        .filter(part => part.visible !== false)
         .sort((a, b) => a.z - b.z)
         .forEach(drawPart);
 
@@ -511,7 +553,7 @@ const sheets = {
       const image = partImages.get(part.id);
       if (image) {
         poseCtx.drawImage(image, -part.pivotX, -part.pivotY);
-      } else {
+      } else if (sourceImage.complete && sourceImage.naturalWidth) {
         poseCtx.drawImage(
           sourceImage,
           part.crop.x, part.crop.y, part.crop.w, part.crop.h,
@@ -543,7 +585,7 @@ const sheets = {
     }
 
     function buildCutoutImage(item) {
-      if (!sourceImage.complete || !item.crop) return null;
+      if (!sourceImage.complete || !sourceImage.naturalWidth || !item.crop) return null;
       const canvas = document.createElement("canvas");
       canvas.width = item.crop.w;
       canvas.height = item.crop.h;
@@ -1411,45 +1453,43 @@ const sheets = {
     function setupPanelResizers() {
       const main = document.querySelector("main");
       let available = Math.max(900, main.clientWidth - 21);
-      let sideWidth = Math.min(360, Math.max(280, available * 0.24));
       let editorWidth = Math.min(380, Math.max(320, available * 0.22));
-      let sourceWidth = (available - sideWidth - editorWidth) / 2;
-      let poseWidth = available - sideWidth - editorWidth - sourceWidth;
+      let sourceWidth = (available - editorWidth) / 2;
+      let poseWidth = available - editorWidth - sourceWidth;
+      if (workspaceWidths) {
+        sourceWidth = finiteNumber(workspaceWidths.source, sourceWidth);
+        poseWidth = finiteNumber(workspaceWidths.pose, poseWidth);
+        editorWidth = finiteNumber(workspaceWidths.editor, editorWidth);
+      }
 
       function applyColumns() {
         const sourceVisible = !document.getElementById("sourceSection").classList.contains("collapsed");
         const poseVisible = !document.getElementById("poseSection").classList.contains("collapsed");
         const editorVisible = !document.getElementById("assetEditorPanel").classList.contains("collapsed");
-        const sideVisible = !document.getElementById("sidePanel").classList.contains("collapsed");
         const visiblePanels = [
           sourceVisible && "source",
           poseVisible && "pose",
-          editorVisible && "editor",
-          sideVisible && "side"
+          editorVisible && "editor"
         ].filter(Boolean);
         const gutterCount = [
           sourceVisible && poseVisible,
-          poseVisible && (editorVisible || sideVisible),
-          editorVisible && sideVisible
+          poseVisible && editorVisible
         ].filter(Boolean).length;
 
         available = Math.max(0, main.clientWidth - gutterCount * 7);
         sourceWidth = Math.max(260, sourceWidth);
         poseWidth = Math.max(260, poseWidth);
         editorWidth = Math.max(300, editorWidth);
-        sideWidth = Math.max(280, sideWidth);
 
         const widths = {
           source: sourceWidth,
           pose: poseWidth,
-          editor: editorWidth,
-          side: sideWidth
+          editor: editorWidth
         };
         const minimums = {
           source: 260,
           pose: 260,
-          editor: 300,
-          side: 280
+          editor: 300
         };
         const visibleTotal = visiblePanels.reduce((sum, key) => sum + widths[key], 0);
         if (visiblePanels.length && visibleTotal !== available) {
@@ -1470,11 +1510,14 @@ const sheets = {
         sourceWidth = widths.source;
         poseWidth = widths.pose;
         editorWidth = widths.editor;
-        sideWidth = widths.side;
+        workspaceWidths = {
+          source: sourceWidth,
+          pose: poseWidth,
+          editor: editorWidth
+        };
         main.style.setProperty("--source-width", `${sourceWidth}px`);
         main.style.setProperty("--pose-width", `${poseWidth}px`);
         main.style.setProperty("--editor-width", `${editorWidth}px`);
-        main.style.setProperty("--side-width", `${sideWidth}px`);
         applyPanelLayout();
       }
 
@@ -1485,7 +1528,6 @@ const sheets = {
           const startSource = sourceWidth;
           const startPose = poseWidth;
           const startEditor = editorWidth;
-          const startSide = sideWidth;
           handle.classList.add("dragging");
           handle.setPointerCapture(event.pointerId);
 
@@ -1496,16 +1538,7 @@ const sheets = {
               poseWidth = startPose - dx;
             } else if (mode === "poseSide") {
               poseWidth = startPose + dx;
-              if (document.getElementById("assetEditorPanel").classList.contains("collapsed")) {
-                sideWidth = startSide - dx;
-                editorWidth = startEditor;
-              } else {
-                editorWidth = startEditor - dx;
-                sideWidth = startSide;
-              }
-            } else if (mode === "editorSide") {
-              editorWidth = startEditor + dx;
-              sideWidth = startSide - dx;
+              editorWidth = startEditor - dx;
             }
             applyColumns();
           }
@@ -1514,6 +1547,7 @@ const sheets = {
             handle.classList.remove("dragging");
             handle.removeEventListener("pointermove", move);
             handle.removeEventListener("pointerup", up);
+            saveWorkspaceLayout();
           }
 
           handle.addEventListener("pointermove", move);
@@ -2338,19 +2372,16 @@ const sheets = {
       const poseCollapsed = document.getElementById("poseSection").classList.contains("collapsed");
       const editorCollapsed = document.getElementById("assetEditorPanel").classList.contains("collapsed");
       const assetsCollapsed = document.getElementById("assetLibrary").classList.contains("collapsed");
-      const sideCollapsed = document.getElementById("sidePanel").classList.contains("collapsed");
       const visibleTopPanels = [
         !sourceCollapsed && "source",
         !poseCollapsed && "pose",
-        !editorCollapsed && "editor",
-        !sideCollapsed && "side"
+        !editorCollapsed && "editor"
       ].filter(Boolean);
 
       main.classList.toggle("source-collapsed", sourceCollapsed);
       main.classList.toggle("pose-collapsed", poseCollapsed);
       main.classList.toggle("editor-collapsed", editorCollapsed);
       main.classList.toggle("assets-collapsed", assetsCollapsed);
-      main.classList.toggle("side-collapsed", sideCollapsed);
 
       const columns = [];
       const areas = [];
@@ -2368,7 +2399,7 @@ const sheets = {
       if (!poseCollapsed) {
         addArea("pose", visibleTopPanels.length === 1 ? "minmax(260px, 1fr)" : "var(--pose-width, minmax(260px, 1fr))");
       }
-      if (!poseCollapsed && (!editorCollapsed || !sideCollapsed)) {
+      if (!poseCollapsed && !editorCollapsed) {
         addArea("poseSide", "7px");
       }
       if (!editorCollapsed) {
@@ -2376,15 +2407,6 @@ const sheets = {
           ? "minmax(280px, 1fr)"
           : "var(--editor-width, minmax(300px, 420px))";
         addArea("editor", editorTrack);
-      }
-      if (!editorCollapsed && !sideCollapsed) {
-        addArea("editorSide", "7px");
-      }
-      if (!sideCollapsed) {
-        const sideTrack = visibleTopPanels.length === 1
-          ? "minmax(280px, 1fr)"
-          : "var(--side-width, minmax(280px, 360px))";
-        addArea("side", sideTrack);
       }
       if (!areas.length) {
         addArea(".", "1fr");
@@ -2410,6 +2432,7 @@ const sheets = {
       target.classList.toggle("collapsed", collapsed);
       if (normalizePanelLayout) normalizePanelLayout();
       else applyPanelLayout();
+      saveWorkspaceLayout();
       drawSource();
       drawAssetEditor();
       drawPose();
@@ -2454,8 +2477,16 @@ const sheets = {
       }
     });
 
-    setupCanvasZoom(sourceCanvas, () => sourceZoom, value => { sourceZoom = value; });
-    setupCanvasZoom(poseCanvas, () => poseZoom, value => { poseZoom = value; });
+    loadWorkspaceLayout();
+    applyWorkspaceLayout();
+    setupCanvasZoom(sourceCanvas, () => sourceZoom, value => {
+      sourceZoom = value;
+      saveWorkspaceLayout();
+    });
+    setupCanvasZoom(poseCanvas, () => poseZoom, value => {
+      poseZoom = value;
+      saveWorkspaceLayout();
+    });
     setupMiddleMousePan(sourceCanvas);
     setupMiddleMousePan(poseCanvas);
     setupPanelResizers();

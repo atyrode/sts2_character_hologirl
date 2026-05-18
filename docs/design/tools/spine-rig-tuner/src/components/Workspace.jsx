@@ -1,7 +1,6 @@
 import { AssetEditorPanel } from "./panels/AssetEditorPanel.jsx";
 import { AssetLibrary } from "./panels/AssetLibrary.jsx";
 import { PosePanel } from "./panels/PosePanel.jsx";
-import { SettingsPanel } from "./panels/SettingsPanel.jsx";
 import { SourcePanel } from "./panels/SourcePanel.jsx";
 
 export function Workspace() {
@@ -13,8 +12,6 @@ export function Workspace() {
       <AssetLibrary />
       <div className="resizer" data-resizer="poseSide" title="Drag to resize panels" />
       <AssetEditorPanel />
-      <div className="resizer" data-resizer="editorSide" title="Drag to resize panels" />
-      <SettingsPanel />
     </main>
   );
 }

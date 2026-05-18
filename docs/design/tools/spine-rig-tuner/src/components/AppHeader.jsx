@@ -58,7 +58,6 @@ export function AppHeader() {
         <PanelToggle target="poseSection">Pose</PanelToggle>
         <PanelToggle target="assetEditorPanel">Editor</PanelToggle>
         <PanelToggle target="assetLibrary">Assets</PanelToggle>
-        <PanelToggle target="sidePanel">Settings</PanelToggle>
       </div>
 
       <span className="status" id="status">Loading...</span>
