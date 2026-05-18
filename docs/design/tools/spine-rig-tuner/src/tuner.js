@@ -628,14 +628,24 @@ const sheets = {
       return canvas;
     }
 
+    function canvasHasVisiblePixels(canvas) {
+      const pixels = canvas.getContext("2d", { willReadFrequently: true }).getImageData(0, 0, canvas.width, canvas.height).data;
+      for (let index = 3; index < pixels.length; index += 4) {
+        if (pixels[index] > 0) return true;
+      }
+      return false;
+    }
+
     function rebuildAssetImage(asset) {
       const canvas = buildCutoutImage(asset);
-      if (canvas) assetImages.set(asset.id, canvas);
+      if (canvas && canvasHasVisiblePixels(canvas)) assetImages.set(asset.id, canvas);
+      else assetImages.delete(asset.id);
     }
 
     function rebuildPartImage(part) {
       const canvas = buildCutoutImage(part);
-      if (canvas) partImages.set(part.id, canvas);
+      if (canvas && canvasHasVisiblePixels(canvas)) partImages.set(part.id, canvas);
+      else partImages.delete(part.id);
     }
 
     function selectedPart() {
@@ -1006,16 +1016,17 @@ const sheets = {
       [...parts].sort((a, b) => b.z - a.z).forEach(part => {
         const row = document.createElement("div");
         row.className = `part-row${selectedPartIds.has(part.id) ? " selected" : ""}${part.locked ? " locked" : ""}`;
-        row.innerHTML = `<span>${part.locked ? "[locked] " : ""}${part.visible ? "" : "[hidden] "}${part.name}<br><small>${part.slot}</small></span><span>z ${part.z}</span>`;
+        const partVisible = part.visible !== false;
+        row.innerHTML = `<span>${part.locked ? "[locked] " : ""}${partVisible ? "" : "[hidden] "}${part.name}<br><small>${part.slot}</small></span><span>z ${part.z}</span>`;
         const visibilityButton = document.createElement("button");
         visibilityButton.type = "button";
         visibilityButton.className = "icon-button";
-        visibilityButton.title = part.visible ? "Hide part" : "Show part";
-        visibilityButton.setAttribute("aria-label", part.visible ? "Hide part" : "Show part");
-        visibilityButton.innerHTML = iconSvg(part.visible ? "eye" : "eyeOff");
+        visibilityButton.title = partVisible ? "Hide part" : "Show part";
+        visibilityButton.setAttribute("aria-label", partVisible ? "Hide part" : "Show part");
+        visibilityButton.innerHTML = iconSvg(partVisible ? "eye" : "eyeOff");
         visibilityButton.onclick = event => {
           event.stopPropagation();
-          part.visible = !part.visible;
+          part.visible = part.visible === false;
           setSelectedParts([part.id], part.id);
           scheduleAutosave();
         };
