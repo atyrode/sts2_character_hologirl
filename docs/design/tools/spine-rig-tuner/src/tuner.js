@@ -263,6 +263,7 @@ const sheets = {
     let repoSaveEntries = [];
     let saveDirectoryHandle = null;
     let renderedSaveEntries = [];
+    let poseFramePending = false;
 
     slots.forEach(slot => {
       const option = document.createElement("option");
@@ -444,6 +445,7 @@ const sheets = {
     }
 
     function drawPose() {
+      poseFramePending = false;
       poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
       poseCtx.save();
       poseCtx.fillStyle = "#20232b";
@@ -487,6 +489,12 @@ const sheets = {
         poseCtx.strokeRect(rect.x, rect.y, rect.w, rect.h);
         poseCtx.restore();
       }
+    }
+
+    function requestPoseDraw() {
+      if (poseFramePending) return;
+      poseFramePending = true;
+      requestAnimationFrame(drawPose);
     }
 
     function drawPart(part) {
@@ -878,11 +886,16 @@ const sheets = {
       inputs.z.value = part.z;
       inputs.opacity.value = part.opacity ?? 1;
       inputs.brightness.value = part.brightness ?? 1;
-      inputs.visible.value = String(part.visible);
-      inputs.locked.value = String(Boolean(part.locked));
       ["x", "y", "rotation", "scale", "pivotX", "pivotY"].forEach(key => {
         inputs[key].disabled = Boolean(part.locked);
       });
+    }
+
+    function syncPositionInputs() {
+      const part = selectedPart();
+      if (!part) return;
+      inputs.x.value = Math.round(part.x);
+      inputs.y.value = Math.round(part.y);
     }
 
     function renderPartsList() {
@@ -961,6 +974,7 @@ const sheets = {
           markAssetSelected(asset.id);
           event.dataTransfer.setData("text/plain", asset.id);
           event.dataTransfer.effectAllowed = "copy";
+          event.dataTransfer.setDragImage(thumb, thumb.width / 2, thumb.height / 2);
         });
         assetList.append(card);
       });
@@ -1531,7 +1545,7 @@ const sheets = {
       const point = canvasPoint(event, poseCanvas);
       if (poseSelectionDrag) {
         poseSelectionDrag.rect = normalizeRect(poseSelectionDrag.start, point);
-        drawPose();
+        requestPoseDraw();
         return;
       }
       if (!poseDrag) return;
@@ -1543,8 +1557,8 @@ const sheets = {
         part.x = original.x + dx;
         part.y = original.y + dy;
       });
-      syncInputs();
-      drawPose();
+      syncPositionInputs();
+      requestPoseDraw();
     });
 
     poseCanvas.addEventListener("pointerup", event => {
