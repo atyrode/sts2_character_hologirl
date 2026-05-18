@@ -1,6 +1,21 @@
 # Hologirl Spine Rig Tuner
 
-Open `index.html` in a browser to compare candidate rig sheets, cut parts, name them, and arrange a first side-facing pose.
+The tuner is a nested Vite app so web tooling stays inside this folder instead of the mod root. Run it with:
+
+```sh
+cd docs/design/tools/spine-rig-tuner
+npm install
+npm run dev
+```
+
+Build/check the tuner with:
+
+```sh
+cd docs/design/tools/spine-rig-tuner
+npm run build
+```
+
+`index.html` is now the Vite entry point. The first migration keeps the existing canvas-heavy behavior in `src/tuner.js` and page shell in `src/App.jsx`; future UI work should continue breaking that logic into focused React components.
 
 Workflow:
 
@@ -9,7 +24,7 @@ Workflow:
 3. Choose the semantic part slot and click `Create Part` or `Create Overlay`. This creates a reusable asset in the bottom Asset Library.
 4. Alternatively, use `Extract Sheet` with Alpha Preview on to automatically split the transparent sheet into connected cutout assets. Auto-extracted assets are named `auto_001`, `auto_002`, etc. and should be renamed/assigned semantic slots as needed.
 5. Drag an asset from the Asset Library onto Pose Preview to place it in the assembled pose.
-6. Select a library asset to rename it, adjust its crop, erase or restore stray alpha pixels, or trim it to visible pixels in the `Selected Asset` panel.
+6. Select a library asset to rename it, adjust its crop, erase or restore stray alpha pixels, or trim it to visible pixels in the `Asset Editor` panel.
 7. Select placed parts in the list or on the pose canvas.
 8. Adjust x, y, rotation, scale, horizontal/vertical flip, z-order, opacity, brightness, and pivot.
 9. Export JSON and send it back for conversion into the Spine skeleton.

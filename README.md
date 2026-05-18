@@ -79,6 +79,21 @@ Run the character-select scene smoke check:
 scripts/godot-smoke-character-select.sh
 ```
 
+Run the local spine rig tuner web app:
+
+```sh
+cd docs/design/tools/spine-rig-tuner
+npm install
+npm run dev
+```
+
+Validate the tuner web app:
+
+```sh
+cd docs/design/tools/spine-rig-tuner
+npm run build
+```
+
 Inspect a packed Godot scene in the exported PCK when debugging placeholder asset routing:
 
 ```sh

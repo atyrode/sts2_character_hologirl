@@ -8,6 +8,7 @@ publish/
 dist/
 Properties/
 packages/
+node_modules/
 .editorconfig
 *.user
 scripts/*.gd.uid
