@@ -680,11 +680,11 @@ const sheets = {
     }
 
     function clampAssetCrop(asset) {
-      if (!asset?.crop || !sourceCanvas.width || !sourceCanvas.height) return;
-      asset.crop.x = Math.max(0, Math.min(sourceCanvas.width - 1, Math.round(Number(asset.crop.x) || 0)));
-      asset.crop.y = Math.max(0, Math.min(sourceCanvas.height - 1, Math.round(Number(asset.crop.y) || 0)));
-      asset.crop.w = Math.max(1, Math.min(sourceCanvas.width - asset.crop.x, Math.round(Number(asset.crop.w) || 1)));
-      asset.crop.h = Math.max(1, Math.min(sourceCanvas.height - asset.crop.y, Math.round(Number(asset.crop.h) || 1)));
+      if (!asset?.crop || !sourceImage.complete || !sourceImage.naturalWidth || !sourceImage.naturalHeight) return;
+      asset.crop.x = Math.max(0, Math.min(sourceImage.naturalWidth - 1, Math.round(Number(asset.crop.x) || 0)));
+      asset.crop.y = Math.max(0, Math.min(sourceImage.naturalHeight - 1, Math.round(Number(asset.crop.y) || 0)));
+      asset.crop.w = Math.max(1, Math.min(sourceImage.naturalWidth - asset.crop.x, Math.round(Number(asset.crop.w) || 1)));
+      asset.crop.h = Math.max(1, Math.min(sourceImage.naturalHeight - asset.crop.y, Math.round(Number(asset.crop.h) || 1)));
     }
 
     function pointInPolygon(x, y, points) {
